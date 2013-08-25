@@ -1,4 +1,6 @@
-# Easy to use Wine configuration programs and libraries
+# Vineyard
+
+## Easy to use Wine configuration programs and libraries
 
 Libraries and graphical utilities for using and configuring Wine from the Gnome desktop.
 Incorporates many of the ideas found at https://wiki.ubuntu.com/karmic-wine-integration.
