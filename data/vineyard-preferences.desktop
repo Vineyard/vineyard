@@ -1,0 +1,53 @@
+
+[Desktop Entry]
+Name=Windows Applications
+Comment=Configure how Windows programs behave when running through Wine
+Exec=vineyard-preferences
+Icon=vineyard-preferences
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Settings;DesktopSettings;
+Name[da_DK]=Windows-programmer
+
+X-Ayatana-Desktop-Shortcuts=General;Appearance;Places;Devices;Libraries;Programs;Install;Tools;
+
+[General Shortcut Group]
+Name=General
+Exec=vineyard-preferences -s general
+TargetEnvironment=Unity
+
+[Appearance Shortcut Group]
+Name=Appearance
+Exec=vineyard-preferences -s appearance
+TargetEnvironment=Unity
+
+[Places Shortcut Group]
+Name=Places
+Exec=vineyard-preferences -s places
+TargetEnvironment=Unity
+
+[Devices Shortcut Group]
+Name=Devices
+Exec=vineyard-preferences -s devices
+TargetEnvironment=Unity
+
+[Libraries Shortcut Group]
+Name=Libraries
+Exec=vineyard-preferences -s libraries
+TargetEnvironment=Unity
+
+[Programs Shortcut Group]
+Name=Programs
+Exec=vineyard-preferences -s programs
+TargetEnvironment=Unity
+
+[Install Shortcut Group]
+Name=Install
+Exec=vineyard-preferences -s install
+TargetEnvironment=Unity
+
+[Tools Shortcut Group]
+Name=Tools
+Exec=vineyard-preferences -s tools
+TargetEnvironment=Unity

@@ -1,0 +1,9 @@
+Document: vineyard-doc
+Title: Vineyard Manual
+Author: Christian Dannie Storgaard
+Abstract: This manual describes what Vineyard is and how to use it.
+Section: System/Package Management
+
+Format: Mallard
+Index: /usr/share/vineyard/docs/index.page
+Files: /usr/share/vineyard/docs/*.page

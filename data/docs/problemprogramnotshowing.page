@@ -1,0 +1,43 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="problemprogramnotshowing">
+<info>
+  <link type="guide" xref="index#trouble"/>
+  <link type="seealso" xref="installprogram"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to get a program to show up in the programs listing.</desc>
+</info>
+<title>Missing a program?</title>
+<p>
+If a program has installed itself in the registry or created an item in the virtual Start Menu then Vineyard should be able to find it. In some cases this fails, f.x. when the menu item has a different name than the registry information, if the registry information is now written according to the (known) Microsoft Windows standards or in case you manually installed, extracted or copied the program in to the configuration.
+If this happens you can help Vineyard along by either creating the relevant information in the registry or defining a program override (not fully implemented yet).
+</p>
+<steps>
+<title>Adding information about a program to the registry (yes, this will be automated in a future version):</title>
+	<item><p>Open the Wine Preferences (<guiseq><gui>System</gui><gui>Preferences</gui><gui>Wine Preferences</gui></guiseq>)</p></item>
+	<item><p>Select the configuration you have installed the program in to (if applicable)</p></item>
+	<item><p>Go to the <gui style="group">Tools</gui> page</p></item>
+	<item><p>Open the registry editor (by clicking <gui style="button">Registry Editor</gui>)</p></item>
+	<item><p>Navigate to <guiseq><gui>HKEY_LOCAL_MACHINE</gui><gui>Software</gui><gui>Microsoft</gui><gui>Windows</gui><gui>CurrentVersion</gui><gui>Uninstall</gui></guiseq> (make sure you end up with <gui>Uninstall</gui> selected)</p></item>
+	<item><p>Right click in the right side of the window, select <guiseq><gui>New</gui><gui>Key</gui></guiseq> and write a short name for the program</p></item>
+	<item><p>With your program name selected (it already should be) right click the right side again, select <guiseq><gui>New</gui><gui>String Value</gui></guiseq> and write <input>DisplayName</input></p></item>
+	<item><p>Double click the "DisplayName" line in the right side area and write the full name of the program</p></item>
+	<item><p>Repeat step 7-8 and instead of "DisplayName", write <input>DisplayIcon</input> and then the path to the program's icon - note that this is in Windows path style (e.g. <file>C:\Program Files\program.exe</file> - note that you can use an exe as an icon)</p></item>
+</steps>
+<note style="advanced">
+	<p>If you already know how to use the registry editor, these are the keys you should create:</p>
+	<code>
+	[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall]
+	[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\<var>SHORT_PROGRAM_NAME</var>]
+	"DisplayName"="<var>The Name of the Program</var>"
+	"DisplayIcon"="<var>C:\\Path\\to\\where\\the\\program\\is\\located\\PROGRAM_ICON.exe</var>"
+	"VineyardProgramExe"="<var>C:\\Path\\to\\where\\the\\program\\is\\located\\program.exe</var>"
+	</code>
+</note>
+</page>

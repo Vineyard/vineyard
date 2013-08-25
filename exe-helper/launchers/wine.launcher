@@ -1,0 +1,42 @@
+[Launcher Entry]
+Argument=wine
+Package=wine
+Icon=wine
+VirusScan=true
+TryExec=wine
+FirstRunExec=wineboot
+TryFirstRunExec=[ -d ${WINEPREFIX:-~/.wine}/dosdevices/c\:/windows/system32 ] && [ -f ${WINEPREFIX:-~/.wine}/system.reg ] && [ -f ${WINEPREFIX:-~/.wine}/userdef.reg ] && [ -f ${WINEPREFIX:-~/.wine}/user.reg ]
+Exec=wine start /unix %FILE%
+
+Title=This is a Windows Application
+TextHandler=Wine
+TextInstall=The program %PROGRAM% was originally designed\nfor Microsoft Windows.\n\nYou can attempt to run it by using the program Wine, however\nbe warned that some Windows applications may not function\ncorrectly.
+TextPermission=The Windows program %PROGRAM%\nrequires permission to run.
+TextFirstRun=Creating Windows configuration, please wait...
+
+Title[da]=Dette er et Windows-program
+TextInstall[da]=Programmet %PROGRAM% er oprindeligt designet\ntil Microsoft Windows.\n\nDu kan prøve at køre det ved at bruge programmet Wine,\nbemærk dog at det ikke er sikkert at alle Windows-programmer\nvil fungere korrekt.
+TextPermission[da]=Windows-programmet %PROGRAM%\nkræver tilladelse for at starte.
+TextFirstRun[da]=Opretter ny Windows-konfiguration, vent venligst...
+
+
+[Desktop Entry]
+Type=Application
+Name=Wine Windows Program Loader
+Name[de]=Wine Windows-Programmstarter
+Name[es]=Wine Cargador de programas de Windows
+Name[nl]=Wine Windows programmalader
+Name[sv]=Wine Windows Programstartare
+Name[ru]=Wine - загрузчик Windows программ
+Name[uk]=Wine - завантажувач Windows програм
+Name[fr]=Wine Exécuter des programmes Windows
+Name[ca]=Wine - Carregador d'aplicacions del Windows
+Name[pt]=Carregador de aplicativos Windows Wine
+Name[pt_br]=Carregador de aplicativos Windows Wine
+Name[it]=Wine Carica Programmi Windows
+Name[da]=Wine, Programstarter til Windows-programmer
+Name[nb]=Wine Programlaster for Windowsapplikasjoner
+Name[nn]=Wine Programlaster for Windowsapplikasjoner
+Exec=exe-handler --wine %f
+MimeType=application/x-ms-dos-executable;application/x-msdos-program;application/x-msdownload;application/exe;application/x-exe;application/dos-exe;vms/exe;application/x-winexe;application/msdos-windows;application/x-zip-compressed;application/x-executable;application/x-msi;
+NoDisplay=true

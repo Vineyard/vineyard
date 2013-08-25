@@ -1,0 +1,794 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wine-preferences\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-03-18 00:17+0100\n"
+"PO-Revision-Date: 2011-05-29 11:12+0000\n"
+"Last-Translator: Svetoslav Stefanov <svetlisashkov@yahoo.com>\n"
+"Language-Team: Svetoslav Stefanov <lfu.project@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-05-20 04:47+0000\n"
+"X-Generator: Launchpad (build 15259)\n"
+"X-Poedit-Country: BULGARIA\n"
+"Language: \n"
+"X-Poedit-Language: Bulgarian\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:171
+msgid "All Files"
+msgstr "Всички файлове"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:172
+msgid "Image Files"
+msgstr "Файлове с изображения"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:173
+msgid "Windows Executables"
+msgstr "Изпълними файлове за Windows"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:174
+msgid "Windows Executables And Image Files"
+msgstr "Изпълними файлове за Windows  и файлове с изображения"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:58
+msgid ""
+"We're terribly sorry. Could you help us fix the problem by reporting the "
+"crash?"
+msgstr ""
+"Ужасно съжаляваме. Ще ни помогнете ли да решим проблема, като съобщите за "
+"грешката."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:169
+msgid "An error has occurred"
+msgstr "Възникна грешка"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:177
+msgid "It looks like an error has occurred."
+msgstr "Изглежда възникна грешка"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:211
+msgid "_Details"
+msgstr "_Подробности"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:217
+msgid "_Report this problem..."
+msgstr "_Съобщаване за този проблем..."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:221
+msgid "_Ignore the error"
+msgstr "_Игнориране на грешката"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:14
+msgid "A file archiver with a high compression ratio"
+msgstr "Архиватор с висока степен на компресиране"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:15
+msgid "An application platform"
+msgstr "Платформа за приложения"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:16
+msgid "Microsoft Internet Explorer 6"
+msgstr "Microsoft Internet Explorer 6"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:17
+msgid "Microsoft Internet Explorer 7"
+msgstr "Microsoft Internet Explorer 7"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:18
+msgid "A free audio and video player for Windows"
+msgstr "Свободен аудио и видео плеър за Windows"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:19
+msgid "Adobe Shockwave Player"
+msgstr "Adobe Shockwave Player"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:20
+msgid "Apple Quicktime"
+msgstr "Apple Quicktime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:21
+msgid "Steam Client from Valve"
+msgstr "Клиентът Steam от Valve"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:22
+msgid "VLC media player"
+msgstr "Медиен плеър VLC"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:23
+msgid "Microsoft Windows Media Player 9 *"
+msgstr "Microsoft Windows Media Player 9 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:24
+msgid "Microsoft Windows Media Player 10 *"
+msgstr "Microsoft Windows Media Player 10 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:30
+msgid "Direct3D from DirectX 9"
+msgstr "Direct3D от DirectX 9"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:31
+msgid "Adobe Flash Player ActiveX and Firefox plugins"
+msgstr "Adobe Flash Player ActiveX и Firefox приставки"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:32
+msgid "DivX video codec"
+msgstr "Видео кодек DivX"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:33
+msgid "Xvid video codec"
+msgstr "Видео кодек Xvid"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:34
+msgid "Microsoft Windows GDI+ library"
+msgstr "Microsoft Windows GDI+ библиотека"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:35
+msgid "MFC module from Microsoft Visual C++"
+msgstr "MFC модул от Microsoft Visual C++"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:36
+msgid "Microsoft .NET *"
+msgstr "Microsoft .NET *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:37
+msgid "Microsoft .NET 2.0 *"
+msgstr "Microsoft .NET 2.0 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:38
+msgid "Microsoft .NET 2.0 Service Pack 2 *"
+msgstr "Microsoft .NET 2.0 Service Pack 2 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:39
+msgid "Microsoft .NET 3.0*"
+msgstr "Microsoft .NET 3.0*"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:40
+msgid "Microsoft Visual Basic 6 Service Pack 6 runtime"
+msgstr "Microsoft Visual Basic 6 Service Pack 6 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:41
+msgid "Microsoft Visual Basic 5 runtime"
+msgstr "Microsoft Visual Basic 5 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:42
+msgid "Microsoft Visual Basic 4 runtime"
+msgstr "Microsoft Visual Basic 4 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:43
+msgid "Microsoft Visual Basic 3 runtime"
+msgstr "Microsoft Visual Basic 3 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:44
+msgid "Microsoft Visual Basic 2 runtime"
+msgstr "Microsoft Visual Basic 2 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:48
+msgid "Open source .NET implementation"
+msgstr "Реализация на .NET с отворен код"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:49
+msgid "Microsoft Visual C++ 2010 runtime libraries"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:50
+msgid "Microsoft Visual C++ 2008 runtime libraries"
+msgstr "Microsoft Visual C++ 2008 runtime библиотеки"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:51
+msgid "Microsoft Visual C++ 2005 runtime libraries"
+msgstr "Microsoft Visual C++ 2005 runtime библиотеки"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:52
+msgid "Microsoft Visual C++ 2003 runtime libraries"
+msgstr "Microsoft Visual C++ 2003 runtime библиотеки"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:53
+msgid "Microsoft Visual C++ 2003 libraries"
+msgstr "Microsoft Visual C++ 2003 библиотеки"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:54
+msgid "Microsoft XML Version 3"
+msgstr "Microsoft XML версия 3"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:55
+msgid "Microsoft XML Version 4"
+msgstr "Microsoft XML версия 4"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:56
+msgid "Microsoft XML Version 6"
+msgstr "Microsoft XML версия 6"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:57
+msgid "flac, theora, speex, vorbix, schroedinger"
+msgstr "flac, theora, speex, vorbix, schroedinger"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:58
+msgid "NVIDIA/AEGIAs physics library"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:59
+msgid "Microsofts Arial, Courier and Times"
+msgstr "Microsofts Arial, Courier и Times"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:60
+msgid "Liberation fonts from Red Hat"
+msgstr "Шрифтовете Liberation от Red Hat"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:61
+msgid "Microsofts Tahoma"
+msgstr "Microsofts Tahoma"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:111
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:112
+msgid "Downloading winetricks"
+msgstr "Изтегляне на winetricks"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:113
+msgid "This only needs to be done this once."
+msgstr "Това трябва да бъде изпълнено еднократно."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:136
+msgid "Installing {package} and others"
+msgstr "Инсталиране на {package} и други"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:140
+msgid "Installing {package}"
+msgstr "Инсталиране на {package}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:147
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:203
+msgid "The package files will be cached locally for installation."
+msgstr "Пакетните файлове ще бъдат кеширани локално за инсталация."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:170
+msgid "Installer"
+msgstr "Инсталатор"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:194
+msgid "Installing package"
+msgstr "Инсталиране на пакет"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:196
+msgid "Installing..."
+msgstr "Инсталиране..."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:205
+msgid "Downloading {file}"
+msgstr "Изтегляне на {file}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:215
+msgid "{package} already installed, skipping"
+msgstr "{package} вече е инсталиран, пропускане"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:223
+msgid "Unpacking installation files"
+msgstr "Разопаковане на файловете за инсталиране"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:229
+msgid "If an installer window appears, just accept its default settings."
+msgstr ""
+"Ако се появи прозорец на инсталатора, просто приемете стандартните му "
+"настройки"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:232
+msgid "Running {executable_or_installer}"
+msgstr "Изпълняване на {executable_or_installer}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:245
+msgid "Installing {package} and others failed"
+msgstr "Инсталирането на {package} и на другите е неуспешно"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:249
+msgid "Installing {package} failed"
+msgstr "Инсталирането на {package} е неуспешно"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:254
+msgid ""
+"{executable_or_installer} can either not be downloaded or is an unsupported "
+"version."
+msgstr ""
+"{executable_or_installer} не може да се изтегли или е неподдържана версия"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:261
+msgid "Retrying installing {package} and others"
+msgstr "Повторен опит за инсталиране на {package} и другите"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:265
+msgid "Retrying installing {package}"
+msgstr "Повторен опит за инсталиране на {package}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:270
+msgid "Mismatching file already exists, trying again"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:281
+msgid "{package} successfully installed"
+msgstr "{package} е успешно инсталиран"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:289
+msgid "Everything successfully installed"
+msgstr "Всичко е инсталирано успешно"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:295
+msgid "Installation failed"
+msgstr "Инсталирането е неуспешно"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:303
+msgid "Done."
+msgstr "Готово."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:328
+msgid "{first_package} and others"
+msgstr "{first_package} и други"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:336
+msgid "Installer for {package}"
+msgstr "Инсталатор за {package}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:59
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:108
+msgid "The program exited with an error"
+msgstr "Програмата излезе с грешка"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:96
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:134
+msgid "A possible cause of the error could be one or more of the following:"
+msgstr "Вероятно грешката се дължи на една или повече от следните причини:"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:98
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:137
+#, python-format
+msgid "The library file (DLL) <b>%s</b> wasn't found."
+msgstr "Библитеката (DLL) <b>%s</b> не е открита."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:106
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:113
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:148
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:167
+msgid "Based on this output it looks like "
+msgstr "Въз основа по пулучената информация изглежда че "
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:111
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:158
+msgid ", "
+msgstr ", "
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:112
+msgid " and "
+msgstr " и "
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:120
+#, python-format
+msgid "When running <b>%s</b> Wine returned the following errors:"
+msgstr "При изпълнението на <b>%s</b> Wine върна следните грешки:"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:130
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:190
+#, python-format
+msgid "Error information for %s"
+msgstr "Информация за грешката на %s"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:168
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:231
+msgid "Detailed error information"
+msgstr "Подробна информация за грешката"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:120
+msgid "More info"
+msgstr "Повече информация"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:157
+msgid "{comma_separated_list} and {last_part}"
+msgstr "{comma_separated_list} и {last_part}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:178
+msgid "When running <b>{program_name}</b> "
+msgstr "При изпълнение на <b>{program_name}</b> "
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-infobar.py:101
+msgid "This directory is in the default Wine/Vineyard configuration"
+msgstr "Тази папка е в стандартната конфигурация на Wine/Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-infobar.py:105
+msgid "This directory is in the Vineyard configuration <b>{0}</b>"
+msgstr "Тази папка е в конфигурацията на Vineyard <b>{0}</b>"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-infobar.py:115
+msgid "Configure"
+msgstr "Настройки"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:98
+msgid "Link info"
+msgstr "Информация за връзката"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:103
+msgid "Target:"
+msgstr "Цел:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:107
+msgid "A network location"
+msgstr "Мрежови ресусрс"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:130
+msgid "Execute in:"
+msgstr "Изпълняване в:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:155
+msgid "Arguments:"
+msgstr "Аргументи:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:168
+msgid "Opens in a:"
+msgstr "Отваряне в:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:173
+msgid "Normal window"
+msgstr "Обикновен прозорец"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:175
+msgid "Maximised window"
+msgstr "Максимизиран прозорец"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:177
+msgid "Minimised window"
+msgstr "Минимизиран прозорец"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:187
+msgid "Compatibility"
+msgstr "Съвместимост"
+
+# fuzzy
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:202
+msgid "Operate as:"
+msgstr "Работа като:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:205
+msgid "(default)"
+msgstr "(стандартно)"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:210
+msgid "Open in:"
+msgstr "Отваряне в:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:213
+msgid "Open program windows in a virtual desktop"
+msgstr "Отваряне прозорците на програмите във виртуален работен плот"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:216
+msgid "Desktop width: "
+msgstr "Широчина на работният плот: "
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:221
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:228
+msgid "pixels"
+msgstr "пиксела"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:223
+msgid "Desktop height: "
+msgstr "Височина на работният плот: "
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:1
+msgid "About Vineyard Preferences"
+msgstr "Относно Настройките на Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:2
+msgid "Add"
+msgstr "Добавяне"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:3
+msgid "Add a new prefix"
+msgstr "Добавяне на нова представка"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:4
+msgid ""
+"Full list of translators at:\n"
+"    https://translations.launchpad.net/vineyard"
+msgstr ""
+"Пълен списък с преводачи на:\n"
+"    https://translations.launchpad.net/vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:6
+msgid "Remove"
+msgstr "Премахване"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:7
+msgid "Remove the current prefix, including all its installed programs"
+msgstr ""
+"Премахване на текущата представка, включително всичките й инсталирани "
+"програми"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:8
+msgid "Show advanced options"
+msgstr "Показване на разширени настройки"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:9
+msgid "The selected prefix (also known as \"configuration\" or \"bottle\")"
+msgstr ""
+"Избраната представка (известна и като \"конфигурация\" или \"бутилка\")"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:10
+msgid "Vineyard Preferences is a part of the Vineyard Project"
+msgstr "Настройки на Vineyard е част от проектът Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:11
+msgid ""
+"Vineyard is free software; you can redistribute it and/or modify it under "
+"the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"Vineyard is distributed in the hope that it will be useful, but WITHOUT ANY "
+"WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS "
+"FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more "
+"details."
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:14
+msgid "Wine Preferences"
+msgstr "Настройки на Wine:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:15
+msgid "Wine Prefix:"
+msgstr "Представка на Wine:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:16
+msgid "© 2009-2011 Christian Dannie Storgaard"
+msgstr "© 2009-2011 Christian Dannie Storgaard"
+
+# fuzzy
+#~ msgid "Run in Wine configuration"
+#~ msgstr "Конфигурация на Wine:"
+
+#~ msgid "Default"
+#~ msgstr "Стандартно"
+
+#~ msgid "Name: "
+#~ msgstr "Име: "
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#~ msgid "<b>Add new override</b>"
+#~ msgstr "<b>Добавяне на нова замяна</b>"
+
+#~ msgid "<b>Direct3D Video Memory Size</b>"
+#~ msgstr "<b>Размер на видео паметта на Direct3D</b>"
+
+#~ msgid "<b>Direct3D</b>"
+#~ msgstr "<b>Direct3D</b>"
+
+#~ msgid "<b>DirectSound</b>"
+#~ msgstr "<b>DirectSound</b>"
+
+#~ msgid "<b>Emulated Drives</b>"
+#~ msgstr "<b>Емулирани устройства</b>"
+
+#~ msgid "<b>Existing DLL Overrides</b>"
+#~ msgstr "<b>Съществуващи DLL замени</b>"
+
+#~ msgid "<b>Folder Mappings</b>"
+#~ msgstr "<b>Цел на папките</b>"
+
+#~ msgid "<b>Hidden Files</b>"
+#~ msgstr "<b>Скрити файлове</b>"
+
+#~ msgid "<b>Program windows</b>"
+#~ msgstr "<b>Прозорци на програмите</b>"
+
+#~ msgid "<b>Sound output</b>"
+#~ msgstr "<b>Звуков изход</b>"
+
+#~ msgid "<b>Virtual Desktop</b>"
+#~ msgstr "<b>Виртуален работен плот</b>"
+
+#~ msgid "<b>Windows Version</b>"
+#~ msgstr "<b>Версия на Windows</b>"
+
+#~ msgid "Absolute: "
+#~ msgstr "Абсолютно: "
+
+#~ msgid "Allow DirectX programs to capture the mouse"
+#~ msgstr "Разрешаване на DirectX приложенията да заключват мишката"
+
+#~ msgid "Allow Pixel Shader (if supported by hardware)"
+#~ msgstr "Разрешаване на Pixel Shader (ако се поддържа от хардуера)"
+
+#~ msgid ""
+#~ "Are you sure you want to remove the configuration?\n"
+#~ "Removing it will remove all programs installed into it!"
+#~ msgstr ""
+#~ "Сигурни ли сте, че желаете да премахнете конфигурацията?\n"
+#~ "Това ще премахне всички програми, инсталирани в нея!"
+
+#~ msgid "Auto detected"
+#~ msgstr "Автоматично засечена"
+
+#~ msgid "Autodetect"
+#~ msgstr "Автоматично засичане"
+
+#~ msgid "Choose a Folder"
+#~ msgstr "Избор на папка"
+
+#~ msgid "Default bit depth:"
+#~ msgstr "Стандартна битова дълбочина:"
+
+#~ msgid "Default sample rate:"
+#~ msgstr "Стандартна честота на дискретизация:"
+
+#~ msgid "Desktop: "
+#~ msgstr "Работен плот "
+
+#~ msgid "Disable anti-aliasing"
+#~ msgstr "Изключване на изглаждането"
+
+#~ msgid "Display hidden files"
+#~ msgstr "Показване на скритите файлове"
+
+#~ msgid "Driver:"
+#~ msgstr "Драйвер:"
+
+#~ msgid "Drives"
+#~ msgstr "Устройства"
+
+#~ msgid "Enable hardware Vertex Shader support"
+#~ msgstr "Включване на хардуерна поддръжка на Vertex Shader"
+
+#~ msgid "Folders"
+#~ msgstr "Папки"
+
+#~ msgid "General"
+#~ msgstr "Общи"
+
+#~ msgid "Graphics"
+#~ msgstr "Графика"
+
+#~ msgid "Hardware acceleration:"
+#~ msgstr "Хардуерно ускорение:"
+
+#~ msgid "Label:"
+#~ msgstr "Етикет:"
+
+#~ msgid "Libraries"
+#~ msgstr "Библиотеки"
+
+#~ msgid "MB"
+#~ msgstr "МБ"
+
+#~ msgid "My Documents: "
+#~ msgstr "My Documents: "
+
+#~ msgid "My Music: "
+#~ msgstr "My Music: "
+
+#~ msgid "My Pictures: "
+#~ msgstr "My Pictures: "
+
+#~ msgid "My Videos: "
+#~ msgstr "My Videos: "
+
+#~ msgid "Path:"
+#~ msgstr "Път:"
+
+#~ msgid "Programs"
+#~ msgstr "Програми"
+
+#~ msgid "Reading settings..."
+#~ msgstr "Прочитане на настройките..."
+
+#~ msgid "Remove Windows Configuration?"
+#~ msgstr "Премахване конфигурацията на Windows?"
+
+#~ msgid "Render offscreen images using the: "
+#~ msgstr "Рендиране на изображенията вън от екрана, използвайки: "
+
+#~ msgid "Run"
+#~ msgstr "Изпълнение"
+
+#~ msgid "Select A Folder"
+#~ msgstr "Избор на папка"
+
+#~ msgid "Serial:"
+#~ msgstr "Номер:"
+
+#~ msgid "Set label and serial:"
+#~ msgstr "Задаване на етикет и номер:"
+
+#~ msgid "Show Linux window borders"
+#~ msgstr "Показване на рамките на прозореца от Линукс"
+
+#~ msgid "Show windows in the taskbar"
+#~ msgstr "Показване на прозорците в лентата със задачи"
+
+#~ msgid "Smooth font edges (anti-alias)"
+#~ msgstr "Заглаждане на шрифтовете (anti-alias)"
+
+#~ msgid "Sound"
+#~ msgstr "Звук"
+
+#~ msgid "Type:"
+#~ msgstr "Тип:"
+
+#~ msgid "Use driver emulation"
+#~ msgstr "Използване на драйверна емулация"
+
+#~ msgid ""
+#~ "What would you like the new\n"
+#~ "configuration to be called?"
+#~ msgstr ""
+#~ "Как желаете да именувате\n"
+#~ "новата конфигурация?"
+
+#~ msgid "Application"
+#~ msgstr "Приложение"
+
+#, python-format
+#~ msgid "Creating configuration \"%s\""
+#~ msgstr "Създаване на конфигурация \"%s\""
+
+#~ msgid "Wine Configuration: "
+#~ msgstr "Конфигурация на Wine: "
+
+#, python-format
+#~ msgid "Run %s in a new or existing Wine configuration/bottle"
+#~ msgstr "Изпълнение на %s в нова или съществуваща конфигурация на Wine"
+
+#~ msgid "New configuration"
+#~ msgstr "Нова конфигурация"
+
+#~ msgid "New configuration options"
+#~ msgstr "Настройки на новата конфигурация"
+
+#~ msgid "Registered Libraries"
+#~ msgstr "Регистрирани библиотеки"
+
+#~ msgid "Menu Programs"
+#~ msgstr "Програми в менюто"
+
+#~ msgid "Program Information"
+#~ msgstr "Информация за програмата"
+
+#~ msgid "Command Prompt"
+#~ msgstr "Команден ред"
+
+#~ msgid "Choose an executable"
+#~ msgstr "Избор на изпълним файл"
+
+#~ msgid "<b>Configuration Settings</b>"
+#~ msgstr "<b>Конфигурационни настройки</b>"
+
+#~ msgid "<b>Configuration Functions</b>"
+#~ msgstr "<b>Конфигурационни функции</b>"
+
+#~ msgid "New Windows Configuration"
+#~ msgstr "Нова конфигурация на Windows"
+
+#~ msgid "Operate as: "
+#~ msgstr "Работа като: "
+
+#~ msgid "Opens "
+#~ msgstr "Отваря "
+
+#~ msgid "Open a Terminal in this Configuration"
+#~ msgstr "Отваряне на Терминал в тази конфигурация"
+
+#~ msgid "Open Main Drive"
+#~ msgstr "Отваряне на основното устройство"
+
+#~ msgid "Run executable: "
+#~ msgstr "Стартиране на изпълнимия файл: "
+
+#~ msgid "Registry Editor"
+#~ msgstr "Редактор на регистъра"
+
+#~ msgid "<b>Windows Utilities</b>"
+#~ msgstr "<b>Инструменти на Windows</b>"
+
+#~ msgid "Tools"
+#~ msgstr "Инструменти"

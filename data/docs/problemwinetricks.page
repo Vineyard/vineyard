@@ -1,0 +1,19 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="problemwinetricks">
+<info>
+  <link type="guide" xref="index#trouble"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to get Winetricks to work with Vineyard configurations.</desc>
+</info>
+<title>Help with Winetricks</title>
+<p>Winetricks doesn't know about Vineyards configurations and will try to operate on the default Wine configuration.</p>
+<p>To make Winetricks function with Vineyard configurations, open a terminal from the Tools page in Wine Preferences (<guiseq><gui>System</gui><gui>Preferences</gui><gui>Wine Preferences</gui></guiseq>) by clicking <gui style="button">Open a Terminal in this Configuration</gui>. You can now run Winetricks in this terminal and have it operate on the correct configuration. Note that other commands will work on the configuration as well, not only Winetricks.
+</p>
+</page>

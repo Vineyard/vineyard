@@ -1,0 +1,17 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="guide"
+      id="index">
+<title>Vineyard Help</title>
+
+<section id="info" style="2column">
+<title>Information</title>
+</section>
+
+<section id="task" style="2column">
+<title>Tasks</title>
+</section>
+
+<section id="trouble" style="2column">
+<title>Troubleshooting</title>
+</section>
+</page>

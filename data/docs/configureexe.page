@@ -1,0 +1,24 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="configurexe">
+<info>
+  <link type="guide" xref="index#task"/>
+  <link type="seealso" xref="differenceprogramconf"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to configure the settings for a single program (executable)</desc>
+</info>
+<title>Configuring a single executable (program settings)/title>
+<p>Configuring a single executable (program settings)
+	You may have noticed that the Properties dialog for files in Nautilus (the file manager) has a new page named Compatibility.
+	On this page you can configure the settings used for this specific filename.
+	Any settings you set on this page will be applied to any executable you run that has this name, so if you set an executable named SETUP.EXE to be run as Windows 98 and open in a virtual desktop then all files named "SETUP.EXE" (and "setup.exe", "setup.EXE", etc.) will be run like this.
+	This is useful for executables like install programs or programs that use the same launcher (like f.x. Steam games), but can be annoying if you just want the single program to behave in a certain way, if this is the case you should look at <link xref="createconf">creating a new configuration</link>.
+	Note that settings for an executable are only applied to executables run from the same configuration.
+</p>
+</page>

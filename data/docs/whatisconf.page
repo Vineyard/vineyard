@@ -1,0 +1,44 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="whatisconf">
+<info>
+  <link type="guide" xref="index#info"/>
+  <link type="seealso" xref="differenceprogramconf"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>What exactly is a configuration?</desc>
+</info>
+<title>What is a configuration?</title>
+<p>A configuration can be very closely compared to a separate installation of Microsoft Windows; it has a separate virtual hard-disk, complete with its own virtual Windows installation and registry, but unlike a separate installation of Microsoft Windows, it can still see your files and even the files of other configurations if you let it.</p>
+<p>You may have seen almost the same concept in other Wine utilities (like CrossOver, Bordeaux, qWine or Cedega) under names like bottles, virtual harddisks or simply a wineprefix - note though that Vineyard's implementation is slightly different and copying installations from other solutions may not work completely.</p>
+	
+<p>In short, a configuration is similar to a separate Microsoft Windows installation or computer in the following ways:</p>
+<list>
+	<item><p>It has its own main drive (C drive)</p></item>
+	<item><p>It has its own registry</p></item>
+	<item><p>It's programs can only see and talk to the programs in the same configuration</p></item>
+</list>
+	
+<p>But unlike a real separate installation, it can:</p>
+<list>
+	<item><p>See the same files as any other configuration (your home directory f.x.)</p></item>
+	<item><p>Have the same extra (virtual) hard-disks as another configuration</p></item>
+</list>
+
+<section><title>Detailed information</title>
+<p>So Vineyard's configurations are different from other implementations, but how?</p>
+<p>To answer this we first need to look at how Wine traditionally lay out its files.</p>
+
+<p>The most basic directory structure of a normal Wine configuration simply has its files in <file>$HOME/.wine</file>,
+here you'll find the <file>dosdevices</file> directory that contains the virtual drives, including the C: drive.</p>
+<p>Things get a bit more complicated when you start installing programs that in Windows would place themselves in the Start Menu since Wine will convert these files to FreeDesktop.org .desktop files and place them in various directories in <file>$HOME/.local</file> and let them show up in your <gui style="menu">Application</gui> menu.</p>
+<p>As you may know, Windows programs usually create a submenu for themselves in which they place entries, not just for the programs installed, but also for documentation, links to the program's web page and various other entries.</p>
+<p>Now, other implementations like bottles, virtual harddisks or wineprefixes simply allow for the creation of separate <file>.wine</file> directories, but allow the menu entries (and MIME type files) to mix with all other bottles/virtual harddisks/prefixes. This is not how Vineyard does it.</p>
+<p>Vineyard instead treats a configuration as a separate <file>HOME</file> directory with it's own <file>.wine</file> directory, own <file>.local</file> directory and so on, avoiding the cross-polution that would otherwise incur while also keeping your <gui style="menu">Application</gui> menu clean.</p>
+</section>
+</page>

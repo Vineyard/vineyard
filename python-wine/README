@@ -1,0 +1,23 @@
+python-wine allows you to configure Wine through Python.
+
+For example, to set the default version of Windows to emulate, you can call:
+	wine.version.set('win2k')
+or to set the default version for a program, you could call:
+	wine.version.set('win2k', 'notepad.exe')
+
+python-wine also contains functions for more advanced usage, like getting icons
+for programs. An example could be:
+	wine.programs.list()['WinRAR archiver']['programicon']
+python-wine will scan both the Windows registry and the XDG menu paths for
+information and cross-reference it for you.
+
+With the exception of theme support, python-wine supports everything that
+winecfg does and tries to do its operations in a compatible way.
+
+The library has been developed for use in Vineyard available at
+https://launchpad.net/vineyard but will work just fine for other uses.
+
+At the moment there is no documentation, but the library should be fairly
+intuitive to use, and if not, feel free to contact me at <cybolic@gmail.com>
+
+ - Christian Dannie Storgaard - 2010

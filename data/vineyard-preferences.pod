@@ -1,0 +1,60 @@
+=head1 NAME
+
+Vineyard - easy to use Wine configuration program
+
+=head1 SYNOPSIS
+
+vineyard-preferences [I<options>]
+
+=head1 DESCRIPTION
+
+B<Vineyard> is a user friendly configuration tool for WINE(1) that offers all the
+features of winecfg (with the exception of the unfinished theme-support) as
+well as configuration handling and program management in an easy to use program
+designed to blend in with the GNOME desktop.
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--enable-configurations>
+
+Show the controls for managing configurations.
+
+=item B<--select-configuration I<CONFIGURATION>>
+
+Select the configuration named CONFIGURATION at program startup.
+
+=item B<--select-page I<PAGE>>
+
+Select the configuration page PAGE at program startup.
+
+=item B<--debug I<LOGGING_LEVEL>>
+
+Vineyard will print debugging information of a certain level.
+Accepted levels are: debug, info, warning, error and critical.
+
+=back
+
+=head1 BUGS
+
+Please report bugs at https://bugs.launchpad.net/vineyard.
+
+=head1 AUTHORS
+
+B<Vineyard> was written by Christian Dannie Storgaard <cybolic@gmail.com>.
+
+Other credits can be found in the file AUTHORS in the top-level directory
+of the source distribution.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL'.
+
+=cut

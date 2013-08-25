@@ -1,0 +1,127 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007-2010 Christian Dannie Storgaard
+#
+# AUTHOR:
+# Christian Dannie Storgaard <cybolic@gmail.com>
+#
+# vineyard is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; either version 2 of the License, or (at
+# your option) any later version.
+#
+# vineyard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with wine-preferences; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# DBus code based on the Python snippet by Simon Vermeersch <simonvermeersch@gmail.com>
+#
+
+import os, sys
+import gobject, gtk
+import dbus, dbus.service, dbus.glib
+from optparse import OptionParser
+import subprocess
+
+DBUS_NAME = 'org.vineyardproject.Server'
+
+SHARED_FILES_PATH = None
+APP_NAME = "vineyard"
+# If we are running from the development directory
+if os.path.isfile( "%s/data/vineyard-preferences.xml" % os.path.abspath(os.path.dirname(sys.argv[0])) ):
+    SHARED_FILES_PATH = "%s/data" % os.path.abspath(os.path.dirname(sys.argv[0]))
+    sys.path.insert(0, '%s/../python-wine' % SHARED_FILES_PATH)
+else:
+    for path in [ os.path.sep.join(i.split(os.path.sep)[:-1]) for i in os.environ['PATH'].split(':') ]:
+        if os.path.isdir( "%s/share/%s" % (path, APP_NAME) ):
+            SHARED_FILES_PATH = "%s/share/%s" % (path, APP_NAME)
+
+if SHARED_FILES_PATH == None:
+    print "Something is wrong with the installation, can't find required files. Exiting."
+    exit(1)
+sys.path.append(SHARED_FILES_PATH)
+
+import vineyard
+_ = vineyard.common.setup_translation()
+
+class MainApp:
+    def __init__(self):
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_size_request(350, 350)
+        self.label = gtk.Label("label")
+        
+        self.window.add(self.label)
+        self.window.show_all()
+        
+        self.window.connect("destroy", self.destroy)
+        
+    def destroy(self, sender):
+        gtk.main_quit()
+
+class DBusService(dbus.service.Object):
+    def __init__(self, app):
+        global wine
+        import wine
+        self.app = app
+        bus_name = dbus.service.BusName(DBUS_NAME, bus = dbus.SessionBus())
+        dbus.service.Object.__init__(self, bus_name, '/')
+
+    @dbus.service.method(dbus_interface=DBUS_NAME)
+    def show_window(self):
+        self.app.window.present()
+    
+    @dbus.service.method(dbus_interface=DBUS_NAME, out_signature='i')
+    def get_running_programs(self):
+        return wine.monitor.list()
+    
+    @dbus.service.method(dbus_interface=DBUS_NAME, out_signature='i')
+    def get_n_running_programs(self):
+        return len(wine.monitor.list())
+
+def run_method(method):
+    method()
+    return False
+
+if __name__ == "__main__":
+    usage =  _("usage")+": %prog [-h | --help] | [ [-c|--select-configuration CONFIGURATION] ] [--debug LOGGING_LEVEL] ]"
+    parser = OptionParser(usage)
+    parser.add_option("-c", "--use-configuration",
+                      action="store", dest="configuration",
+                      help=_("Use the given configuration (bottle)"))
+    parser.add_option("-w", "--show-window",
+                      action="store_true", dest="show_window",
+                      help=_("Show the main window"))
+    parser.add_option("-p", "--get-running-programs",
+                      action="store_true", dest="get_running_programs",
+                      help=_("Get a list of running programs"))
+    parser.add_option("-n", "--get-number-of-running-programs",
+                      action="store_true", dest="get_n_running_programs",
+                      help=_("Get the number of running programs"))
+    parser.add_option("--debug",
+                      action="store", dest="logging_level",
+                      help=_("print debug information of level (one of debug, info, warning, error, critical)"))
+    (options, args) = parser.parse_args()
+
+    if dbus.SessionBus().request_name(DBUS_NAME) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
+        """ Vineyard is already running """
+        enabled_options = [ k for (k,v) in dict(eval(options.__str__())).iteritems() if v != None ]
+        
+        for method_name in enabled_options:
+            method = dbus.SessionBus().get_object(DBUS_NAME, "/").get_dbus_method(method_name)
+            if method_name.startswith('get_'):
+                print method()
+            else:
+                method()
+    else:
+        """ Vineyard is not running, starting... """
+        app = MainApp()
+        service = DBusService(app)
+        """ Now running methods """
+        subprocess.Popen(sys.argv, stdin=sys.stdin, stdout=sys.stdout, close_fds=True)
+        gtk.main()

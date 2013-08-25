@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PATH="${PATH/$(dirname "$0"):/}"
+
+# Update existing files only if newer and add files that don't already exist
+exec unzip -u "$@"

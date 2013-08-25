@@ -1,0 +1,494 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007-2010 Christian Dannie Storgaard
+#
+# AUTHOR:
+# Christian Dannie Storgaard <cybolic@gmail.com>
+
+
+import pygtk
+pygtk.require('2.0')
+import gtk, gobject, gtk.glade, pango
+import sys, os, time, subprocess, thread, stat, re
+import locale, gettext
+
+SHARED_FILES_PATH = None
+if os.path.isfile( "%s/%s.glade" % ( os.path.abspath(os.path.dirname(sys.argv[0])), os.path.basename(sys.argv[0]).split('.')[0] ) ):
+    SHARED_FILES_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+    sys.path.insert(0, os.path.abspath('%s/../' % os.path.dirname(sys.argv[0])))
+else:
+    for path in [ os.path.sep.join(i.split(os.path.sep)[:-1]) for i in os.environ['PATH'].split(':') ]:
+        if os.path.isdir( "%s/share/%s" % (path, os.path.basename(sys.argv[0]).split('.')[0]) ):
+            SHARED_FILES_PATH = "%s/share/%s" % (path, os.path.basename(sys.argv[0]).split('.')[0])
+
+if SHARED_FILES_PATH == None:
+    print "Something is wrong with the installation, can't find required files. Exiting."
+    exit(1)
+
+APP_NAME = "exe-helper"
+try:
+    locale.setlocale(locale.LC_ALL, '')
+except locale.Error:
+    try:
+        if 'LANGUAGE' in os.environ:
+            locale.setlocale(locale.LC_ALL, '%s.UTF-8' % os.environ['LANGUAGE'])
+        elif 'LANG' in os.environ:
+            locale.setlocale(locale.LC_ALL, '%s.UTF-8' % os.environ['LANG'])
+        else:
+            print "Locale not supported, running in English"
+    except:
+        print "Locale not supported, running in English"
+
+for module in (gettext, gtk.glade):
+    module.bindtextdomain(APP_NAME, "%s/%s" % (SHARED_FILES_PATH, "locale"))
+    module.textdomain(APP_NAME)
+gettext.install(APP_NAME, "%s/%s" % (SHARED_FILES_PATH, "locale"), unicode=True)
+_ = gettext.gettext
+
+CONTINUE = False
+
+class MainInstall:
+    def _exit(self, *args):
+        gtk.main_quit()
+        exit()
+
+    def onQuit(self, *args):
+        self._exit()
+
+    def __init__(self, filename, title, handler, text=None, icon=None, package=""):
+        self.filename = filename
+        self.package = package
+        self.widgets = CreateWidgets(self, file="exe-helper.glade")
+
+        self.widgets['label-title'].set_markup("<big>%s</big>" % title)
+        if text == None:
+            self.widgets['label-info'].set_markup(self.widgets['label-info'].get_text().replace('%PROGRAM%', os.path.basename(self.filename)).replace('%HANDLER%', handler))
+        else:
+            self.widgets['label-info'].set_markup(text.replace('%PROGRAM%', os.path.basename(self.filename)).replace('%HANDLER%', handler))
+        self.widgets['label-ok'].set_text(self.widgets['label-ok'].get_text().replace('%HANDLER%', handler))
+
+        if icon != None:
+            self.widgets['image-icon'].set_from_icon_name(icon, gtk.ICON_SIZE_DIALOG)
+            self.widgets['image-install'].set_from_icon_name(icon, gtk.ICON_SIZE_BUTTON)
+
+        if type(package) != type([]):
+            self.widgets['button-install-select'].hide()
+
+        res = self.widgets['dialog'].run()
+        if res == gtk.RESPONSE_CANCEL:
+            self.widgets['dialog'].hide()
+            self.widgets['label-cancel'].set_text(self.widgets['label-cancel'].get_text().replace('%HANDLER%', handler))
+            self.widgets['dialog-cancel'].run()
+            exit()
+
+        # don't set on-top while installing
+        self.widgets['dialog'].set_keep_above(False)
+
+        if res == gtk.RESPONSE_OK:
+            self.widgets['dialog'].hide()
+            self.widgets['dialog-install'].set_title(self.widgets['dialog-install'].get_title().replace('%HANDLER%', handler))
+            self.widgets['label-install-title'].set_markup("<b>%s</b>" % self.widgets['label-install-title'].get_text().replace('%HANDLER%', handler))
+            column = gtk.TreeViewColumn(_("Package"))
+            column.set_expand(True)
+            column.set_sort_column_id(1)
+            renderer_app_icon = gtk.CellRendererPixbuf()
+            column.pack_start(renderer_app_icon, False)
+            column.set_cell_data_func(renderer_app_icon, self._icon_cell_func)
+            renderer_app = gtk.CellRendererText()
+            renderer_app.set_property("ellipsize", pango.ELLIPSIZE_END)
+            column.pack_start(renderer_app, True)
+            column.set_cell_data_func(renderer_app, self._package_view_func)
+            self.widgets['treeview-handler'].append_column(column)
+
+            liststore = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
+            if gobject.signal_lookup('row-has-child-toggled', liststore) != 0:
+                liststore.connect('row-has-child-toggled', lambda *args: True)
+                #liststore.stop_emission('row-has-child-toggled')
+            self.widgets['treeview-handler'].set_model(liststore)
+
+            icon = gtk.icon_theme_get_default().load_icon("deb", 24, 0)
+            for info in package:
+                liststore.append([ icon, info[0], info[1] ])
+
+            res = self.widgets['dialog-install'].run()
+            if res != gtk.RESPONSE_OK:
+                self.widgets['dialog-install'].hide()
+                self.widgets['label-cancel'].set_text(self.widgets['label-cancel'].get_text().replace('%HANDLER%', handler))
+                self.widgets['dialog-cancel'].run()
+                exit()
+
+            package = self.widgets['treeview-handler'].get_model()[ self.widgets['treeview-handler'].get_model().get_path(self.widgets['treeview-handler'].get_selection().get_selected()[1]) ][2]
+
+            self.widgets['dialog-install'].hide()
+            self.package = package
+            self.doInstall()
+        else:
+            if type(package) == type([]):
+                self.package = package[0][1]
+            self.doInstall()
+
+        self.widgets['dialog'].hide()
+
+    def _package_view_func(self, cell_layout, renderer, model, iter):
+        markup = model.get_value(iter, 1)
+        renderer.set_property("markup", markup)
+
+    def _icon_cell_func(self, column, cell, model, iter):
+        icon = model.get_value(iter, 0)
+        cell.set_property("pixbuf", icon)
+        cell.set_property("visible", True)
+
+    def doInstall(self):
+        # run synaptic
+        tempname = os.tmpnam()
+        temp = open(tempname,'w')
+        temp.write("%s\t install\n" % self.package)
+        temp.flush()
+        p = subprocess.Popen(['gksu',
+                              '--desktop',
+                              '/usr/share/applications/synaptic.desktop',
+                              '--',
+                              '/usr/sbin/synaptic',
+                              '--hide-main-window',
+                              '--non-interactive',
+                              '--parent-window-id', str(self.widgets['dialog'].window.xid),
+                              '--set-selections-file', tempname
+                              ])
+
+        self.widgets['dialog'].set_sensitive(False)
+        _wait_for_program(p)
+        self.widgets['dialog'].set_sensitive(True)
+        temp.close()
+        os.remove(tempname)
+
+
+class MainPermission:
+    def _exit(self, *args):
+        if self.virusscan and self.scanpossible:
+            if self.p.returncode == None:
+                self.p.kill()
+            if self.p2.returncode == None:
+                self.p2.kill()
+        gtk.main_quit()
+        exit()
+
+    def onQuit(self, *args):
+        self._exit()
+
+    def __init__(self, filename, handler, text=None, icon=None, virusscan=False):
+        self.filename = filename
+        self.handler = handler
+        self.virusscan = virusscan
+
+        self.scanpossible = checkForProgram("clamscan")
+
+        self.widgets = CreateWidgets(self, file="exe-helper.glade")
+
+        self.widgets['label-exec-title'].set_markup("<big>%s</big>" % self.widgets['label-exec-title'].get_text().replace('%PROGRAM%', os.path.basename(self.filename)))
+
+        if text != None:
+            self.widgets['label-exec-info'].set_text(text.replace('%PROGRAM%', os.path.basename(self.filename)).replace('%HANDLER%', handler))
+        else:
+            self.widgets['label-exec-info'].set_text(self.widgets['label-exec-info'].get_text().replace('%PROGRAM%', os.path.basename(self.filename)).replace('%HANDLER%', handler))
+
+        if icon != None:
+            self.widgets['image-exec-icon'].set_from_icon_name(icon, gtk.ICON_SIZE_DIALOG)
+
+        if not self.scanpossible:
+            self.widgets['button-exec-virusscan'].hide()
+            self.widgets['hseparator-exec'].hide()
+            self.widgets['label-exec-scan'].hide()
+        else:
+            if virusscan:
+                self.widgets['button-exec-virusscan'].hide()
+            else:
+                self.widgets['hseparator-exec'].hide()
+                self.widgets['label-exec-scan'].hide()
+
+        self.widgets['window-exec'].show()
+
+        if self.virusscan:
+            self.startScan()
+
+
+    def startScan(self):
+        if self.scanpossible:
+            self.virusscan = True
+            self.widgets['button-exec-ok'].set_sensitive(False)
+            self.p = subprocess.Popen(['clamscan', self.filename], stdout=subprocess.PIPE)
+            self.p2 = subprocess.Popen(['grep', 'Infected files'], stdin=self.p.stdout, stdout=subprocess.PIPE)
+            self.result = _wait_for_program(self.p2)
+            self.result = int(self.result.split(" ")[-1].strip())
+
+            if self.result > 0:
+                self.widgets['window-exec'].hide()
+                text = self.widgets['label-virustitle'].get_text()
+                self.widgets['label-virustitle'].set_markup("<big>%s</big>" % text.replace('%PROGRAM%', os.path.basename(self.filename)))
+                self.widgets['dialog-virus'].run()
+                CONTINUE = False
+            else:
+                self.widgets['label-exec-scan'].set_text(_("The program appears safe to run."))
+                self.widgets['button-exec-ok'].set_sensitive(True)
+                self.widgets['button-exec-ok'].grab_focus()
+        else:
+            self.widgets['button-exec-ok'].set_sensitive(True)
+        return False
+
+    def onExecTrust(self, button):
+        if button.get_active():
+            subprocess.call("chmod +x \"%s\"" % self.filename, stdout=subprocess.PIPE, shell=True)
+        else:
+            subprocess.call("chmod -x \"%s\"" % self.filename, stdout=subprocess.PIPE, shell=True)
+
+    def onVirusscan(self, button):
+        self.widgets['hseparator-exec'].show()
+        self.widgets['label-exec-scan'].show()
+        self.startScan()
+
+
+    def onOk(self, button):
+        self.widgets['window-exec'].hide()
+        gtk.main_quit()
+
+    def onCancel(self, button):
+        self._exit()
+
+
+class MainConfigure:
+    def _exit(self, *args):
+        gtk.main_quit()
+
+    def onQuit(self, *args):
+        self._exit()
+
+    def __init__(self, initcommand=None, checkcommand=None):
+        self.widgets = CreateWidgets(self, file="exe-helper.glade")
+        self.widgets['window-configure'].show()
+        self.checkcommand = checkcommand
+        self.process = subprocess.Popen(initcommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os.environ, shell=True)
+        gobject.timeout_add(60, self.waitForCreation)
+
+    def waitForCreation(self):
+        done = False
+        self.widgets['progressbar-configure'].pulse()
+
+        if self.checkcommand != None and subprocess.call(self.checkcommand, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True) == 0:
+            done = True
+        elif self.process.returncode or type(self.process.returncode) == int and self.process.returncode < 0:
+            done = True
+
+        if done:
+            self.widgets['window-configure'].hide()
+            self._exit()
+            return False
+        else:
+            return True
+
+class CreateWidgets:
+    def __init__(self, handlerclass, file):
+        self.widgets = gtk.glade.XML("%s/%s" % (SHARED_FILES_PATH, file), None)
+        self.widgets.signal_autoconnect(handlerclass)
+        self.ownwidgets = {}
+    def __getitem__(self, key):
+        if key not in self.ownwidgets:
+            return self.widgets.get_widget(key)
+        else:
+            return self.ownwidgets[key]
+    def __setitem__(self, key, value):
+        self.ownwidgets[key] = value
+
+
+def checkForProgram(program):
+    # Returns True if program is installed
+    return not subprocess.call("which %s" % program, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+
+def checkForPermission(filename):
+    # Returns True if file is executable
+    try:
+        return os.stat(filename)[stat.ST_MODE] & (stat.S_IXUSR|stat.S_IXGRP|stat.S_IXOTH) > 0
+    except OSError:
+        print "\"%s\" not found." % filename
+        exit(1)
+
+def _wait_for_p(p, lock):
+    " helper for the thread to wait for process p to finish "
+    global _PROCESS_OUTPUT
+    _PROCESS_OUTPUT = p.communicate()[0]
+    lock.release()
+
+def _wait_for_program(p, pre_func=None, post_func=None):
+    lock = thread.allocate_lock()
+    lock.acquire()
+    thread.start_new_thread(_wait_for_p, (p, lock))
+    if pre_func:
+        pre_func()
+    while lock.locked():
+        while gtk.events_pending():
+            gtk.main_iteration()
+        time.sleep(0.01)
+    if post_func:
+        post_func()
+    return _PROCESS_OUTPUT
+
+
+if __name__ == "__main__":
+    try:
+        path = os.path.join(SHARED_FILES_PATH, "launchers")
+
+        # Parse the available launchers
+        launchers = {}
+        desktopfiles = {}
+        for launcherfilename in os.listdir(path):
+            if not os.path.join(path, launcherfilename).lower().endswith('.launcher'):
+                continue
+            launcherfile = open(os.path.join(path, launcherfilename))
+            content = launcherfile.readlines()
+            launcherfile.close()
+            sections = {
+                'launcher entry':
+                {'translations': {}, 'texthandler': '', 'textinstall': None, 'textpermission': None, 'icon': None, 'package': "", 'virusscan': False},
+                'desktop entry': []
+            }
+            section = None
+            for line in content:
+                if line[0] in ['#', "\n", "\r"]:
+                    continue
+
+                if line.startswith('[') and line.strip().endswith(']'):
+                    section = line.strip()[1:-1].lower()
+                    continue
+
+                line = line.split('=')
+                if len(line) == 1:
+                    print "%s: Malformed line: %s" % (launcherfilename, line)
+                    break
+
+                key = line[0]
+                value = "\n".join( '='.join(line[1:]) .split("\n")[:-1]).replace('\\\\', '\\').replace('\\s','\s').replace('\\n','\n').replace('\\t','\t').replace('\\r','\r')
+
+                if section == 'launcher entry':
+                    key = key.split('[')
+                    if len(key) > 1:
+                        language = key[1][:-1]
+                    else:
+                        language = None
+                    key = key[0].lower()
+
+                    if value.lower() == 'true':
+                        value = True
+                    elif value.lower() == 'false':
+                        value = False
+
+                    if language:
+                        if language in sections[section]['translations'].keys():
+                            sections[section]['translations'][language][key] = value
+                        else:
+                            sections[section]['translations'][language] = {key: value}
+                    else:
+                        sections[section][key] = value
+                else:
+                    sections[section].append( "%s=%s" % (key, value) )
+
+                #launchers["--%s" % launcher['argument']] = launcher
+            launchers["--%s" % sections['launcher entry']['argument']] = sections['launcher entry']
+            desktopfiles[sections['launcher entry']['argument']] = sections['desktop entry']
+
+
+        if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1].lower() in ['-h', '--help']):
+            print "%s [%s FILE]|[--update [--local]]" % ( sys.argv[0], '|'.join(sorted(launchers.keys())) )
+            exit(0)
+        elif len(sys.argv) > 1:
+            if len(sys.argv) == 1 or sys.argv[1].lower() == '--update' or sorted(sys.argv[1:]) == ['--local', '--update']:
+                if '--local' in sys.argv[1:]:
+                    path = os.path.expandvars("$HOME/.local/share/applications")
+                else:
+                    path = "/usr/share/applications"
+                if not os.path.exists(path):
+                    if subprocess.call("mkdir -p %s" % path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True):
+                        print "Error: Couldn't create directory %s." % path
+                        exit(1)
+                if not os.access(path, os.W_OK):
+                    print "Error: You need to have access to %s in order to update the global mime associations." % path
+                    exit(1)
+                for name,launcher in desktopfiles.iteritems():
+                    desktopcontent = "\n".join(launcher)
+                    #desktopcontent = "\n".join(sorted([ "%s=%s" % (key,value) for key,value in launcher.iteritems() ]))
+                    if len(desktopcontent.strip()):
+                        desktopfile = open("%s/exe-handler-%s.desktop" % (path, name), "w")
+                        desktopfile.write("[Desktop Entry]\n%s" % desktopcontent)
+                        desktopfile.close()
+            else:
+                # Run the requested launcher
+                launcer_name = sys.argv[1].lower()
+                file_name = sys.argv[2]
+                command = ' '.join(sys.argv[2:])
+                
+                if launcer_name in launchers.keys():
+                    launcher = launchers[launcer_name]
+
+                    # Find the correct translation to use, if any
+                    if locale.getlocale()[0] != None:
+                        language = None
+                        # If locale precisely matches ("en_GB" == "en_GB")
+                        if locale.getlocale()[0] in launcher['translations'].keys():
+                            language = launcher['translations'][locale.getlocale()[0]]
+                        # If locale country matches ("en"_GB == "en"_GB)
+                        elif locale.getlocale()[0].split('_')[0].lower() in [
+                            i.split('_')[0].lower()
+                            for i in launcher['translations'].keys()
+                        ]:
+                            language = filter(
+                                lambda i: locale.getlocale()[0].split('_')[0].lower().__eq__(i),
+                                [ i.split('_')[0].lower() for i in launcher['translations'].keys() ]
+                            )[0]
+
+                        if language:
+                            for key in launcher['translations'][language].keys():
+                                launcher[key] = launcher['translations'][language][key]
+
+                    if 'package' in launcher and ' "' in launcher['package']:
+                        packages = []
+                        for item in re.compile(r' ?([a-zA-Z0-9\-]+ ".*?[^\\]")', re.MULTILINE|re.DOTALL).findall(launcher['package']):
+                            packages.append( (' '.join(item.split(' ')[1:])[1:-1], item.split(' ')[0]) )
+                        launcher['package'] = packages
+
+                    gobject.threads_init()
+                    gtk.gdk.threads_init()
+                    gtk.gdk.threads_enter()
+
+                    if 'tryexec' in launcher and not checkForProgram(launcher['tryexec']):
+                        Install = MainInstall(
+                            file_name,
+                            title = launcher['title'],
+                            handler = launcher['texthandler'],
+                            text = launcher['textinstall'],
+                            icon = launcher['icon'],
+                            package = launcher['package']
+                        )
+
+                    if not checkForPermission(file_name):
+                        Permission = MainPermission(
+                            file_name,
+                            launcher['texthandler'],
+                            text = launcher['textpermission'],
+                            icon = launcher['icon'],
+                            virusscan = launcher['virusscan']
+                        )
+                        gtk.main()
+
+                    if 'tryfirstrunexec' in launcher and os.system(launcher['tryfirstrunexec']) != 0:
+                        Configuration = MainConfigure(
+                            initcommand = launcher['firstrunexec'],
+                            checkcommand = launcher['tryfirstrunexec']
+                        )
+                        gtk.main()
+
+                    subprocess.call(launcher['exec'].replace('%FILE%', command), shell=True)
+                    gtk.gdk.threads_leave()
+                else:
+                    print "Unsupported argument \"%s\"." % launcer_name[2:]
+                    exit(1)
+
+    finally:
+        pass

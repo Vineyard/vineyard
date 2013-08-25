@@ -1,0 +1,22 @@
+Source: python-wine
+Section: python
+Priority: optional
+Maintainer: Christian Dannie Storgaard <cybolic@gmail.com>
+Build-Depends: debhelper (>= 7), python-support
+XS-Python-Version: >= 2.4
+Standards-Version: 3.9.1
+Vcs-Bzr: lp:vineyard
+Vcs-Browser: https://code.launchpad.net/~ubuntu-wine/vineyard/trunk
+Homepage: https://launchpad.net/vineyard
+
+Package: python-wine
+Architecture: all
+Depends: wine, icoutils, cabextract, unzip, ${misc:Depends}, ${python:Depends}
+XB-Python-Version: ${python:Versions}
+Description: Configure and use Wine through Python
+ python-wine is a module that let's you run and configure Windows program run
+ by Wine directly from Python.
+ .
+ It has support for all that winecfg can do (except themes) and also includes
+ advanced functions like retrieving icons based on registry, XDG menu
+ information and program information based on an executable's metadata.

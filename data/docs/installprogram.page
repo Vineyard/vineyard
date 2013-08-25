@@ -1,0 +1,34 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="installprogram">
+<info>
+  <link type="guide" xref="index#task"/>
+  <link type="seealso" xref="createconf"/>
+  <link type="seealso" xref="whatisconf"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to install a Windows program.</desc>
+</info>
+<title>Installing a program</title>
+<p>
+By default, running an installer will install the program in the default Wine configuration, 
+if you want to install several non-related programs it might be a better idea to install each into its own configuration.
+</p>
+
+<section id="basic">
+<title>Installing a program in to the default configuration</title>
+<p>Double click the installation executable and follow the same procedure that you would in Microsoft Windows.</p>
+<p>As the program will be installed in a virtual Microsoft Windows installation, in most cases you don't need to worry about the location of the installation, and can safely use the defaults.</p>
+</section>
+
+<section id="newconf">
+<title>Installing a program in to a new or existing configuration</title>
+<p>Right click the installation executable and select <gui style="menuitem">Run in Wine configuration</gui>.
+In the dialog that appears you can now select the configuration you wish to install the program to, or select <gui style="menuitem">New</gui> to create a new configuration for the program. If you select to create a new configuration you can adjust a few basic settings like which Windows version to function as and whether or not to run the program in a virtual desktop.</p>
+</section>
+</page>

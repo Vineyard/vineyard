@@ -1,0 +1,5 @@
+To package python-wine separately, move or copy the "wine" directory from the
+parent of this directory into the one this file is in.
+The setup.py script will now work.
+
+Also see the ../tools/package_python-wine.sh script.

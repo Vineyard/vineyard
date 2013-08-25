@@ -1,0 +1,793 @@
+# Brazilian Portuguese translation for vineyard
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the vineyard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vineyard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-03-18 00:17+0100\n"
+"PO-Revision-Date: 2012-03-15 17:21+0000\n"
+"Last-Translator: Darlildo Lima <darlildo.cefetce@gmail.com>\n"
+"Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-05-20 04:47+0000\n"
+"X-Generator: Launchpad (build 15259)\n"
+"Language: pt_BR\n"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:171
+msgid "All Files"
+msgstr "Todos os Arquivos"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:172
+msgid "Image Files"
+msgstr "Arquivos de Imagem"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:173
+msgid "Windows Executables"
+msgstr "Executáveis do Windows"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/common.py:174
+msgid "Windows Executables And Image Files"
+msgstr "Executáveis do Windows e Arquivos de Imagem"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:58
+msgid ""
+"We're terribly sorry. Could you help us fix the problem by reporting the "
+"crash?"
+msgstr ""
+"Lamentamos muito! Você poderia nos ajudar a corrigir o problema reportando "
+"esta falha?"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:169
+msgid "An error has occurred"
+msgstr "Ocorreu um erro"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:177
+msgid "It looks like an error has occurred."
+msgstr "Parece que ocorreu um erro."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:211
+msgid "_Details"
+msgstr "_Detalhes"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:217
+msgid "_Report this problem..."
+msgstr "_Reportar este problema..."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/crashhandler.py:221
+msgid "_Ignore the error"
+msgstr "_Ignorar o erro"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:14
+msgid "A file archiver with a high compression ratio"
+msgstr "Um compactador de arquivos com uma alta taxa de compressão"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:15
+msgid "An application platform"
+msgstr "Uma plataforma de aplicação"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:16
+msgid "Microsoft Internet Explorer 6"
+msgstr "Microsoft Internet Explorer 6"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:17
+msgid "Microsoft Internet Explorer 7"
+msgstr "Microsoft Internet Explorer 7"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:18
+msgid "A free audio and video player for Windows"
+msgstr "Um tocador de áudio e vídeo gratuito para Windows"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:19
+msgid "Adobe Shockwave Player"
+msgstr "Adobe Shockwave Player"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:20
+msgid "Apple Quicktime"
+msgstr "Apple Quicktime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:21
+msgid "Steam Client from Valve"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:22
+msgid "VLC media player"
+msgstr "Reprodutor de mídia VLC"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:23
+msgid "Microsoft Windows Media Player 9 *"
+msgstr "Microsoft Windows Media Player 9 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:24
+msgid "Microsoft Windows Media Player 10 *"
+msgstr "Microsoft Windows Media Player 10 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:30
+msgid "Direct3D from DirectX 9"
+msgstr "Direct3D para DirectX 9"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:31
+msgid "Adobe Flash Player ActiveX and Firefox plugins"
+msgstr "Adobe Flash Player ActiveX e Firefox plugins"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:32
+msgid "DivX video codec"
+msgstr "DivX video codec"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:33
+msgid "Xvid video codec"
+msgstr "Xvid video codec"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:34
+msgid "Microsoft Windows GDI+ library"
+msgstr "Microsoft Windows GDI+ library"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:35
+msgid "MFC module from Microsoft Visual C++"
+msgstr "MFC módulo para Microsoft Visual C++"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:36
+msgid "Microsoft .NET *"
+msgstr "Microsoft .NET *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:37
+msgid "Microsoft .NET 2.0 *"
+msgstr "Microsoft .NET 2.0 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:38
+msgid "Microsoft .NET 2.0 Service Pack 2 *"
+msgstr "Microsoft .NET 2.0 Service Pack 2 *"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:39
+msgid "Microsoft .NET 3.0*"
+msgstr "Microsoft .NET 3.0*"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:40
+msgid "Microsoft Visual Basic 6 Service Pack 6 runtime"
+msgstr "Microsoft Visual Basic 6 Service Pack 6 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:41
+msgid "Microsoft Visual Basic 5 runtime"
+msgstr "Microsoft Visual Basic 5 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:42
+msgid "Microsoft Visual Basic 4 runtime"
+msgstr "Microsoft Visual Basic 4 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:43
+msgid "Microsoft Visual Basic 3 runtime"
+msgstr "Microsoft Visual Basic 3 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:44
+msgid "Microsoft Visual Basic 2 runtime"
+msgstr "Microsoft Visual Basic 2 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:48
+msgid "Open source .NET implementation"
+msgstr "Open source .NET implementação"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:49
+msgid "Microsoft Visual C++ 2010 runtime libraries"
+msgstr "Bibliotecas Microsoft Visual C++ 2010 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:50
+msgid "Microsoft Visual C++ 2008 runtime libraries"
+msgstr "Bibliotecas Microsoft Visual C++ 2008 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:51
+msgid "Microsoft Visual C++ 2005 runtime libraries"
+msgstr "Bibliotecas Microsoft Visual C++ 2005 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:52
+msgid "Microsoft Visual C++ 2003 runtime libraries"
+msgstr "Bibliotecas Microsoft Visual C++ 2003 runtime"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:53
+msgid "Microsoft Visual C++ 2003 libraries"
+msgstr "Bibliotecas Microsoft Visual C++ 2003"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:54
+msgid "Microsoft XML Version 3"
+msgstr "Microsoft XML Versão 3"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:55
+msgid "Microsoft XML Version 4"
+msgstr "Microsoft XML Versão 4"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:56
+msgid "Microsoft XML Version 6"
+msgstr "Microsoft XML Versão 6"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:57
+msgid "flac, theora, speex, vorbix, schroedinger"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:58
+msgid "NVIDIA/AEGIAs physics library"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:59
+msgid "Microsofts Arial, Courier and Times"
+msgstr "Microsofts Arial, Courier and Times"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:60
+msgid "Liberation fonts from Red Hat"
+msgstr "Liberação de fonts da Red Hat"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:61
+msgid "Microsofts Tahoma"
+msgstr "Microsofts Tahoma"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:111
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:112
+msgid "Downloading winetricks"
+msgstr "Baixando winetricks"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:113
+msgid "This only needs to be done this once."
+msgstr "Isto só precisa ser feito uma vez."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:136
+msgid "Installing {package} and others"
+msgstr "Instalando {pacotes} e outros"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:140
+msgid "Installing {package}"
+msgstr "Instalando {pacotes}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:147
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:203
+msgid "The package files will be cached locally for installation."
+msgstr ""
+"Os arquivos de pacotes serão colocados em cache localmente para instalação."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:170
+msgid "Installer"
+msgstr "Instalador"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:194
+msgid "Installing package"
+msgstr "Instalando o pacote"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:196
+msgid "Installing..."
+msgstr "Instalando..."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:205
+msgid "Downloading {file}"
+msgstr "Baixando {arquivo}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:215
+msgid "{package} already installed, skipping"
+msgstr "{pacote} já está instalado, pulando"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:223
+msgid "Unpacking installation files"
+msgstr "Desempacotar arquivos de instalação"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:229
+msgid "If an installer window appears, just accept its default settings."
+msgstr ""
+"Se uma janela de instalação aparecer, basta aceitar as configurações padrões."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:232
+msgid "Running {executable_or_installer}"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:245
+msgid "Installing {package} and others failed"
+msgstr "Instalando {pacote} e outros falhou"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:249
+msgid "Installing {package} failed"
+msgstr "Instalando {pacotes} falhou"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:254
+msgid ""
+"{executable_or_installer} can either not be downloaded or is an unsupported "
+"version."
+msgstr ""
+"{executável_ou_instalador} pode ou não ser baixado ou esta é uma versão não "
+"suportada."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:261
+msgid "Retrying installing {package} and others"
+msgstr "Tentando novamente instalar {pacote} e outros"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:265
+msgid "Retrying installing {package}"
+msgstr "Tentando novamente instalar {pacote}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:270
+msgid "Mismatching file already exists, trying again"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:281
+msgid "{package} successfully installed"
+msgstr "{pacote} instalado com sucesso"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:289
+msgid "Everything successfully installed"
+msgstr "Tudo instalado com sucesso"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:295
+msgid "Installation failed"
+msgstr "Falha na instalação"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:303
+msgid "Done."
+msgstr "Concluído."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:328
+msgid "{first_package} and others"
+msgstr "{primeiro_pacote} e outros"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:336
+msgid "Installer for {package}"
+msgstr "Instalador para {pacote}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:59
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:108
+msgid "The program exited with an error"
+msgstr "O programa terminou com um erro"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:96
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:134
+msgid "A possible cause of the error could be one or more of the following:"
+msgstr "Uma possível causa para o erro seria uma ou mais do seguinte:"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:98
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:137
+#, python-format
+msgid "The library file (DLL) <b>%s</b> wasn't found."
+msgstr "A biblioteca (DLL) <b>%s</b> não foi encontrada."
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:106
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:113
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:148
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:167
+msgid "Based on this output it looks like "
+msgstr "Baseado nessa saída isso pareceria com "
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:111
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:158
+msgid ", "
+msgstr ", "
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:112
+msgid " and "
+msgstr " e "
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:120
+#, python-format
+msgid "When running <b>%s</b> Wine returned the following errors:"
+msgstr "Ao executar <b>%s</b> o Wine retornou os seguintes erros:"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:130
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:190
+#, python-format
+msgid "Error information for %s"
+msgstr "Informação de erro para %s"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:168
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:231
+msgid "Detailed error information"
+msgstr "Informações detalhadas de erro"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:120
+msgid "More info"
+msgstr "Mais informação"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:157
+msgid "{comma_separated_list} and {last_part}"
+msgstr "{comma_separated_list} e {last_part}"
+
+#: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:178
+msgid "When running <b>{program_name}</b> "
+msgstr "Quando executando o <b>{program_name}</b> "
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-infobar.py:101
+msgid "This directory is in the default Wine/Vineyard configuration"
+msgstr "Este diretório está na configuração padrão do Wine/Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-infobar.py:105
+msgid "This directory is in the Vineyard configuration <b>{0}</b>"
+msgstr "Este diretório está na configuração <b>{0}</b> do Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-infobar.py:115
+msgid "Configure"
+msgstr "Configurar"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:98
+msgid "Link info"
+msgstr "link de informação"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:103
+msgid "Target:"
+msgstr "Alvo:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:107
+msgid "A network location"
+msgstr "Um local de rede"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:130
+msgid "Execute in:"
+msgstr "Executar em:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:155
+msgid "Arguments:"
+msgstr "Argumentos:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:168
+msgid "Opens in a:"
+msgstr "Abre em uma:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:173
+msgid "Normal window"
+msgstr "Janela normal"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:175
+msgid "Maximised window"
+msgstr "Janela maximizada"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:177
+msgid "Minimised window"
+msgstr "Janela minimizada"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:187
+msgid "Compatibility"
+msgstr "Compatibilidade"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:202
+msgid "Operate as:"
+msgstr "Funcionar como:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:205
+msgid "(default)"
+msgstr "(padrão)"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:210
+msgid "Open in:"
+msgstr "Abrir em:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:213
+msgid "Open program windows in a virtual desktop"
+msgstr "Abrir programas do Windows em um desktop virtual"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:216
+msgid "Desktop width: "
+msgstr "Largura do Desktop: "
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:221
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:228
+msgid "pixels"
+msgstr "pixels"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:223
+msgid "Desktop height: "
+msgstr "Altura do Desktop: "
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:1
+msgid "About Vineyard Preferences"
+msgstr "Sobre as preferências do Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:2
+msgid "Add"
+msgstr "Adicionar"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:3
+msgid "Add a new prefix"
+msgstr "Adicionar um novo prefixo"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:4
+msgid ""
+"Full list of translators at:\n"
+"    https://translations.launchpad.net/vineyard"
+msgstr "Uma lista completa de tradutores em:"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:6
+msgid "Remove"
+msgstr "Remover"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:7
+msgid "Remove the current prefix, including all its installed programs"
+msgstr "Remover os prefixos atuais, incluindo todos os programas instalados"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:8
+msgid "Show advanced options"
+msgstr "Mostrar opções avançadas"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:9
+msgid "The selected prefix (also known as \"configuration\" or \"bottle\")"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:10
+msgid "Vineyard Preferences is a part of the Vineyard Project"
+msgstr "Preferências do Vineyard faz parte do Projeto Vineyard"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:11
+msgid ""
+"Vineyard is free software; you can redistribute it and/or modify it under "
+"the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"Vineyard is distributed in the hope that it will be useful, but WITHOUT ANY "
+"WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS "
+"FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more "
+"details."
+msgstr ""
+"Vineyard é um software livre; você pode redistrubuí-lo e/ou modoficá-lo nos "
+"termos da Licença Pública Geral GNU conforme publicada pela Free Software "
+"Foundation; tanto a versão 2 da Licenç, ou (opcionalmente) qualquer versão "
+"subsequente..\n"
+"\n"
+"Vineyard é distribuído na esperança que será útil, mas SEM QUALQUER "
+"GARANTIA; sem a garantia implicada da COMERCIALIZAÇÃO ou do USO PARA "
+"PROPÓSITO PARTICULAR. Veja a Licença Pública Geral GNU para mais detalhes."
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:14
+msgid "Wine Preferences"
+msgstr "Preferências do Wine"
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:15
+msgid "Wine Prefix:"
+msgstr ""
+
+#: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:16
+msgid "© 2009-2011 Christian Dannie Storgaard"
+msgstr "© 2009-2011 Christian Dannie Storgaard"
+
+#~ msgid "Run in Wine configuration"
+#~ msgstr "Executar na configuração do Wine"
+
+#~ msgid "Default"
+#~ msgstr "Padrão"
+
+#~ msgid "New configuration"
+#~ msgstr "Nova configuração"
+
+#~ msgid "Name: "
+#~ msgstr "Nome: "
+
+#~ msgid "New configuration options"
+#~ msgstr "Novas opções de configuração"
+
+#~ msgid "<b>Direct3D Video Memory Size</b>"
+#~ msgstr "<b>Tamanho Memória de Vídeo Direct3D</b>"
+
+#~ msgid "<b>Configuration Settings</b>"
+#~ msgstr "<b>Definições de configuração</b>"
+
+#~ msgid "<b>Configuration Functions</b>"
+#~ msgstr "<b>Configuration Functions</b>"
+
+#, python-format
+#~ msgid "Run %s in a new or existing Wine configuration/bottle"
+#~ msgstr "Executar %s em uma configuração/garrafa do Wine novo ou já existente"
+
+#~ msgid "<b>Add new override</b>"
+#~ msgstr "<b>Adicionar novo</b>"
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#, python-format
+#~ msgid "Creating configuration \"%s\""
+#~ msgstr "Criando configuração \"%s\""
+
+#~ msgid "<b>Program windows</b>"
+#~ msgstr "<b>Janela de programas</b>"
+
+#~ msgid "<b>Sound output</b>"
+#~ msgstr "<b>Saída de som</b>"
+
+#~ msgid "<b>Hidden Files</b>"
+#~ msgstr "<b>Arquivos ocultos</b>"
+
+#~ msgid "<b>Folder Mappings</b>"
+#~ msgstr "<b>Mapeamento de pastas</b>"
+
+#~ msgid "<b>DirectSound</b>"
+#~ msgstr "<b>DirectSound</b>"
+
+#~ msgid "<b>Emulated Drives</b>"
+#~ msgstr "<b>Unidades emuladas</b>"
+
+#~ msgid "<b>Direct3D</b>"
+#~ msgstr "<b>Direct3D</b>"
+
+#~ msgid "<b>Existing DLL Overrides</b>"
+#~ msgstr "<b>DLL substitutos existentes</b>"
+
+#~ msgid "<b>Virtual Desktop</b>"
+#~ msgstr "<b>Desktop virtual</b>"
+
+#~ msgid "Autodetect"
+#~ msgstr "Detecção automática"
+
+#~ msgid "Auto detected"
+#~ msgstr "Auto detectado"
+
+#~ msgid "Absolute: "
+#~ msgstr "Absoluto: "
+
+#~ msgid "<b>Windows Version</b>"
+#~ msgstr "<b>Versão do Windows</b>"
+
+#~ msgid "<b>Windows Utilities</b>"
+#~ msgstr "<b>Utilitários Windows</b>"
+
+#~ msgid ""
+#~ "Are you sure you want to remove the configuration?\n"
+#~ "Removing it will remove all programs installed into it!"
+#~ msgstr ""
+#~ "Você tem certeza que quer remover a configuração?\n"
+#~ "Isto irá remover todos os programas instalados na mesma!"
+
+#~ msgid "Allow Pixel Shader (if supported by hardware)"
+#~ msgstr "Permitir 'Pixel Shader' (se suportado pelo hardware)"
+
+#~ msgid "Allow DirectX programs to capture the mouse"
+#~ msgstr "Permitir que os programas DirectX capturem o mouse"
+
+#~ msgid "Default sample rate:"
+#~ msgstr "Taxa de amostragem padrão:"
+
+#~ msgid "Desktop: "
+#~ msgstr "Desktop: "
+
+#~ msgid "Command Prompt"
+#~ msgstr "Prompt de Comando"
+
+#~ msgid "Default bit depth:"
+#~ msgstr "Profundidade de bits padrão:"
+
+#~ msgid "Choose a Folder"
+#~ msgstr "Escolha uma pasta"
+
+#~ msgid "Choose an executable"
+#~ msgstr "Escolha um executável"
+
+#~ msgid "Graphics"
+#~ msgstr "Gráficos"
+
+#~ msgid "Disable anti-aliasing"
+#~ msgstr "Desativar anti-aliasing"
+
+#~ msgid "Driver:"
+#~ msgstr "Unidade:"
+
+#~ msgid "Display hidden files"
+#~ msgstr "Mostrar arquivos ocultos"
+
+#~ msgid "Enable hardware Vertex Shader support"
+#~ msgstr "Ativar suporte de hardware Vertex Shader"
+
+#~ msgid "Drives"
+#~ msgstr "Unidades"
+
+#~ msgid "Folders"
+#~ msgstr "Pastas"
+
+#~ msgid "General"
+#~ msgstr "Geral"
+
+#~ msgid "Label:"
+#~ msgstr "Etiqueta:"
+
+#~ msgid "Libraries"
+#~ msgstr "Bibliotecas"
+
+#~ msgid "Hardware acceleration:"
+#~ msgstr "Aceleração de hardware:"
+
+#~ msgid "My Music: "
+#~ msgstr "Minhas Músicas: "
+
+#~ msgid "My Pictures: "
+#~ msgstr "Minhas Imagens: "
+
+#~ msgid "MB"
+#~ msgstr "MB"
+
+#~ msgid "My Documents: "
+#~ msgstr "Meus Documentos: "
+
+#~ msgid "My Videos: "
+#~ msgstr "Meus Vídeos: "
+
+#~ msgid "New Windows Configuration"
+#~ msgstr "Nova Configuração do Windows"
+
+#~ msgid "Open Main Drive"
+#~ msgstr "Abrir Unidade Principal"
+
+#~ msgid "Remove Windows Configuration?"
+#~ msgstr "Remover configuração do Windows?"
+
+#~ msgid "Render offscreen images using the: "
+#~ msgstr "Renderizar imagens fora da tela usando o: "
+
+#~ msgid "Program Information"
+#~ msgstr "Informações sobre o Programa"
+
+#~ msgid "Registry Editor"
+#~ msgstr "Editor de Registro"
+
+#~ msgid "Reading settings..."
+#~ msgstr "Configurações de Leitura ..."
+
+#~ msgid "Programs"
+#~ msgstr "Programas"
+
+#~ msgid "Path:"
+#~ msgstr "Caminho:"
+
+#~ msgid "Operate as: "
+#~ msgstr "Funcionar como: "
+
+#~ msgid "Opens "
+#~ msgstr "Abre "
+
+#~ msgid "Open a Terminal in this Configuration"
+#~ msgstr "Abra um terminal com esta configuração"
+
+#~ msgid "Run"
+#~ msgstr "Executar"
+
+#~ msgid "Run executable: "
+#~ msgstr "Execute o executável: "
+
+#~ msgid "Select A Folder"
+#~ msgstr "Selecionar uma Pasta"
+
+#~ msgid "Serial:"
+#~ msgstr "Serial:"
+
+#~ msgid "Set label and serial:"
+#~ msgstr "Ajustar etiqueta e serial:"
+
+#~ msgid "Show Linux window borders"
+#~ msgstr "Mostrar bordas de janela do linux"
+
+#~ msgid "Show windows in the taskbar"
+#~ msgstr "Mostrar janelas na barra de tarefas"
+
+#~ msgid "Smooth font edges (anti-alias)"
+#~ msgstr "Suavizar bordas fonte (anti-alias)"
+
+#~ msgid "Sound"
+#~ msgstr "Som"
+
+#~ msgid "Use driver emulation"
+#~ msgstr "Usar emulação de driver"
+
+#~ msgid "Wine Configuration: "
+#~ msgstr "Configuração do Wine: "
+
+#~ msgid ""
+#~ "What would you like the new\n"
+#~ "configuration to be called?"
+#~ msgstr ""
+#~ "Como você gostaria que a nova\n"
+#~ " configuração seja chamada?"
+
+#~ msgid "Type:"
+#~ msgstr "Tipo:"
+
+#~ msgid "Tools"
+#~ msgstr "Ferramentas"
+
+#~ msgid "Application"
+#~ msgstr "Aplicativo"
+
+#~ msgid "Registered Libraries"
+#~ msgstr "Bibliotecas Registradas"
+
+#~ msgid "Menu Programs"
+#~ msgstr "Programas do Menu"

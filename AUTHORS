@@ -1,0 +1,24 @@
+Design, programming and original icons by:
+    Christian Dannie Storgaard <cybolic@gmail.com>
+
+Various utility functions by (or based on work by):
+    Endolith / KillerKiwi / Johannes Roith (Gtk/Gnome colour scraper)
+    Sébastien Keim (bitfield manipulator)
+    Simon Vermeersch (DBus example code)
+	
+Monochrome indicator icon by:
+    Connor Carney
+
+Icons modified for better view in different sizes and original regedit icon by:
+    Joel Holdsworth <joel@airwebreathe.org.uk>
+
+For translation credits please see Vineyard's Launchpad page:
+    https://translations.launchpad.net/vineyard
+
+Other icons are by the Tango Project and/or the Wine-Doors Project.
+
+Parts of Vineyard were inspired by ideas posted by Scott Ritchie at:
+    https://wiki.ubuntu.com/karmic-wine-integration
+
+BeautifulSoup is created and copyrighted by Leonard Richardson, more info at:
+    http://www.crummy.com/software/BeautifulSoup/

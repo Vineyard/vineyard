@@ -1,0 +1,19 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="createshortcut">
+<info>
+  <link type="guide" xref="index#task"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to create a shortcut or a launcher for a program</desc>
+</info>
+<title>Creating a shortcut or launcher for a program</title>
+<p>
+To add a launcher or shortcut on your desktop or desktop panel open Wine Preferences (<guiseq><gui>System</gui><gui>Preferences</gui><gui>Wine Preferences</gui></guiseq>), select the <gui style="group">Programs</gui> page and simply drag the desired program to where you want the shortcut.
+</p>
+</page>

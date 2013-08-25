@@ -1,0 +1,24 @@
+[Launcher Entry]
+Argument=java
+Package=default-jre "<b>Default JRE</b>\n<small>Standard Java or Java compatible Runtime</small>", openjdk-6-jre "<b>OpenJDK</b>\n<small>OpenJDK Java runtime, using Hotspot JIT</small>", java-gcj-compat "<b>GCJ</b>\n<small>The GNU Compiler for Java</small>", sun-java6-jre "<b>Sun Java 6</b>\n<small>Java 6 from Sun Microsystems</small>"
+Icon=gnome-mime-application-x-jar
+VirusScan=true
+TryExec=java
+Exec=java -jar %FILE%
+
+Title=This is a Java Application
+TextHandler=Java
+TextInstall=The program %PROGRAM% is written for Java.\nIn order to run it you need to install a Java compiler.
+
+Title[da]=Dette er et Java-program
+TextInstall[da]=Programmet %PROGRAM% er skrevet til Java.\nFor at kunne køre det er du nødt til at installere en Java-oversætter.
+TextFirstRun[da]=Opretter ny Windows-konfiguration, vent venligst...
+Package[da]=java-gcj-compat "<b>GCJ</b>\n<small>GNUs oversætter til Java</small>", sun-java5-jre "<b>Sun Java 5</b>\n<small>Java 5 fra Sun Microsystems</small>", sun-java6-jre "<b>Sun Java 6</b>\n<small>Java 6 fra Sun Microsystems</small>"
+
+
+[Desktop Entry]
+Type=Application
+Name=Java
+Exec=exe-handler --java %f
+MimeType=application/x-jar;
+NoDisplay=true

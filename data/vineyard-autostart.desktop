@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Vineyard Autorun Prompt
+TryExec=vineyard-launcher
+Exec=vineyard-launcher %u
+Icon=vineyard
+NoDisplay=true
+Terminal=false
+StartupNotify=true
+Type=Application
+MimeType=x-content/software;

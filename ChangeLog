@@ -1,0 +1,154 @@
+Version 0.1.5-pre10
+
+2011-02-10 Christian Dannie Storgaard <cybolic@gmail.com>
+
+python-wine:
+	* python-wine will now exit with a fitting message if Wine is not installed
+	* If the default prefix doesn't exist on access it will be created
+	* Fixed: Setting registry values was broken in many cases due to a recent change
+	* Fixed: Setting virtual desktop values didn't really work on the default prefix
+	* Fixed: Setting integer registry values (also fixes setting font aliasing)
+	* Fixed: Reading the name of unified format prefixes failed
+	* Fixed: Reading icons is less prone to fail
+	* Fixed: Reading program info from registry would sometimes use faulty uninstall info
+
+vineyard-preferences:
+	* The virtual desktop widget didn't work, it does now.
+
+
+Version 0.1.5-pre9
+
+2011-02-09 Christian Dannie Storgaard <cybolic@gmail.com>
+
+vineyard-launcher:
+    * Supports symlinking a directory to a configuration
+    * Relative file-paths work
+
+vineyard-indicator:
+    * New icons for all themes based on Connor Carney's new design
+
+vineyard-preferences:
+    * Program adding is implemented
+    * Lot's of fixes for program editing
+    * All programs that can be run are displayed as such
+    * Programs can have their menu category edited
+    * Changes that should activate the "Apply" button now always properly do so
+    * Programs can disable PulseAudio whilst running (including waiting for children to exit before starting PulseAudio again)
+
+python-wine:
+    * Configurations are now created according to the unified prefix format created in cooperation with Dan Kegel
+    * Configuration directory names are now named like the configuration
+    * Program icons are properly searched in configurations
+    * Windows executables that don't have a resource header can be read
+    * Names can be read from non-executables (like .msi files)
+    * Programs that should be run in terminal are properly read as such
+    * Creating a new configuration waits properly for regedit instead of dying
+    * Editing a program now creates a .desktop file, automatically linked to the menu and with the "TryExec" key given to ensure no dead menu items
+    * Getting icons work for more programs now
+    * Running a process can now wait for children to finish as well
+
+
+Version 0.1.5-pre-pre
+
+2009-08-26 Christian Dannie Storgaard <cybolic@gmail.com>
+
+    * This is a pre-release. Nothing should break, but not everything works.
+    * vineyard-preferences has been re-programmed basically from scratch.
+      Everything is much faster now.
+    * vineyard-preferences now adapts to Gtk 2.18 or 2.20 (w/wo the spinner).
+	* Program list updating now works and is slightly more informative.
+	* Vineyard can now list installed themes - installation and removal is
+	  on its way.
+	* Running a terminal in the configuration correctly sets environment values
+	  and adds the configuration name to the title of the terminal.
+	* Program monitoring and error handling is much faster.
+	* There is now a page for installing programs and libraries
+	  using winetricks.
+	* The beginnings of an installation script system has been created.
+	* Lowercase all files in the configuration -function is under way.
+	* vineyard-cli has been "resurrected" and supports new functions.
+	* Much work on the underlaying python-wine brings much stability.
+
+
+Version 0.1.4.1.3
+
+2009-03-02 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Fixed an error with relaying error output from programs to the terminal.
+	* Switched to using gtk.Builder instead of libGlade.
+	* Fixed errors in error handling when running programs.
+	* Added warning about too old Gtk versions.
+
+Version 0.1.4.1.2
+
+2009-02-27 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* vineyard-preferences now has a basic plugin system that should make
+	  updates easier and less error prone.
+	* Program page is now a plugin and supports adding unlisted programs,
+	  also looks a bit better (the same does the error information).
+	* Various bug fixes.
+
+Version 0.1.4.1.1
+
+2009-02-10 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Fixed silly bug in vineyard-preferences where function returned False
+	  instead of None that kept changing program icon from working.
+
+Version 0.1.4.1
+
+2009-02-09 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Added man page, no other changes.
+
+Version 0.1.4
+
+2009-02-08 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Added new page called "Tools" for launcing regedit, a Command Prompt,
+	  executables, the main drive or a Terminal in the selected configuration.
+	* It's now possible to drag programs directly from the Programs listing
+	  on to f.x. the Gnome panel to create a desktop shortcut.
+	* Cache now stores a version number used when the internal data changes
+	  format (see python-wine changelog to see why this was necessary).
+	* Programs can now be edited.
+	* Program icons are converted to their matching icon theme counterparts.
+	* Program listing is now grouped into programs, libraries, menu entries
+	  and websites.
+	* Added debug argument.
+
+Version 0.1.3
+
+2009-11-27 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Added cache for reading Wine settings.
+	* Fixed window icon.
+	* Added descriptive type icons for drives.
+	* Changed notebook tabs to a list to conform to the Gnome HIG.
+	* First drive in list is now selected.
+	* Program list now doesn't display header and doesn't show a horizontal
+	  scrollbar.
+
+Version 0.1.2
+
+2009-11-15 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Gracefully handle the user trying to create a bottle without a name.
+	* Added a Cancel button to the new bottle dialog.
+	* Localization is now supported on install, not just for testing.
+	* Added "(default)" to the title of Windows XP.
+
+Version 0.1.1
+
+2009-10-14 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Changing wording, now uses "Wine" instead of "Windows".
+	* Improved loading progressbar updates.
+	* Uninstalling programs now actually works.
+
+Version 0.1
+
+2009-10-13 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Initial public release

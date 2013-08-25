@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Vineyard Wine Launcher
+Comment=Launch a Windows program with Wine using Vineyard
+Exec=vineyard-launcher %f
+MimeType=application/x-ms-dos-executable;application/x-msi;application/x-win-lnk;application/x-ms-shortcut;inode/directory;
+Icon=vineyard
+Terminal=false
+NoDisplay=true
+StartupNotify=true
+Name[da]=Vineyard Wine-starter
+Comment[da]=Start et Windows-program med Wine gennem Vineyard

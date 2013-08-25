@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Vineyard
+Comment=Vineyard Wine program indicator
+Comment[da]=Vineyards Wine-programindikator
+Icon=vineyard
+Exec=vineyard-indicator
+Terminal=false
+Type=Application
+OnlyShowIn=GNOME;XFCE;
+X-GNOME-Autostart-enabled=true

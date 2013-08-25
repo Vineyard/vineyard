@@ -1,0 +1,177 @@
+vineyard (0.1.5) karmic lucid maverick natty oneiric precise quantal raring; urgency=medium
+
+  * This is not a release. This info is only to allow Launchpad to get the version.
+  * Please see Bazaar log or http://vineyardproject.org for changes.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Thu, 20 Apr 2012 20:37:25 +0100
+
+vineyard (0.1.5~pre13) karmic lucid maverick natty; urgency=high
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Fri, 18 Mar 2011 02:37:33 +0100
+
+vineyard (0.1.5~pre12) karmic lucid maverick natty; urgency=high
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Fri, 18 Mar 2011 00:20:33 +0100
+
+vineyard (0.1.5~pre11) karmic lucid maverick natty; urgency=high
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Sun, 13 Mar 2011 22:26:06 +0100
+
+vineyard (0.1.5~pre10) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Thu, 10 Feb 2011 21:09:58 +0100
+
+vineyard (0.1.5~pre9) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 08 Feb 2011 23:17:29 +0100
+
+vineyard (0.1.5~pre8) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Mon, 20 Dec 2010 18:04:02 +0100
+
+vineyard (0.1.5~pre7) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Sun, 07 Nov 2010 07:33:50 +0100
+
+vineyard (0.1.5~pre6-1) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 26 Oct 2010 23:08:12 +0200
+
+vineyard (0.1.5~pre6) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 26 Oct 2010 17:15:15 +0200
+
+vineyard (0.1.5-pre5) karmic lucid maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Mon, 25 Oct 2010 13:09:56 +0200
+
+vineyard (0.1.5-pre4) maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Wed, 20 Oct 2010 18:38:40 +0200
+
+vineyard (0.1.5-pre3) maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Wed, 20 Oct 2010 15:47:50 +0200
+
+vineyard (0.1.5-pre2) maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Fri, 15 Oct 2010 03:00:56 +0200
+
+vineyard (0.1.5-pre1) maverick; urgency=medium
+
+  * New upstream release, beta quality, not everything is enabled yet.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 14 Oct 2010 03:06:25 +0100
+
+vineyard (0.1.4.1.3) lucid; urgency=high
+
+  * New upstream release.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 02 Mar 2010 09:25:51 +0100
+
+vineyard (0.1.4.1.2) lucid; urgency=high
+
+  * New upstream release.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Sat, 27 Feb 2010 17:50:02 +0100
+
+vineyard (0.1.4.1.1) karmic; urgency=high
+
+  * New upstream release.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Wed, 10 Feb 2010 15:55:33 +0100
+
+vineyard (0.1.4.1) karmic; urgency=low
+
+  * Fixed packaging - vineyard replaces both wine-preferences and nautilus-wine.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 09 Feb 2010 15:56:19 +0100
+
+vineyard (0.1.4) karmic; urgency=low
+
+  * New upstream release.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Mon, 08 Feb 2010 23:42:05 +0100
+
+wine-preferences (0.1.3) karmic; urgency=low
+
+  * Re-added dependency on python and python-central to make sure installation
+    goes smoothly.
+  * Added cache for reading Wine settings.
+  * Fixed window icon.
+  * Added descriptive type icons for drives.
+  * Changed notebook tabs to a list to conform to the Gnome HIG.
+  * First drive in list is now selected.
+  * Program list now doesn't display header and doesn't show a horizontal
+    scrollbar.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Thu, 24 Dec 2009 14:38:57 +0100
+
+wine-preferences (0.1.2-1) karmic; urgency=low
+
+  * Re-added dependency on python and python-central to make sure installation
+    goes smoothly.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Thu, 19 Nov 2009 03:02:02 +0100
+
+wine-preferences (0.1.2) karmic; urgency=low
+
+  * Gracefully handle the user trying to create a bottle without a name.
+  * Added a Cancel button to the new bottle dialog.
+  * Localization is now supported on install, not just for testing.
+  * Added "(default)" to the title of Windows XP.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Sun, 15 Nov 2009 18:37:35 +0100
+
+wine-preferences (0.1.1-2) karmic; urgency=low
+
+  * Fixed dependencies, now also depends on python-glade2.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Sat, 14 Nov 2009 22:05:40 +0100
+
+wine-preferences (0.1.1-1) karmic; urgency=low
+
+  * Changing wording, now uses "Wine" instead of "Windows".
+  * Improved loading progressbar updates.
+  * Uninstalling programs now actually works.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Wed, 14 Oct 2009 01:59:35 +0200
+
+wine-preferences (0.1-1) karmic; urgency=low
+
+  * Added missing .desktop file and icons.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 13 Oct 2009 23:29:28 +0200
+
+wine-preferences (0.1) karmic; urgency=low
+
+  * Initial release.
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Tue, 13 Oct 2009 22:09:28 +0200
+

@@ -1,0 +1,30 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="problemprogramwontrun">
+<info>
+  <link type="guide" xref="index#trouble"/>
+  <link type="seealso" xref="installprogram"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to help get troublesome programs running</desc>
+</info>
+<title>Help with running programs</title>
+<p>If a program doesn't run or exists before it should, try looking at the error information that Vineyard gives you.
+Common problems include missing DLL files (libraries), some of which Vineyard is able to identify for you, or simply incompatibility with a specific version of Windows.</p>
+
+<p>Try changing the Windows version that Vineyard should function as and see if this helps, or in the case of DLL files, try finding the missing DLL file (try online or from an old Windows installation or CD) and copy it to <sys>C:\Windows\System32</sys> in the configuration.
+Note that Vineyard offers automated installation of many common libraries from the <gui style="group">Install</gui> page.</p>
+	
+<p>If you are still stuck, you can often find help in <link href="http://appdb.winehq.org/">Wine's application database</link>, but remember that you should run any commands listed in a terminal launched from Vineyard, not just the regular terminal if you want the commands to operate on something other than the default configuration.</p>
+
+<note style="advanced">
+	<p>Note that Vineyard has no way of knowing if a program has a graphical user interface or not, and you may therefor experience that command prompt programs will not open in their own window.</p>
+	<p>One way to get around this is to run Wine Preferences from a terminal, run the program from there and switch back to the terminal where your program should now be running.</p>
+</note>
+
+</page>

@@ -1,0 +1,56 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="differenceprogramconf">
+<info>
+  <link type="guide" xref="index#info"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>The difference between program settings and configuration settings</desc>
+</info>
+<title>Program and Configuration settings</title>
+<terms>
+  <item>
+    <title>Program settings</title>
+    <p>Program settings are basic settings that are applied to all executables that have the same name and that are run from the same configuration.</p>
+  </item>
+  <item>
+    <title>Configurations</title>
+    <p>A configuration is basically a separate Windows installation and it's settings applies to all programs within it, except of course executables that have their own program settings.</p>
+  </item>
+</terms>
+
+<p>In short, the settings are applied hierarchically, as in this example featuring:</p>
+<tree style="lines">
+	<item><app>Game of Snakes</app>
+		<item>Configuration settings
+			<item>Level editor</item>
+			<item>Text editor</item>
+			<item>Music program</item>
+			<item>Program settings for <file>engine.exe</file>
+				<item><file>engine.exe</file> (the actual game)</item>
+			</item>
+		</item>
+	</item>
+	<item><app>Parrot Game</app>
+		<item>Configuration settings
+			<item><file>engine.exe</file></item>
+		</item>
+	</item>
+</tree>
+
+<p>To make it a bit more clear imagine that we have two configurations, one named <app>Game of Snakes</app> and one named <app>Parrot Game</app> (their full structure is displayed above).</p>
+<p>In the <app>Game of Snakes</app> configuration we have installed a great game about snakes which executable is named <file>engine.exe</file> and in the <app>Parrot Game</app> configuration we have another game about parrots installed which executable is also named <file>engine.exe</file>.
+	If we now set our <app>Game of Snakes</app> configuration to operate as Windows XP, the <file>engine.exe</file> and therefor the game will be run as if in Windows XP, but if we afterwards set the program settings for the <file>engine.exe</file> in the <app>Game of Snakes</app> to operate as Windows 98, then <file>engine.exe</file> and its game will be run as in Windows 98, even though the configuration is set to run as Windows XP.</p>
+
+<p>The difference between the two settings is that if you install another program into the <app>Game of Snakes</app> configuration, then that program will still be run with the settings for the configuration, not for <file>engine.exe</file>. This can be useful in case you f.x. install a level editor, a text-editor and let's say a music program for making your own levels for the snake game and they should all be run as in Windows XP, but the game itself functions better when run as Windows 98.</p>
+	
+<p>Now, let's get back to the <app>Parrot Game</app>. Because this is a completely different configuration, the program settings for <file>engine.exe</file> we did in the <app>Game of Snakes</app> configuration has no effect here, instead the settings for the actual configuration (<app>Parrot Game</app>) will be used.</p>
+	
+<p>Also, as you may have guessed, if we install another program in to the <app>Game of Snakes</app> configuration that also has an executable named <file>engine.exe</file> (f.x. the sequel: <app>Clash of the Pythons</app>) then this will run with the same settings as the first game since program settings are applied to all programs with the same executable filename.
+</p>
+</page>

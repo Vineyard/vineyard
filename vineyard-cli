@@ -1,0 +1,874 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007-2011 Christian Dannie Storgaard
+#
+# AUTHOR:
+# Christian Dannie Storgaard <cybolic@gmail.com>
+#
+# This file is part of Wine
+#
+# Wine.py is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; either version 2 of the License, or (at
+# your option) any later version.
+#
+# Wine.py is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with AptUrl; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# TODO:
+#
+# + Drive autodetection
+#
+
+from __future__ import print_function
+
+import vineyard
+
+SHARED_FILES_PATH = vineyard.get_shared_files_path()
+
+import wine
+
+import os, sys, subprocess, re, time
+import locale, gettext
+from optparse import OptionParser
+
+ON_ARGS  = ["yes", "true", "1", "on"]
+OFF_ARGS = ["no", "false", "0", "none", "off"]
+
+class Main:
+    def __init__(self):
+        self.openargs = []
+        self.__run_kwargs = {'monitor': True}
+
+        usage = "usage: %prog [ [--wine-prefix PREFIX | --use-conf CONFIGURATIONNAME] | --add-conf CONFIGURATIONNAME | --remove-conf CONFIGURATIONNAME | --list-confs | --uninstall PROGRAM | --list-uninstall | --list-uninstall-desktop | --windows-version [list | VERSION | EXECUTABLE [VERSION]] | --drive-map [DRIVELETTER DIRECTORY [LABEL [SERIAL] [TYPE]] ] | --set-drive-type DRIVELETTER TYPE | --show-dot-files [[yes|true]|[no|false]] | --print-registry [BRANCH] | --set-registry BRANCH KEY VALUE | --virtual-desktop [[USE_DESKTOP | WIDTHxHEIGHT] | PROGRAM [USE_DESKTOP | WIDTHxHEIGHT]] | --window-grab-mouse [true|false] | --window-decorated [true|false] | --window-managed [true|false] | --audio-drivers [h | [enable|disable] DRIVER ] | --audio-acceleration [h | [PROGRAM] [full | standard | basic | emulation ]] | --audio-sample-rate | --audio-bit-depth | --audio-emulate-driver | --screen-resolution DPI | --vertex-shader [PROGRAM] on|off | --pixel-shader [PROGRAM] on|off | --check-wine | --check-3d | --set-shell-folder DESKTOPFOLDER TARGET | --get-shell-folders | --list-libraries | --override-library [n|b] LIBRARY | --get-overridden-libraries | --get-program-name PROGRAMEXE | --open-desktop NAME WIDTHxHEIGHT | --run EXE | --run-in-dir EXE]"
+        parser = OptionParser(usage)
+        parser.add_option("--use-conf",
+                          action="callback", callback=self._variable_callback, dest="useconf",
+                          help="define the Wine configuration to operate on")
+        parser.add_option("--add-conf",
+                          action="callback", callback=self._variable_callback, dest="addconf",
+                          help="create a new Wine configuration named CONFIGURATIONNAME")
+        parser.add_option("--remove-conf",
+                          action="callback", callback=self._variable_callback, dest="removeconf",
+                          help="delete the Wine configuration called CONFIGURATIONNAME")
+        parser.add_option("--open-conf-dir",
+                          action="callback", callback=self._variable_callback, dest="openconf",
+                          help="open the main drive of the Wine configuration called CONFIGURATIONNAME in the standard file browser")
+        parser.add_option("--list-confs",
+                          action="store_true", dest="listconfs",
+                          help="list the available Wine configurations")
+        parser.add_option("-u", "--uninstall",
+                          action="store",  dest="uninstall", metavar="PROGRAM",
+                          help="launch the uninstaller for PROGRAM")
+        parser.add_option("-l", "--list-uninstall",
+                          action="store_true", dest="listprograms",
+                          help="list applications that can be removed")
+        parser.add_option("--list-uninstall-desktop",
+                          action="store_true", dest="listprogramsdesktop",
+                          help="list applications that can be removed outputted as a menu file and the relevant desktop files")
+        parser.add_option("-v", "--windows-version",
+                          action="callback", callback=self._variable_callback, dest="winversion",
+                          help="print or set either the default windows version or the windows version of an executable. 'list' lists the possible winversions. ")
+        parser.add_option("-m", "--drive-map",
+                          action="callback", callback=self._variable_callback, dest="mapdrive", metavar="DRIVELETTER DIRECTORY [LABEL] [SERIAL]",
+                          help="print the drive mappings or map DRIVELETTER to DIRECTORY, possibly setting LABEL and SERIAL")
+        parser.add_option("--set-drive-type",
+                          action="callback", callback=self._variable_callback, dest="drivetype", metavar="DRIVELETTER TYPE",
+                          help="set the drive type of DRIVELETTER to one of auto|hd|network|cdrom|floppy")
+        parser.add_option("--remove-drive",
+                          action="callback", callback=self._variable_callback, dest="removedrive", metavar="DRIVELETTER",
+                          help="remove the drive DRIVELETTER (does not delete the linked dir)")
+        parser.add_option("-d", "--show-dot-files",
+                          action="callback", callback=self._variable_callback, dest="showdotfiles",
+                          help="set or get whether dot files are shown to programs")
+        parser.add_option("-r", "--print-registry", callback=self._variable_callback, metavar="BRANCH",
+                          action="callback", dest="registry",
+                          help="print BRANCH or the Windows registry as a Python style, utf-8 formatted dictionary. Doesn't convert HEX and DWORD.")
+        parser.add_option("-s", "--set-registry",
+                          action="callback", callback=self._variable_callback, dest="setregistry", metavar="BRANCH KEY VALUE",
+                          help="set KEY to VALUE in BRANCH of the Windows registry")
+        parser.add_option("--virtual-desktop",
+                          action="callback", callback=self._variable_callback, dest="virtualdesktop",
+                          help="set or get the virtual desktop size of either PROGRAM or the default configuration")
+        parser.add_option("--window-grab-mouse",
+                          action="callback", callback=self._variable_callback, dest="wingrab",
+                          help="set or get whether DirectX applications can grab the mouse")
+        parser.add_option("--window-decorated",
+                          action="callback", callback=self._variable_callback, dest="windecorate",
+                          help="set or get whether the window manager should decorate windows")
+        parser.add_option("--window-managed",
+                          action="callback", callback=self._variable_callback, dest="winmanage",
+                          help="set or get whether the window manager should manage windows")
+        parser.add_option("-a", "--audio-drivers",
+                          action="callback", callback=self._variable_callback, dest="audiodrivers",
+                          help="prints or sets the enabled audio driver(s)")
+        parser.add_option("-c", "--audio-acceleration",
+                          action="callback", callback=self._variable_callback, dest="audioacceleration",
+                          help="prints or sets the level of DirectSound hardware audio acelleration")
+        parser.add_option("--audio-sample-rate",
+                          action="callback", callback=self._variable_callback, dest="audiorate",
+                          help="prints or sets the DirectSound audio sample rate")
+        parser.add_option("--audio-bit-depth",
+                          action="callback", callback=self._variable_callback, dest="audiodepth",
+                          help="prints or sets the DirectSound audio bit depth")
+        parser.add_option("--audio-emulate-driver",
+                          action="callback", callback=self._variable_callback, dest="audioemuldriver",
+                          help="prints or sets wether DirectSound should emulate a hardware driver")
+        parser.add_option("--screen-dpi",
+                          action="callback", callback=self._variable_callback, dest="screendpi",
+                          help="get or set the screen resolution in DPI")
+        parser.add_option("--vertex-shader",
+                          action="callback", callback=self._variable_callback, dest="vertexshader",
+                          help="enable or disable vertex shader support")
+        parser.add_option("--pixel-shader",
+                          action="callback", callback=self._variable_callback, dest="pixelshader",
+                          help="enable or disable pixel shader support")
+        parser.add_option("--check-wine",
+                          action="store_true", dest="checkwine",
+                          help="report whether or not Wine has been configured for the current user")
+        parser.add_option("--check-3d",
+                          action="store_true", dest="check3d",
+                          help="report whether or not the system supports direct rendering for 3D")
+        parser.add_option("--set-shell-folder",
+                          action="callback", callback=self._variable_callback, dest="setshellfolder",
+                          help="set one of \"Desktop\", \"My Documents\", \"My Pictures\", \"My Music\", \"My Videos\" to TARGET")
+        parser.add_option("--get-shell-folders",
+                          action="callback", callback=self._variable_callback, dest="shellfolders",
+                          help="prints the target folders for \"Desktop\", \"My Documents\", \"My Pictures\", \"My Music\" and \"My Videos\"")
+        parser.add_option("--list-libraries",
+                          action="callback", callback=self._variable_callback, dest="listlibraries",
+                          help="prints the Wine libraries available for override")
+        parser.add_option("--override-library",
+                          action="callback", callback=self._variable_callback, dest="overridelibrary",
+                          help="set LIBRARY to either native (DLL file) or builtin (Wine)")
+        parser.add_option("--get-overridden-libraries",
+                          action="callback", callback=self._variable_callback, dest="getoverriddenlibraries",
+                          help="get a list of libraries set to use native DLL files")
+        parser.add_option("--get-program-name",
+                          action="callback", callback=self._variable_callback, dest="programname",
+                          help="get the internal descriptive name of PROGRAMEXE, or a nicely formatted version of the exe name")
+        parser.add_option("--open-desktop",
+                          action="callback", callback=self._variable_callback, dest="opendesktop",
+                          help="open a desktop named NAME of size WIDTHxHEIGHT")
+        parser.add_option("--run",
+                          action="callback", callback=self._variable_callback, dest="run",
+                          help="run EXE through Wine")
+        parser.add_option("--run-in-dir",
+                          action="callback", callback=self._variable_callback, dest="runindir",
+                          help="run EXE through Wine in the directory of the EXE")
+        parser.add_option("--disable-monitor",
+                         action="store_true", dest="nomonitor",
+                          help="don't monitor the program that should be run")
+        parser.add_option("--disable-pulseaudio",
+                         action="store_true", dest="nopulseaudio",
+                          help="shut down PulseAudio while running the given program")
+        parser.add_option("--cpu-limit",
+                          action="callback", callback=self._variable_callback, dest="cpulimit",
+                          help="limit EXE to only run on X CPUs")
+
+        (options, args) = parser.parse_args()
+
+        if len(sys.argv) <= 1:
+            #returncode = subprocess.call("winecfg", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr, env=os.env)
+            #sys.exit(returncode)
+            parser.print_help()
+
+        if options.useconf:
+            try:
+                prefix_data = wine.prefixes.get_metadata_from_name_or_prefix(
+                    options.useconf[0]
+                )
+            except:
+                print("Configuration doesn't exist.", file=sys.stderr)
+                exit(1)
+            wine.prefixes.use(prefix_data['WINEPREFIX'])
+
+        if options.addconf:
+            prefix_path = wine.prefixes.add(options.addconf[0])
+            if prefix_path is not False:
+                print(
+                    "Configuration created in: {0}".format(
+                        prefix_path
+                    )
+                )
+            else:
+                print("Something went wrong in creating the configuration.")
+                exit(1)
+
+        if options.removeconf:
+            try:
+                prefix_data = wine.prefixes.get_metadata_from_name_or_prefix(
+                    options.removeconf[0]
+                )
+            except:
+                print(str("Configuration \"{0}\" not removed. "+
+                          "The configuration was either not found or "+
+                          "several configurations share the same name."
+                          ).format(options.removeconf[0]), file=sys.stderr)
+            prefix_path = prefix_data['WINEPREFIX']
+            if wine.prefixes.remove(options.removeconf[0]):
+                print("Configuration \"{0}\" removed.".format(
+                        options.removeconf[0]
+                ))
+            else:
+                print(str(
+                    "Configuration \"{0}\" not removed. "+
+                    "Do you have the necessary permissions?"
+                    ).format(options.removeconf[0]), file=sys.stderr)
+
+        if options.openconf:
+            try:
+                prefix_data = wine.prefixes.get_metadata_from_name_or_prefix(
+                    options.openconf[0]
+                )
+                wine.prefixes.use(prefix_data['WINEPREFIX'])
+            except:
+                print("Configuration doesn't exist.", file=sys.stderr)
+                exit(1)
+            mapping = wine.drives.get_main_drive(use_registry=False)['mapping']
+            wine.util.run_command(["xdg-open", mapping])
+
+        if options.listconfs:
+            data = []
+            prefixes = wine.prefixes.list()
+            for name in sorted(prefixes.keys(), key=str.lower):
+                data.append([
+                    name,
+                    prefixes[name]['WINEPREFIXROOT']
+                ])
+            wine.util.print_in_cols(data)
+
+        if options.registry:
+            if options.registry == True:
+                print(wine.registry.get())
+            else:
+                print(wine.registry.get(
+                    options.registry[0].replace('\\\\', '\\')
+                ))
+
+        if options.setregistry:
+            branch = options.setregistry[0]
+            key    = options.setregistry[1]
+            value  = options.setregistry[2]
+            wine.registry.set({branch: {key: value}})
+
+        if options.uninstall:
+            wine.programs.uninstall(options.uninstall)
+
+        if options.listprograms:
+            if options.useconf:
+                print("Programs in configuration \"{conf}\":\n{programs}".format(
+                    conf = options.useconf[0],
+                    programs = wine.programs.get_print()
+                ))
+            else:
+                print("Programs in default configuration:\n{programs}".format(
+                    wine.programs.get_print()
+                ))
+
+        if options.listprogramsdesktop:
+            wine.programs.create_desktop_files()
+
+        if options.winversion:
+            if options.winversion == True:
+                print("Windows version: {0}".format(
+                    wine.version.get()
+                ))
+            else:
+                if len(options.winversion) == 1:
+                    if options.winversion[0].lower() == 'list':
+                        print("Supported Windows versions: {0}:".format(
+                            ', '.join(['default'] + wine.version.versions)
+                        ))
+                    elif options.winversion[0].lower() in ['default'] + wine.version.versions:
+                        version = options.winversion[0].lower()
+                        if version == 'default':
+                            version = wine.version.DEFAULT
+
+                        if wine.version.set(options.winversion[0].lower()):
+                            print("Windows version set to {0}".format(
+                                version
+                            ))
+                        else:
+                            print("Failed to set Windows version.")
+                    else:
+                        program = options.winversion[0]
+                        programs = wine.version.get_programs()
+                        if program.lower() in programs:
+                            version = programs[program]['Version']
+                        else:
+                            version = 'not set'
+                        print("Windows version for \"{exe\": {version}".format(
+                            version
+                        ))
+                elif len(options.winversion) == 2:
+                    wine.version.set(options.winversion[1], options.winversion[0])
+
+        if options.mapdrive:
+            if options.mapdrive != True:
+                wine.drives.add(*options.mapdrive)
+                print("Added drive {drive}".format(
+                    options.mapdrive[0].upper())
+                )
+            else:
+                print("Drives in configuration \"{conf}\":\n{drives}".format(
+                    conf = options.useconf[0],
+                    drives = wine.drives.list()
+                ))
+
+        if options.drivetype:
+            wine.drives.set_type(
+                options.drivetype[0], options.drivetype[1].lower()
+            )
+            print("Drive {drive} set to {type}".format(
+                drive = options.drivetype[0].upper(),
+                type = options.drivetype[1].lower()
+            ))
+
+        if options.removedrive:
+            wine.drives.remove(options.removedrive[0])
+            print("Removed drive {drive}".format(
+                drive = options.removedrive[0].upper()
+            ))
+
+        if options.showdotfiles:
+            if options.showdotfiles != True:
+                wine.drives.set_show_dot_files(
+                    (options.showdotfiles[0].lower() in ON_ARGS)
+                )
+                print("Show dot files set to {0}".format(
+                    str(options.showdotfiles[0].lower() in ON_ARGS).lower()
+                ))
+            else:
+                print("Show dot files is: {0}".format(
+                    wine.drives.get_show_dot_files()
+                ))
+
+        if options.virtualdesktop:
+            if options.virtualdesktop == True:
+                desktop = wine.desktop.get()
+                if desktop:
+                    print("Virtual desktop is: {size[0]}x{size[1]}".format(
+                        size = desktop
+                    ))
+                else:
+                    print("Virtual desktop is disabled")
+
+            elif len(options.virtualdesktop) == 1:
+                if "x" in options.virtualdesktop[0].lower() and options.virtualdesktop[0].lower().split('x')[0].isdigit():
+                    size = [
+                            int(i) for i
+                            in options.virtualdesktop[0].lower().split('x')
+                    ]
+                    wine.desktop.set(True,
+                        size = tuple(size),
+                        program = None
+                    )
+                    print("Virtual desktop set to {size[0]}x{size[1]}".format(
+                        size = size
+                    ))
+
+                elif options.virtualdesktop[0].lower() in ON_ARGS:
+                    wine.desktop.set(True)
+                    print("Virtual desktop enabled")
+                elif options.virtualdesktop[0].lower() in OFF_ARGS:
+                    wine.desktop.set(False)
+                    print("Virtual desktop disabled")
+                else:
+                    desktop = wine.desktop.get(options.virtualdesktop[0])
+                    if desktop:
+                        print("Virtual desktop for \"{exe}\" is: {size[0]}x{size[1]}".format(
+                            exe = options.virtualdesktop[0],
+                            size = desktop
+                        ))
+                    else:
+                        print("Virtual desktop for \"{exe}\" is: disabled".format(
+                            exe = options.virtualdesktop[0]
+                        ))
+
+
+            elif len(options.virtualdesktop) == 2:
+                if "x" in options.virtualdesktop[1].lower() and options.virtualdesktop[1].lower().split('x')[0].isdigit():
+                    size = [
+                            int(i) for i
+                            in options.virtualdesktop[1].lower().split('x')
+                    ]
+                    wine.desktop.set(True,
+                        size = tuple(size),
+                        program = options.virtualdesktop[0]
+                    )
+                    print("Virtual desktop for \"{exe}\" set to {size[0]}x{size[1]}".format(
+                        exe = options.virtualdesktop[0],
+                        size = size
+                    ))
+                elif options.virtualdesktop[1].lower() in OFF_ARGS:
+                    wine.desktop.set(
+                        False,
+                        program = options.virtualdesktop[0]
+                    )
+                    print("Virtual desktop for \"{exe}\" set as disabled".format(
+                        exe = options.virtualdesktop[0]
+                    ))
+                else:
+                    wine.desktop.set(
+                        True,
+                        size = None,
+                        program = options.virtualdesktop[0]
+                    )
+                    print("Virtual desktop for \"{exe}\" set as enabled".format(
+                        exe = options.virtualdesktop[0]
+                    ))
+
+        if options.wingrab:
+            if options.wingrab != True:
+                wine.windows.set_mouse_grab(
+                    (options.wingrab[0].lower() in ON_ARGS)
+                )
+            else:
+                if wine.windows.get_mouse_grab():
+                    print("Mouse grab is: enabled")
+                else:
+                    print("Mouse grab is: disabled")
+
+        if options.windecorate:
+            if options.windecorate != True:
+                wine.windows.set_decorated(
+                    (options.windecorate[0].lower() in ON_ARGS)
+                )
+            else:
+                if wine.windows.get_decorated():
+                    print("Window decoration is: enabled")
+                else:
+                    print("Window decoration is: disabled")
+
+        if options.winmanage:
+            if options.winmanage != True:
+                wine.windows.set_managed(
+                    (options.winmanage[0].lower() in ON_ARGS)
+                )
+            else:
+                if wine.windows.get_managed():
+                    print("Window management is: enabled")
+                else:
+                    print("Window management is: disabled")
+
+        if options.audiodrivers:
+            args = options.audiodrivers
+            if type(args) != type(True) and len(args):
+                if len(args) == 1:
+                    driver = args[0].lower()
+                    if driver == 'h':
+                        print("Supported audio drivers: {0}".format(
+                            ', '.join(sorted(wine.audio.DRIVERS))
+                        ))
+                    elif driver in wine.audio.DRIVERS:
+                        if driver in wine.audio.get_enabled_drivers():
+                            print("Audio driver \"{0}\" is enabled".format(
+                                driver
+                            ))
+                        else:
+                            print("Audio driver \"{0}\" is disabled".format(
+                                driver
+                            ))
+                    else:
+                        print("Error: Unsupported audio driver: {0}".format(
+                            driver
+                        ))
+
+                elif len(args) == 2 and args[1].lower() in wine.audio.DRIVERS:
+                    driver = args[1].lower()
+                    if args[0].lower() == "enable":
+                        wine.audio.enable_driver(driver)
+                        print("Audio driver \"{driver}\" is now enabled".format(
+                            driver
+                        ))
+                    else:
+                        wine.audio.disable_driver(driver)
+                        print("Audio driver \"{driver}\" is now disabled".format(
+                            driver
+                        ))
+            else:
+                drivers = wine.audio.get_enabled_drivers()
+                if len(drivers):
+                    print("Enabled audio drivers: {0}".format(
+                        ', '.join(drivers)
+                    ))
+                else:
+                    print("Enabled audio drivers: default")
+
+        if options.audioacceleration:
+            if options.audioacceleration != True:
+                _done = False
+                if len(options.audioacceleration) == 2:
+                    program, level = options.audioacceleration
+                    level = level.lower()
+
+                elif len(options.audioacceleration) == 1:
+                    if options.audioacceleration[0].lower() == 'h':
+                        print("Supported audio acceleration levels: {0}".format(
+                            ', '.join(wine.audio.ACCELERATIONS)
+                        ))
+                        _done = True
+                    # If we're setting the default level
+                    elif options.audioacceleration[0] in wine.audio.ACCELERATIONS:
+                        program, level = None, options.audioacceleration[0]
+                    else:
+                        print("Audio acceleration for \"{exe}\" is: {level}".format(
+                            exe = options.audioacceleration[0],
+                            level = wine.audio.get_acceleration(
+                                options.audioacceleration[0]
+                            ).lower()
+                        ))
+                        _done = True
+                else:
+                    print(
+                        "Error: Unsupported hardware audio acceleration argumenents:",
+                        *options.audioacceleration
+                    )
+
+                if not _done:
+                    if level in wine.audio.Accels:
+                        wine.audio.set_acceleration(level, program)
+                        print("Audio acceleration for \"{exe}\" set to \"{level}\"".format(
+                            exe = program,
+                            level = level
+                        ))
+                    else:
+                        print("Error: Unsupported hardware audio acceleration level \"%s\"" % level)
+            else:
+                print("Audio acceleration level: {0}".format(
+                    wine.audio.get_acceleration().lower()
+                ))
+
+        if options.audiorate:
+            if options.audiorate != True:
+                _done = False
+                if len(options.audiorate) == 2:
+                    program,rate = options.audiorate
+                elif len(options.audiorate) == 1:
+                    if options.audiorate[0].lower() == 'h':
+                        print("Supported audio rates: {0}".format(
+                            ', '.join([ str(i) for i in wine.audio.RATES ])
+                        ))
+                        _done = True
+                    # If we're setting the default level
+                    elif options.audiorate[0] in wine.audio.RATES:
+                        program, rate = None, options.audiorate[0]
+                    else:
+                        print("Audio rate for \"{exe}\" is: {level}".format(
+                            exe = options.audiorate[0],
+                            level = wine.audio.get_sample_rate(
+                                options.audiorate[0]
+                            )
+                        ))
+                        _done = True
+                else:
+                    print(
+                        "Error: Unsupported audio rate argumenents:",
+                        *options.audiorate
+                    )
+
+                if not _done:
+                    if rate in wine.audio.RATES:
+                        wine.audio.set_sample_rate(rate, program)
+                        print("Audio rate for \"{exe}\" set to \"{rate}\"".format(
+                            exe = program,
+                            rate = rate
+                        ))
+                    else:
+                        print("Error: Unsupported sample rate \"%s\"" % rate)
+            else:
+                print("Audio rate: {0}".format(
+                    wine.audio.get_sample_rate()
+                ))
+
+
+        if options.audiodepth:
+            if options.audiodepth != True:
+                _done = False
+                if len(options.audiodepth) == 2:
+                    program,depth = options.audiodepth
+                elif len(options.audiodepth) == 1:
+                    if options.audiodepth[0].lower() == 'h':
+                        print("Supported audio bit depths: {0}".format(
+                            ', '.join([ str(i) for i in wine.audio.BITS ])
+                        ))
+                        _done = True
+                    # If we're setting the default level
+                    elif options.audiodepth[0] in wine.audio.BITS:
+                        program, depth = None, options.audiodepth[0]
+                    else:
+                        print("Audio bit depth for \"{exe}\" is: {level}".format(
+                            exe = options.audiodepth[0],
+                            level = wine.audio.get_bit_depth(
+                                options.audiodepth[0]
+                            ).lower()
+                        ))
+                        _done = True
+                else:
+                    print(
+                        "Error: Unsupported audio bit depth argumenents:",
+                        *options.audiodepth
+                    )
+                    return
+
+                if not _done:
+                    if rate in wine.audio.BITS:
+                        wine.audio.set_bit_depth(depth, program)
+                        print("Audio bit depth for \"{exe}\" set to \"{depth}\"".format(
+                            exe = program,
+                            depth = depth
+                        ))
+                    else:
+                        print("Error: Unsupported bit depth \"{0}\"".format(
+                            depth
+                        ))
+            else:
+                print("Audio bit depth: {0}".format(
+                    wine.audio.get_bit_depth()
+                ))
+
+        if options.audioemuldriver:
+            if options.audioemuldriver == True:
+                if wine.audio.get_driver_emulation():
+                    print("Audio driver emulation: enabled")
+                else:
+                    print("Audio driver emulation: disabled")
+            else:
+                if options.audioemuldriver[0].lower() in OFF_ARGS:
+                    wine.audio.set_driver_emulation(False)
+                    print("Audio driver emulation set as disabled")
+                else:
+                    wine.audio.set_driver_emulation(True)
+                    print("Audio driver emulation set as enabled")
+
+        if options.screendpi:
+            if options.screendpi == True:
+                print("Screen DPI: {0}".format(
+                    wine.graphics.get_screen_dpi()
+                ))
+            else:
+                wine.graphics.set_screen_dpi(
+                    options.screendpi[0]
+                )
+                print("Screen DPI set to {0}".format(
+                    options.screendpi[0]
+                ))
+
+        if options.vertexshader:
+            if options.vertexshader == True:
+                if wine.graphics.get_vertex_shader():
+                    print("Vertex shader is: enabled")
+                else:
+                    print("Vertex shader is: disabled")
+            else:
+                if options.vertexshader[0].lower() in OFF_ARGS:
+                    wine.graphics.set_vertex_shader(False)
+                    print("Vertex shader disabled")
+                else:
+                    wine.graphics.set_vertex_shader(True)
+                    print("Vertex shader enabled")
+
+        if options.pixelshader:
+            if options.pixelshader == True:
+                if wine.graphics.get_pixel_shader():
+                    print("Pixel shader is: enabled")
+                else:
+                    print("Pixel shader is: disabled")
+            else:
+                if options.pixelshader[0].lower() in OFF_ARGS:
+                    wine.graphics.set_pixel_shader(False)
+                    print("Pixel shader disabled")
+                else:
+                    wine.graphics.set_pixel_shader(True)
+                    print("Pixel shader enabled")
+
+        if options.checkwine:
+            if wine.check_setup():
+                print("Wine is setup: yes")
+            else:
+                print("Wine is setup: no")
+
+        if options.check3d:
+            if wine.graphics.check_3d_support():
+                print("System has 3D support: yes")
+            else:
+                print("System has 3D support: no")
+
+        if options.shellfolders:
+            folders = wine.shellfolders.get()
+            print("Shell folders:")
+            for folder in sorted(folders.keys()):
+                print("\t{folder}:\t{target}".format(
+                    folder = folder,
+                    target = folders[folder]
+                ))
+
+        if options.setshellfolder:
+            wine.shellfolders.set(
+                options.setshellfolder[0],
+                options.setshellfolder[1]
+            )
+            print("Shellfolder \"{folder}\" set to \"{target}\"".format(
+                folder = options.setshellfolder[0],
+                target = options.setshellfolder[1]
+            ))
+
+        if options.listlibraries:
+            print("Wine libraries on this system: {0}".format(
+                ', '.join(wine.libraries.list())
+            ))
+
+        if options.getoverriddenlibraries:
+            print("Overriden libraries:\n{0}".format(
+                ', '.join([
+                    "{0} ({1})".format(i[0], i[1])
+                    for i in
+                    wine.libraries.get_overrides()
+                ])
+            ))
+
+        if options.overridelibrary:
+            if options.overridelibrary[0].lower() in ['native', 'builtin', 'native,builtin', 'builtin,native', 'disabled']:
+                override = options.overridelibrary[0].lower()
+                wine.libraries.set_override(options.overridelibrary[1], override)
+                print("Library override for \"{library}\" set to {override}".format(
+                    library = options.overridelibrary[1],
+                    override = override
+                ))
+            else:
+                print("Error: Library override has to one of {0}".format(
+                    wine.common.list_to_english_or(['native', 'builtin', 'native,builtin', 'builtin,native', 'disabled'])
+                ))
+
+        if options.programname:
+            print("Program name of \"{program}\" is: \"{name}\"".format(
+                program = options.programname[0],
+                name = wine.programs.return_valid_program_name(options.programname[0])
+            ))
+
+        if options.opendesktop:
+            if len(options.opendesktop) == 2:
+                wine.desktop.set_open(
+                    options.opendesktop[0],
+                    options.opendesktop[1]
+                )
+                print("Setting desktop to open as \"{name}\" in {size}".format(
+                    name = options.opendesktop[0],
+                    size = options.opendesktop[1]
+                ))
+            else:
+                print("Error: Arguments for --open-desktop should be \"NAME WIDTHxHEIGHT\"")
+
+        if options.nomonitor:
+            self.__run_kwargs['monitor'] = False
+            print("Monitoring disabled for running programs")
+
+        if options.nopulseaudio:
+            self.__run_kwargs['pulseaudio'] = False
+            print("PulseAudio disabled while running programs")
+
+        if options.cpulimit:
+            if len(options.cpulimit):
+                try:
+                    cpus = int(options.cpulimit[0])
+                except:
+                    print("Error: Argument for --cpu-limit should be a number")
+                cpus = 1
+            else:
+                cpus = 1
+            self.__run_kwargs['cpu_limit'] = cpus
+
+        if options.run:
+            print("Running command...")
+            if 'pulseaudio' in self.__run_kwargs:
+                pulseaudio = True
+                del self.__run_kwargs['pulseaudio']
+                wine.common.run('killall pulseaudio', shell = True)
+            else:
+                pulseaudio = False
+
+            process = wine.run(options.run[0], **self.__run_kwargs)
+            print("Started in process group:",wine.util.get_pgid_of_pid(process.pid))
+
+            if process is not False:
+                process.wait()
+                print("Done.")
+            else:
+                print("Failed.")
+
+            # If PulseAudio isn't running and we killed it, start it again
+            if (
+                pulseaudio and
+                not wine.util.get_pid_from_process_name('pulseaudio')
+            ):
+                # Wait for any child processes of the program to end first
+                # (e.g. so we don't start PulseAudio when a launcher starts a game)
+
+                process.wait_for_children()
+
+                # Check if PulseAudio still isn't running and start it if not
+                if not wine.util.get_pid_from_process_name('pulseaudio'):
+                    print("All children exited. Restarting PulseAudio")
+                    wine.common.Popen(
+                        'pulseaudio',
+                        stdin = 'null', stdout = 'null', stderr = 'null'
+                    )
+
+        if options.runindir:
+            print("Running command in directory...")
+            directory = wine.util.wintounix(options.runindir[0])
+            directory = os.path.dirname(directory)
+            original_directory = os.getcwd()
+            os.chdir(directory)
+            process = wine.run(options.runindir[0])
+            if process is not False:
+                process.wait()
+                print("Done.")
+            else:
+                print("Failed.")
+            os.chdir(original_directory)
+
+    def __run(self, command):
+        """Execute command with wine.run() while accepting unquoted filenames"""
+        _command = wine.util.wintounix(command)
+        # If the command wasn't converted to a unix path, try converting the
+        # other way
+        if _command == command and os.path.lexists(command):
+            _command = wine.util.unixtowin(command)
+
+        return wine.run(command, **self.__run_kwargs)
+
+
+    def _variable_callback(self, option, opt_str, value, parser):
+        assert value == None
+        value = []
+
+        for arg in parser.rargs:
+            if arg[:2] == "--" and len(arg) > 2:
+                break
+            if arg[:1] == "-" and len(arg) > 1:
+                break
+            value.append(arg)
+
+        del parser.rargs[:len(value)]
+
+        if not len(value):
+            value = True
+
+        setattr(parser.values, option.dest, value)
+
+
+
+if __name__ == "__main__":
+    locale.setlocale(locale.LC_ALL, "C")
+    main = Main()
+    #main._wineprocess.stdin.write("exit")
+    #main._wineprocess.terminate()

@@ -1,0 +1,11 @@
+*.*~
+*.pyc
+*_old.*
+*.old.*
+test_widget_alpha.py
+test_widget_overlay.py
+test_winetricks_download.py
+python-wine/output.txt
+python-wine/print_to_stderr.sh
+indicator_example.py
+* (copy).svg

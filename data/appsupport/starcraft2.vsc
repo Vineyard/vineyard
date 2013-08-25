@@ -1,0 +1,51 @@
+# /usr/bin/env vineyard-script
+# The comments before the first command will be read by Vineyard.
+# A line starting with ## will be considered a field name.
+# A line starting with ### will be considered a field value.
+# If a field name line contains [...] at the end, this will be considered the
+# language for the value.
+# All fields defined in this section will also be available to the script in
+# their capitalised form.
+#
+## Type
+### Application
+## Name
+### StarCraft II: Wings of Liberty
+#
+## Description
+### The first part of the three part sequel to the award winning 1998 real-time strategy game <i>StarCraft</i>.
+## Description [da]
+### Den første del af den tre-delte efterfølger til det prisbelønnede realtids-strategispil <i>StarCraft</i> fra 1998.
+## Category
+### Games, Strategy
+#
+#FIXME: These are not good places to get the icons from, and is probably not legal either.
+#SUGGESTION: Make new ones from scratch.
+## Icon
+### http://macin.files.wordpress.com/2010/07/starcraft-ii-icon.png
+## IconSmall
+### http://img.brothersoft.com/icon/softimage/s/starcraft_ii-_wings_of_liberty_%5Bkorea%5D-387147-1280215720.jpeg
+#
+## License
+### Commercial
+
+KERNELVERSION="$(uname -r)"
+if [ OLDEST-VERSION "$KERNELVERSION" "2.6.35" == "$KERNELVERSION" ]; then
+    PRENOTE="You are running version $KERNELVERSION of the Linux kernel. This game is known to have issues on Linux kernels older than 2.6.35. If you experience crashes before the loading screen or after logging in, please consider upgrading your kernel."
+fi
+SHOW --text "Installing dependancies..." -status "waiting"
+INSTALL droid fontfix fontsmooth-rgb allfonts gdiplus gecko vcrun2008 vcrun2005 d3dx9 win7
+SET-LIBRARY-OVERRIDE mmdevapi disabled
+SET-REGISTRY 'HKEY_CURRENT_USER\Software\Wine\Direct3D\UseGLSL' 'disabled'
+
+INFO --text "Copying installation files..." -status "waiting"
+
+# Copy files from CDROM, polling the size and thereby the progress in percentage
+# Not fully implemented yet.
+
+INFO --text "Installing StarCraft II..." -status "waiting"
+
+RUN 'CDROM:\installer.exe'
+if ASK 'StarCraft II has been successfully installed.\n\nWould you like to start the game now?'; then
+    RUN 'C:\%ProgramFiles%\StarCraft~\StarCraft II.exe'
+fi

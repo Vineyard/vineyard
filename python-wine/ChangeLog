@@ -1,0 +1,164 @@
+Version 0.3
+
+2009-25-08 Christan Dannie Storgaard <cybolic@gmail.com>
+
+	* Many, many parts rewritten.
+	* Many, many bugs fixed.
+	* Converted all modules, except _cache, to not use classes.
+	* Renamed most functions to standard Python naming (underlines instead of
+	  CamelCase).
+	* Program listing from reg now lists duplicate program names the same as
+	  Nautilus ("name", "name (1)", ...).
+	* Wine programs used internally are now run without a valid DISPLAY
+	  variable, to get rid of Wine's internal update dialog.
+	* run() arguments that start with 'CDROM:\' are now automatically converted
+	  to the drive letter for any Wine defined or mounted CD drive that contain
+	  the requested file - the CD drive that contains the file will be added to
+	  to configurations list of drives if it not already.
+	* run() now returns a wine.monitor.Program instance instead of a Popen
+	  instance.
+	* wine.monitor is added and contains a list of running programs and has the
+	  ability to read log files of current and previously run programs along
+	  with providing explanations for common Wine errors.
+	  (wine.monitor.Program.explain_errors())
+	* wine.command is added as a replacement for direct use of subprocess.Popen.
+	  This works around issues with output buffering (e.g. the AvP3 installer)
+	  as well as issues with zombie processes.
+	* wine.registry.get() will now try a simple parsing of the .reg files to
+	  produce faster output that is limited to a branch depth level of 2.
+	  If there are more levels in the requested branch, the standard code will
+	  be used.
+	* wine.drives.add() now supports a 'type' argument.
+
+Version 0.2.5.6
+
+2009-03-15 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Improved wine.util.wintounix to better handle '~' like the shell handles '*'.
+	* Added wine.util.unixtowin.
+	* Added wine.appearance that so far handles theme functions, other functions
+	  might migrate here in the future.
+	* Added wine.appdb to query and forward the user to WineHQ's AppDB.
+
+Version 0.2.5.5
+
+2009-03-14 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Fixed an error that occured if ~/.wine didn't exist.
+	* Fixed an error with setting shell folders when using a non-English locale,
+	  thanks to Tiago J. Pavan for reporting it.
+	* Turned off Wine's fixme messages.
+
+Version 0.2.5.4
+
+2009-03-02 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Restructured wine.run(), added support for opening directories and fixed
+	  some errors in it.
+	* Rewrote registry program to menu entry matching and improved the
+	  matching.
+	* Added support for not splitting variable definitions in
+	  wine.util.splitString().
+
+Version 0.2.5.3
+
+2009-02-22 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* New function, wine.drives.getMainDrive().
+	* Much improved programs and program override support.
+	* New function, wine.util.tempstring().
+
+Version 0.2.5.2
+
+2009-02-22 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Fixed a bug that occured with programs names that have unbalanced
+	  parentheses, thanks to Andy Piper for reporting this.
+
+Version 0.2.5.1
+
+2009-02-20 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Added missing parsers.py file that cause python-wine to not work at all.
+
+Version 0.2.5
+
+2009-02-18 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Rewrote registry file parser, doesn't fall over any more and is faster.
+	* Added new function to wine.programs, setProgramOptions to update the
+	  info of a program.
+	* Fixed some bugs in program listing related to the introduction of
+	  the new Vineyard-prefixed entries in the registry (the overriding
+	  variables, see last changelog).
+
+Version 0.2.4
+
+	* util.wintounix now supports '~' characters for fuzzy matching.
+	* Program finding and listing functions completely rewritten, they
+	  are now more intelligent, more coherent and easier to maintain.
+	  Note that the new functions produce slightly different output than
+	  the old, f.x. program name are now stripped of version info, which
+	  is now listed as version info.
+	* Program finding now also lists menu entries that do not have a match
+	  in the registry.
+	* Icons for programs are now created and maintained internally which
+	  gives a pretty significant speed boost.
+	* Icons are now created by directly calling wrestool and icotool
+	  instead of using gnome-exe-thumbnailer, dropping the dependancy.
+	* Registry values are now parsed much better and supports extended
+	  strings and multi-strings.
+	* Hex conversion is now simpler and more stable.
+	* Added list of known library (DLL) packages (like Visual Basic and WMP).
+	* Added wine.icons that so far only has one function: convert, which will
+	  return either the original filename of an icon or the matching mime type
+	  icon name. Other icon functions will be moved here later.
+	* Added functions for overriding registry information for programs.
+
+2009-01-10 Christian Dannie Storgaard <cybolic@gmail.com>
+
+Version 0.2.3
+
+	* Fixed an error that allowed a bottle without a name to be created.
+	* Fixed creating a bottle if no winebottles directory exists.
+	* Adding a new bottle now returns True or False indicating if the creation
+	  was successful.
+	* Trying to remove a non-existing bottle now doesn't exit Python.
+	* Adding a new bottle now waits until Wine dir creation is finished before
+	  cleaning up shellfolders.
+
+2009-11-15 Christian Dannie Storgaard <cybolic@gmail.com>
+
+
+Version 0.2.2
+
+	* Fixed an import error that kept uninstalling programs from working.
+
+2009-10-14 Christian Dannie Storgaard <cybolic@gmail.com>
+
+
+Version 0.2.1
+
+	* Switched from exe-thumbnailer to gnome-exe-thumbnailer for icon creation
+	  from exe files (they are they same, now it's just packaged).
+
+2009-10-13 Christian Dannie Storgaard <cybolic@gmail.com>
+
+
+Version 0.2
+
+2009-10-13 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Fixed a bug where program names and program versions were mixed up.
+	* Cleaned up the use of 'icon' and 'programicon' in program listings.
+	  'icon' is now used for when a graphics file can be loaded for an icon.
+	  'programicon' is used for when an icon has to be extraced from an exe file.
+	* Program listings now also use the registry key 'DisplayIcon' for finding icons.
+	* Program listings now search XDG menus more liberaly in search of icons.
+
+
+Version 0.1
+
+2009-10-13 Christian Dannie Storgaard <cybolic@gmail.com>
+
+	* Initial public release

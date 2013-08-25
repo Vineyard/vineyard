@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+#VERSION := $(shell head debian/changelog -n 1 | cut -d\( -f2 | cut -d\) -f1 | cut -d- -f1)
+
+#override_dh_auto_build:
+#	pod2man --section=1 --release=$(VERSION) --center="Windows On Unix" debian/vineyard-preferences.pod > vineyard-#preferences.1
+
+#DEB_INSTALL_MANPAGES_vineyard = vineyard-preferences.1
+
+%:
+	dh $@
+
+override_dh_builddeb:
+	dh_builddeb -- -Zbzip2 -z9

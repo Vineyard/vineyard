@@ -1,0 +1,18 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="runningcommands">
+<info>
+  <link type="guide" xref="index#task"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to run shell commands for Vineyard configurations.</desc>
+</info>
+<title>Running shell commands</title>
+<p>If you want to run a shell command that should operate on the default Wine configuration, you can safely run it as normally, but if you want the command(s) to operate on a configuration, you should select the configuration in <app>Wine Preferences</app> (<guiseq><gui>System</gui><gui>Preferences</gui><gui>Wine Preferences</gui></guiseq>), open a terminal from the Tools page by clicking <gui style="button">Open a Terminal in this Configuration</gui> and run the commands from there.
+</p>
+</page>

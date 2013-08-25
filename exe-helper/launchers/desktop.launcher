@@ -1,0 +1,5 @@
+[Launcher Entry]
+Argument=desktop
+Exec=%FILE%
+TextPermission=The application launcher "%PROGRAM%"\nrequires permission to run.
+TextPermission[da]=Programstarteren "%PROGRAM%"\nkræver tilladelse til at køre.

@@ -1,0 +1,363 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007-2011 Christian Dannie Storgaard
+#
+# AUTHOR:
+# Christian Dannie Storgaard <cybolic@gmail.com>
+#
+# vineyard is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; either version 2 of the License, or (at
+# your option) any later version.
+#
+# vineyard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with wine-preferences; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# DBus code based on the Python snippet by Simon Vermeersch <simonvermeersch@gmail.com>
+#
+
+import os, sys
+import gobject, gtk, pango
+import appindicator
+from optparse import OptionParser
+
+
+SHARED_FILES_PATH = None
+APP_NAME = "vineyard"
+# If we are running from the development directory
+if os.path.isfile( "%s/data/vineyard-preferences.xml" % os.path.abspath(os.path.dirname(sys.argv[0])) ):
+    SHARED_FILES_PATH = "%s/data" % os.path.abspath(os.path.dirname(sys.argv[0]))
+    sys.path.insert(0, '%s/../python-wine' % SHARED_FILES_PATH)
+else:
+    for path in [ os.path.sep.join(i.split(os.path.sep)[:-1]) for i in os.environ['PATH'].split(':') ]:
+        if os.path.isdir( "%s/share/%s" % (path, APP_NAME) ):
+            SHARED_FILES_PATH = "%s/share/%s" % (path, APP_NAME)
+
+if SHARED_FILES_PATH == None:
+    print "Something is wrong with the installation, can't find required files. Exiting."
+    exit(1)
+sys.path.append(SHARED_FILES_PATH)
+
+import vineyard
+_ = vineyard.common.setup_translation()
+vineyard.get_shared_files_path() # sets up shared files path, we need it for icon
+
+import wine
+
+class Indicator():
+    def __init__(self):
+        self.indicator = appindicator.Indicator(
+            "vineyard", # name
+            "vineyard-panel-idle", # icon
+            appindicator.CATEGORY_APPLICATION_STATUS
+        )
+        self.indicator.set_attention_icon ('vineyard-panel-active')
+
+        self.indicator.set_status(appindicator.STATUS_PASSIVE)
+
+        self._setup_menu()
+        gobject.timeout_add(
+            1000,
+            self._check_for_changes
+        )
+        self._check_for_changes()
+
+    def close(self, *args):
+        gtk.main_quit()
+
+    def program_view_log(self, menuitem, program_name):
+        dialog = gtk.Dialog(_("Log for %s") % program_name,
+            flags = gtk.DIALOG_NO_SEPARATOR,
+            buttons = (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+
+        settings = gtk.settings_get_default()
+        settings.set_property('gtk-alternative-button-order', True)
+
+        button_refresh = gtk.Button(_("Refresh"))
+        dialog.add_action_widget(button_refresh, 10)
+        dialog.set_alternative_button_order([10, gtk.RESPONSE_OK])
+        dialog.set_default_response(gtk.RESPONSE_OK)
+
+        dialog.set_border_width(6)
+
+        vbox = gtk.VBox()
+        vbox.set_spacing(3)
+
+        label = gtk.Label()
+        label.set_line_wrap(True)
+        label.set_alignment(0.0, 0.5)
+        label.set_markup(_("Standard output:"))
+
+        vbox.pack_start(label, expand=False, fill=True)
+
+        scrolledwindow = gtk.ScrolledWindow()
+        scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        scrolledwindow.set_size_request(
+            vineyard.widget_get_char_width(scrolledwindow)*80,
+            vineyard.widget_get_char_height(scrolledwindow)*6
+        )
+
+        textview_out = gtk.TextView()
+        textview_out.modify_font(pango.FontDescription('monospace'))
+        textview_out.set_cursor_visible(False)
+        scrolledwindow.add(textview_out)
+
+        vbox.pack_start(scrolledwindow, expand=True, fill=True)
+
+        vbox.pack_start(gtk.HSeparator(), expand=False, fill=False)
+
+
+        label = gtk.Label()
+        label.set_line_wrap(True)
+        label.set_alignment(0.0, 0.5)
+        label.set_markup(_("Error output:"))
+
+        vbox.pack_start(label, expand=False, fill=True)
+
+        scrolledwindow = gtk.ScrolledWindow()
+        scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        scrolledwindow.set_size_request(
+            vineyard.widget_get_char_width(scrolledwindow)*80,
+            vineyard.widget_get_char_height(scrolledwindow)*6)
+
+        textview_err = gtk.TextView()
+        textview_err.modify_font(pango.FontDescription('monospace'))
+        textview_err.set_cursor_visible(False)
+        scrolledwindow.add(textview_err)
+
+        vbox.pack_start(scrolledwindow, expand=True, fill=True)
+
+        dialog.vbox.pack_start(vbox, expand=True, fill=True)
+
+        button_refresh.connect("clicked", self._refresh_view_log,
+                               program_name, textview_out, textview_err)
+
+        dialog.connect('response', self._dialog_response)
+
+        self._refresh_view_log(button_refresh,
+                               program_name, textview_out, textview_err
+        )
+
+        dialog.show_all()
+
+    def _dialog_response(self, dialog, response):
+        if response == gtk.RESPONSE_CLOSE:
+            dialog.destroy()
+
+    def _refresh_view_log(self, button, program_name, textview_out, textview_err):
+        program = self.active_programs[program_name]
+        stdout = program.read_stdout()
+        stderr = program.read_stderr()
+
+        if len(stdout):
+            textview_out.get_buffer().set_text(stdout)
+        else:
+            textview_out.get_buffer().set_text(_(
+                'No output yet.\n'+
+                'You may not actually see any here until the program exits.'
+            ))
+        textview_err.get_buffer().set_text(stderr)
+
+    def program_close(self, menuitem, program_name):
+        program = self.active_programs[program_name]
+        program.terminate()
+
+    def _check_for_changes(self):
+        active_programs = wine.monitor.get_all()
+        active_programs = dict((
+            (program.name, program)
+            for program in active_programs.itervalues()
+        ))
+        if (
+            not hasattr(self, 'active_programs') or
+            active_programs != self.active_programs
+        ):
+            self.active_programs = active_programs
+            self._process_changes()
+        else:
+            ## Update programs
+            for program_name, program_menu in self.menu_programs.iteritems():
+                program = self.active_programs[program_name]
+
+                program_menu['status'].set_label(
+                    self._get_status_text_for_program_menu(program)
+                )
+                if len(program.read_stdout()) or len(program.read_stderr()):
+                    program_menu['log'].set_sensitive(True)
+                else:
+                    program_menu['log'].set_sensitive(False)
+        return True
+
+    def _setup_menu(self):
+        self.menu_programs = {}
+
+        self.menu = gtk.Menu()
+
+        self.menuitem_separator = gtk.SeparatorMenuItem()
+        self.menu.append(self.menuitem_separator)
+
+        self.menuitem_quit = gtk.MenuItem(_("Quit"))
+        self.menuitem_quit.connect('activate', self.close)
+        self.menuitem_quit.show()
+        self.menu.append(self.menuitem_quit)
+        self.indicator.set_menu(self.menu)
+
+    def _process_changes(self):
+        changed = False
+        ## Add new programs
+        for program in self.active_programs.values():
+            if program.name not in self.menu_programs:
+                self.menu.prepend(
+                    self._create_submenu_item_for_program(program)
+                )
+                changed = True
+        ## Remove closed ones
+        menuitems_to_remove = []
+        for program_name, info in self.menu_programs.iteritems():
+            if program_name not in self.active_programs:
+                self.menu.remove(info['main'])
+                # Clean up memory
+                for name, widget in info.iteritems():
+                    if name != 'program':
+                        del widget
+                menuitems_to_remove.append((program_name, info['program']))
+                changed = True
+        ## Check if we need to show the program error dialog
+        for (program_name, program) in menuitems_to_remove:
+            stderr = program.read_stderr()
+            if len(stderr) and program.has_standard_output:
+                print("Vineyard-indicator to the rescue!")
+                vineyard.program_handler.show_program_error_question(
+                    program.name,
+                    stderr,
+                    program.explain_missing_dlls()
+                )
+            del self.menu_programs[program_name]
+
+        if len(self.active_programs):
+            self.indicator.set_status(appindicator.STATUS_ACTIVE)
+            ## This showing and hiding is a bit needless since the entire
+            ## menu is hidden anyway if there are no programs, but that might
+            ## change in the future, therefor it is here.
+            self.menuitem_separator.show()
+        else:
+            self.indicator.set_status(appindicator.STATUS_PASSIVE)
+            self.menuitem_separator.show()
+
+        if changed:
+            ## FIXME: I would really like to just have the menu update itself
+            ##        but AppIndicators apparently don't catch up on it
+            self.indicator.set_menu(self.menu)
+
+    def _create_submenu_item_for_program(self, program):
+        menuitem = gtk.MenuItem(program.name)
+
+        submenu = gtk.Menu()
+        submenuitem_status = gtk.MenuItem(
+            self._get_status_text_for_program_menu(program)
+        )
+        submenuitem_status.set_sensitive(False)
+        submenu.append(submenuitem_status)
+
+        submenu.append(gtk.SeparatorMenuItem())
+
+        submenuitem_log = gtk.MenuItem(_("View log"))
+        submenu.append(submenuitem_log)
+        submenuitem_log.connect("activate", self.program_view_log, program.name)
+        submenuitem_close = gtk.MenuItem(_("Close"))
+        submenu.append(submenuitem_close)
+        submenuitem_close.connect("activate", self.program_close, program.name)
+
+        menuitem.set_submenu(submenu)
+        menuitem.show_all()
+
+        self.menu_programs[program.name] = {
+            'main': menuitem,
+            'menu': submenu,
+            'status': submenuitem_status,
+            'log': submenuitem_log,
+            'close': submenuitem_close,
+            'program': program
+        }
+        if len(program.read_stdout()) or len(program.read_stderr()):
+            submenuitem_log.set_sensitive(True)
+        else:
+            submenuitem_log.set_sensitive(False)
+
+        return menuitem
+
+    def _get_status_text_for_program_menu(self, program_or_name):
+        try:
+            if type(program_or_name) in (str, unicode):
+                program = self.active_programs[program_or_name]
+            else:
+                program = program_or_name
+        except KeyError:
+            print "Couldn't find program name in known programs:",program_or_name
+            return "Error"
+
+        prefix_name = wine.prefixes.get_name(program.prefix)
+
+        if prefix_name is None:
+            return "{time}".format(
+                time = self._get_running_time_as_text(program)
+            )
+        else:
+            return "{time}\nin {prefix_name}".format(
+                time = self._get_running_time_as_text(program),
+                prefix_name = prefix_name
+            )
+
+    def _get_running_time_as_text(self, program):
+        time_info = wine.util.get_elapsed_time_since(program.start_time)
+        ## If the program has been running for less than a minute
+        if not any(time_info[:-1]):
+            time = _("Just started")
+        else:
+            time = ""
+            if time_info[0]:
+                if time_info[0] > 1:
+                    time = (_("{0} days")).format(
+                        *time_info
+                    )
+                else:
+                    time = (_("{0} day")).format(
+                        *time_info
+                    )
+            if time_info[1]:
+                if time_info[0]:
+                    time = '%s %s' % (time, _(", "))
+                if time_info[1] > 1:
+                    time = '%s%s' % (time, (_("{1} hours")).format(
+                        *time_info
+                    ))
+                else:
+                    time = '%s%s' % (time, (_("{1} hour")).format(
+                        *time_info
+                    ))
+            if time_info[2]:
+                if any(time_info[0:2]):
+                    time = '%s %s' % (time, _("and "))
+                if time_info[2] > 1:
+                    time = '%s%s' % (time, (_("{2} minutes")).format(
+                        *time_info
+                    ))
+                else:
+                    time = '%s%s' % (time, (_("{2} minute")).format(
+                        *time_info
+                    ))
+            time = _("Running for ")+time
+
+        return time
+
+
+if __name__ == '__main__':
+    main = Indicator()
+    gtk.main()

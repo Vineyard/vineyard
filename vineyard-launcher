@@ -1,0 +1,858 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007-2011 Christian Dannie Storgaard
+#
+# AUTHOR:
+# Christian Dannie Storgaard <cybolic@gmail.com>
+#
+
+from __future__ import print_function
+
+import urllib
+import os, sys, subprocess, operator
+import threading, time, string
+
+import gtk, gobject, pango
+import gettext as _gettext
+from locale import getdefaultlocale
+
+SHARED_FILES_PATH = None
+current_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+
+if os.path.isdir( "%s/data/locale" % current_path ):
+    SHARED_FILES_PATH = current_path
+    sys.path.insert(0, os.path.abspath('%s/' % current_path))
+    sys.path.insert(0, os.path.abspath('%s/python-wine/' % current_path))
+else:
+    base_paths = [
+        os.path.sep.join(i.split(os.path.sep)[:-1])
+        for i in os.environ['PATH'].split(':')
+    ]
+    for path in base_paths:
+        if os.path.isdir( "%s/share/vineyard" % path):
+            SHARED_FILES_PATH = "%s/share/vineyard" % path
+
+if SHARED_FILES_PATH == None:
+    print(("Something is wrong with the installation, "+
+            "can't find required files. Exiting."), file=sys.stderr)
+    exit(1)
+
+icon_theme_default = gtk.icon_theme_get_default()
+if icon_theme_default != None and (
+    '%s/icons' % SHARED_FILES_PATH not in icon_theme_default.get_search_path()
+    ):
+    icon_theme_default.prepend_search_path('%s/icons' % SHARED_FILES_PATH)
+
+
+import wine, vineyard
+from vineyard import installer
+
+APP_NAME = "vineyard"
+
+languages = ( [getdefaultlocale()[0]] or [] )
+if 'LANGUAGE' in os.environ:
+    languages = os.environ['LANGUAGE'].split(':') + languages
+elif 'LANG' in os.environ:
+    languages = os.environ['LANG'].split(':') + languages
+
+_gettext.bindtextdomain(APP_NAME, "%s/%s" % (SHARED_FILES_PATH, "locale"))
+_gettext.textdomain(APP_NAME)
+
+gettext = _gettext.translation(APP_NAME, "%s/%s" % (SHARED_FILES_PATH, "locale"), languages=languages, fallback=True)
+_ = gettext.gettext
+
+
+gobject.threads_init()
+gtk.gdk.threads_init()
+gtk.gdk.threads_enter()
+
+class Dialog(gtk.Dialog):
+    def __init__(self, parent, filename):
+        #super(Dialog, self).__init__(title=_("Run in Wine configuration"), parent=parent)
+
+        is_dir = os.path.isdir(filename)
+        if is_dir:
+            title = _("Add to Vineyard")
+        else:
+            title = _("Run in Vineyard")
+
+        # This widget won't exist if there's no internet
+        self.alsorun_entry = None
+
+        gtk.Dialog.__init__(self,
+            title = title,
+            parent = parent
+        )
+
+        self.parentwidget = parent
+        self.filename = filename
+
+        self.hbox = gtk.HBox()
+        self.hbox.set_spacing(6)
+        self.hbox.set_border_width(6)
+        self.innervbox = gtk.VBox()
+        self.innervbox.set_spacing(6)
+        self.hbox.pack_end(self.innervbox)
+        self.vbox.add(self.hbox)
+
+        self.image = gtk.Image()
+
+        if is_dir:
+            self.image.set_from_icon_name('folder', gtk.ICON_SIZE_DIALOG)
+        else:
+            icon = vineyard.icons.get_icon_pixbuf_from_program(
+                executable = filename,
+                size = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)[1]
+            )
+            if icon:
+                self.image.set_from_pixbuf(icon)
+            else:
+                self.image.set_from_icon_name('wine', gtk.ICON_SIZE_DIALOG)
+
+        self.image.set_alignment(0.5, 0.0)
+        self.hbox.pack_start(self.image, expand=False, fill=False)
+
+        self.label_intro = gtk.Label()
+        if is_dir:
+            self.dir_name = os.path.basename(filename)
+            self.label_intro.set_markup((
+                _("Add the folder <b>{0}</b> to this configuration:")
+            ).format(self.dir_name))
+        else:
+            try:
+                self.program_name = wine.util.get_program_name(filename)
+            except:
+                self.program_name = os.path.basename(filename)
+
+            self.label_intro.set_text((
+                _("Run {0} in this configuration:")
+            ).format(self.program_name))
+        self.label_intro.set_alignment(0.0, 0.5)
+        self.innervbox.pack_start(self.label_intro, expand=False, fill=True)
+
+        self.liststore = gtk.ListStore(gobject.TYPE_PYOBJECT, str)
+        if gobject.signal_lookup('row-has-child-toggled', self.liststore) != 0:
+            self.liststore.connect('row-has-child-toggled', lambda *args: True)
+            #self.liststore.stop_emission('row-has-child-toggled')
+
+        self.bottlewidget = gtk.ComboBox(self.liststore)
+        cell = gtk.CellRendererText()
+        self.bottlewidget.pack_start(cell, True)
+        self.bottlewidget.add_attribute(cell, 'markup', 1)
+
+        small_color = vineyard.gdk_color_to_hex(
+            vineyard.gdk_color_mix(
+                self.bottlewidget.get_style().bg[gtk.STATE_NORMAL],
+                self.bottlewidget.get_style().fg[gtk.STATE_NORMAL],
+                mix=0.5
+            )
+        )
+        self.prefixes = [
+            (None, _('Default')),
+            (-1, _("New configuration")),
+            (-1, '-')
+        ]
+        prefix_dict = wine.prefixes.list()
+        # Get the names so we can test for duplicates
+        prefix_names = [
+            data['WINEPREFIXNAME'] for data in prefix_dict.values()
+        ]
+        prefix_duplicates = set([
+            name for name in prefix_names if prefix_names.count(name) > 1
+        ])
+        file_prefix = wine.prefixes.get_prefixpath_from_filepath(filename)
+
+        for name, data in sorted(
+            prefix_dict.items(),
+            key = lambda item: operator.getitem(item, 0).lower()
+        ):
+            # This name is a duplicate, display prefix path as well
+            if data['WINEPREFIXNAME'] in prefix_duplicates:
+                text = str(
+                    '{name} '+
+                    '<span foreground="{color}" size="small">{prefix}</span>'
+                ).format(
+                    name = name,
+                    prefix = data['WINEPREFIXROOT'],
+                    color = small_color
+                )
+            else:
+                text = name
+            self.prefixes.append((
+                data['WINEPREFIX'], text
+            ))
+
+        select_prefix = None
+        for index, prefix_info in enumerate(self.prefixes):
+            self.liststore.append(prefix_info)
+            if (
+                file_prefix is not None and type(prefix_info[0]) is str and (
+                    prefix_info[0] == file_prefix or
+                    (
+                        prefix_info[0].endswith('/.wine') and
+                        '/.wine'.join(prefix_info[0].split('/.wine')[:-1]) == file_prefix
+                    )
+                )
+            ):
+                select_prefix = index
+
+
+        self.bottlewidget.set_row_separator_func(self.__row_separator_func)
+
+        #vineyard.combobox_set_active_by_string(self.bottlewidget, self.prefixes[0][1])
+        if select_prefix is None:
+            self.bottlewidget.set_active(0)
+        else:
+            self.bottlewidget.set_active(select_prefix)
+
+        self.bottlewidget.connect("changed", self.__bottle_selection_changed)
+
+        self.innervbox.pack_start(self.bottlewidget, False, False)
+
+
+        self.newvbox = gtk.VBox()
+        self.entryhbox = gtk.HBox()
+        self.entryhbox.set_spacing(6)
+
+        self.entrylabel = gtk.Label(_("Name: "))
+        self.entryhbox.pack_start(self.entrylabel, False, False)
+
+        self.liststore_completion = gtk.ListStore(str)
+        for name in set(prefix_names):
+            self.liststore_completion.append([name])
+
+        self.entry = gtk.Entry()
+        self.entrycompletion = gtk.EntryCompletion()
+        self.entry.set_completion(self.entrycompletion)
+        self.entrycompletion.set_model(self.liststore_completion)
+        self.entrycompletion.set_text_column(0)
+
+        self.entry.connect("changed", self.__entry_changed)
+        self.entry.connect('key-press-event', self.__key_pressed)
+
+        self.entryhbox.pack_start(self.entry)
+        self.newvbox.pack_start(self.entryhbox, False, False)
+
+        self.expander = gtk.Expander(_("New configuration options"))
+
+        self.table = gtk.Table(rows=2, columns=2, homogeneous=False)
+        table_rownr = 0
+
+        version_label = gtk.Label(_('Operate as:'))
+        version_label.set_alignment(0.0, 0.5)
+        self.version_value = gtk.combo_box_new_text()
+        self._windowsversions = wine.version.windowsversions_sorted.copy()
+        if 'win2008' in self._windowsversions:
+            self._windowsversions['win2008'][0] = "Windows 7"
+        windows_versions = [
+            _('%s (default)') % v[0] if k.endswith('xp') else v[0]
+            for (k,v) in self._windowsversions
+        ]
+        for version in windows_versions:
+            self.version_value.append_text(version)
+        vineyard.combobox_set_active_by_string(
+            self.version_value,
+            "Windows XP",
+            startswith=True
+        )
+        self.table.attach(
+            version_label, 0,1, table_rownr,table_rownr+1, gtk.FILL,0, 6,6)
+        self.table.attach(
+            self.version_value, 1,2, table_rownr,table_rownr+1, gtk.FILL,0, 6,6)
+        table_rownr += 1
+
+        desktop_label = gtk.Label(_('Open in:'))
+        desktop_label.set_alignment(0.0, 0.0)
+
+        self.widget_virtual_desktop = vineyard.widgets.virtual_desktop.Widget()
+        self.widget_virtual_desktop._load_settings_done()
+        self.widget_virtual_desktop.checkbutton.set_active(False)
+        self.widget_virtual_desktop.table_values.set_sensitive(False)
+
+        self.table.attach(
+            desktop_label, 0,1, table_rownr,table_rownr+1, gtk.FILL,gtk.FILL, 6,6)
+        self.table.attach(
+            self.widget_virtual_desktop, 1,2, table_rownr,table_rownr+1, gtk.FILL,0, 6,6)
+        table_rownr += 1
+
+        location_label = gtk.Label(('Place in:'))
+        location_label.set_alignment(0.0, 0.5)
+        self.location_hbox = gtk.HBox()
+        self.location_entry = gtk.Entry()
+        self.location_button = gtk.Button(_('Browse...'))
+        self.location_hbox.pack_start(self.location_entry, True, True)
+        self.location_hbox.pack_start(self.location_button, False, False)
+        self.table.attach(
+            location_label, 0,1, table_rownr,table_rownr+1, gtk.FILL,0, 6,6)
+        self.table.attach(
+            self.location_hbox, 1,2, table_rownr,table_rownr+1, gtk.FILL,0, 6,6)
+        table_rownr += 1
+
+        self.expander.add(self.table)
+        self.newvbox.set_sensitive(False)
+
+        self.newvbox.pack_start(self.expander, False, False)
+        self.newvbox.pack_start(gtk.HSeparator(), True, False)
+
+        self.innervbox.pack_start(self.newvbox, False, False)
+
+
+        if not is_dir and (
+            wine.util.get_internet_available() and
+            wine.winetricks_installed()
+        ):
+
+            self.expander_alsorun = gtk.Expander(_("Install support packages first"))
+
+            self.vbox_alsorun = gtk.VBox()
+            self.vbox_alsorun.set_spacing(6)
+            self.expander_alsorun.add(self.vbox_alsorun)
+
+            self.alsorun_list = vineyard.SimpleList(
+                types = [str, gtk.gdk.Pixbuf, str, bool]
+            )
+            self.alsorun_list.set_fallback_pixbuf('package-x-generic')
+            self.alsorun_list.fill([
+                ( i[0], i[1], '{0}\n<small>{1}</small>'.format(i[2], i[3]), False )
+                for i in vineyard.widgets.installers.INSTALLERS_EXTRAS
+            ])
+            self.alsorun_list.connect('toggled', self.__on_list_toggled)
+            self.alsorun_list.set_size_request(-1, vineyard.widget_get_char_height(self)*6)
+            self.vbox_alsorun.pack_start(self.alsorun_list, expand=False, fill=True)
+
+            self.alsorun_hbox = gtk.HBox()
+            self.alsorun_hbox.set_spacing(6)
+            self.vbox_alsorun.pack_start(self.alsorun_hbox, expand=False, fill=False)
+
+            self.alsorun_label = gtk.Label(_("Arguments:")+' ')
+            self.alsorun_hbox.pack_start(self.alsorun_label, expand=False, fill=False)
+            self.alsorun_entry = gtk.Entry()
+            self.alsorun_hbox.pack_start(self.alsorun_entry, expand=True, fill=True)
+            self.alsorun_entry.connect('changed', self.__on_install_entry_changed)
+
+            self.innervbox.pack_start(self.expander_alsorun, expand=True, fill=True)
+
+        if not is_dir:
+            self.appdb_widget = gtk.Button(_("Check _AppDB"))
+            self.appdb_widget.set_tooltip_text(_("Search for this program on AppDB"))
+
+            self.action_area.pack_start(self.appdb_widget, expand=False, fill=True)
+            self.action_area.set_child_secondary(self.appdb_widget, True)
+
+            self.appdb_widget.connect('clicked', self.open_appdb)
+
+
+        if is_dir:
+            self.placeinbox = gtk.VBox()
+            self.placeinlocationbox = gtk.HBox()
+
+            self.placein_sizegroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+            self.placeinlabel = gtk.Label('{0}: '.format(_("Create symlink at")))
+            self.placein_sizegroup.add_widget(self.placeinlabel)
+            self.placeinentry = gtk.Entry()
+            self.placeinbutton = gtk.Button(_(_("Browse...")))
+            self.placeinlocationbox.pack_start(self.placeinlabel, expand=False, fill=False)
+            self.placeinlocationbox.pack_start(self.placeinentry, expand=True, fill=True)
+            self.placeinlocationbox.pack_start(self.placeinbutton, expand=False, fill=True)
+
+            self.placeinbox.pack_start(self.placeinlocationbox, expand=True, fill=False)
+
+            self.placeinentry.set_text('C:\\{0}'.format(
+                wine.util.string_safe_win(
+                    os.path.basename(self.filename),
+                    '_'
+                )
+            ))
+
+            # This is for link/copy/move action selection but we need to figure
+            # out proper visual feedback for it first
+            """self.placeoperationbox = gtk.HBox()
+
+            self.placeoperationlabel = gtk.Label('{0}: '.format(_("How")))
+            self.placeoperationlabel.set_alignment(0.0, 0.5)
+            self.placein_sizegroup.add_widget(self.placeoperationlabel)
+            self.placeoperationcombobox = gtk.combo_box_new_text()
+            for text in [
+                _("Create symbolic link"),
+                _("Copy"),
+                _("Move")
+            ]:
+                self.placeoperationcombobox.append_text(text)
+            self.placeoperationcombobox.set_active(0)
+
+            self.placeoperationbox.pack_start(self.placeoperationlabel, False, False)
+            self.placeoperationbox.pack_start(self.placeoperationcombobox, True, True)
+
+            self.placeinbox.pack_start(self.placeoperationbox, expand=False, fill=True)"""
+
+            self.innervbox.pack_start(self.placeinbox, expand=True, fill=False)
+
+            self.placeinentry.connect('key-press-event', self.__key_pressed_placein)
+
+            self.placeinbutton.connect('clicked', self.__placein_button_clicked)
+            self.filechooserdialog_placein = vineyard.filechooserdialog_new_with_filters(
+                title = _('Select the root of where the folder should be placed'),
+                parent = self,
+                action = gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                on_response_func = self.__placein_dialog_response)
+
+
+        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.add_button(gtk.STOCK_OK, gtk.RESPONSE_YES)
+
+        self.set_default_response(gtk.RESPONSE_YES)
+
+        self.set_size_request(vineyard.widget_get_char_width(self)*75, -1)
+        self.set_resizable(False)
+
+        self.show_all()
+
+        self.newvbox.hide()
+
+        self.is_dir = is_dir
+        self.__run_main()
+
+    def __run_main(self):
+        result = self.run()
+
+        if result == gtk.RESPONSE_YES:
+            self.__ok()
+        else:
+            self.destroy()
+
+    def __row_separator_func(self, model, iter):
+        return model.get_value(iter,1) == '-'
+
+    def __bottle_selection_changed(self, combobox):
+        if combobox.get_active() == 1:
+            self.newvbox.set_sensitive(True)
+            self.newvbox.show()
+            if self.is_dir:
+                self.placeinbutton.set_sensitive(False)
+        else:
+            self.newvbox.set_sensitive(False)
+            self.newvbox.hide()
+            if self.is_dir:
+                self.placeinbutton.set_sensitive(True)
+
+    def __entry_changed(self, entry):
+        value = entry.get_text()
+
+        if not len(value.strip()):
+            return
+
+        select = None
+        #for rownr in range(len(self.liststore_completion)):
+        #    if self.liststore_completion[rownr][0].lower() == value.lower():
+        #        select = rownr
+        #        break
+        for row_nr, prefix_row in enumerate(self.prefixes):
+            if prefix_row[1].lower().split('<')[0].strip() == value.lower():
+                self.bottlewidget.set_active(row_nr)
+                self.bottlewidget.grab_focus()
+                style = self.entry.get_style()
+                style.font_desc.set_style(pango.STYLE_ITALIC)
+                self.entry.set_style(style)
+                #print(style.font_desc)
+                return
+
+        style = self.entry.get_style()
+        style.font_desc.set_style(pango.STYLE_NORMAL)
+        self.entry.set_style(style)
+
+    def __placein_button_clicked(self, button):
+        selectedbottle = self.liststore[self.bottlewidget.get_active()][0]
+
+        wine.prefixes.use(selectedbottle)
+
+        current_target = self.placeinentry.get_text()
+        current_target = '\\'.join(current_target.split('\\')[:-1])
+        current_target = wine.util.wintounix(current_target)
+
+        if not os.path.isdir(current_target):
+            current_target = wine.util.wintounix(
+                wine.drives.get_main_drive(use_registry = False)['mapping']
+            )
+        self.filechooserdialog_placein.set_current_folder(current_target)
+        self.filechooserdialog_placein.run()
+
+    def __placein_dialog_response(self, dialog, response):
+        if response == gtk.RESPONSE_OK:
+            folder = dialog.get_current_folder()
+            folder_win = wine.util.unixtowin(folder)
+
+            current_target = self.placeinentry.get_text()
+            current_target = current_target.split('\\')[-1]
+
+            if len(folder_win) > 3:
+                target = '{0}\\{1}'.format(
+                        folder_win,
+                        current_target
+                    )
+            else:
+                target = '{0}{1}'.format(
+                        folder_win,
+                        current_target
+                    )
+            self.placeinentry.set_text(target)
+        dialog.hide()
+
+    def __on_list_toggled(self, simplelist, row_nr, column_nr, state):
+        package_toggled = simplelist.model[row_nr][0]
+        ## A package was deselected, remove it from the argument entry as well
+        if not state:
+            new_packages = []
+            for package in self.alsorun_entry.get_text().split(' '):
+                if package != package_toggled:
+                    new_packages.append(package)
+            self.alsorun_entry.set_text(' '.join(new_packages))
+        else:
+            self.alsorun_entry.set_text(
+                '{0} {1}'.format(
+                    self.alsorun_entry.get_text(),
+                    package_toggled
+                ).strip()
+            )
+
+    def __on_install_entry_changed(self, entry):
+        typed_packages = entry.get_text().split(' ')
+        for row_nr, row in enumerate(self.alsorun_list.model):
+            if row[0] in typed_packages:
+                self.alsorun_list.model[row_nr][3] = True
+            else:
+                self.alsorun_list.model[row_nr][3] = False
+
+    def __ok(self):
+        self.hide()
+        selectedbottle = self.liststore[self.bottlewidget.get_active()][0]
+
+        # If we were asked to create a new configuration
+        if selectedbottle == self.liststore[1][0]:
+            bottlename = self.entry.get_text().strip()
+            selectedbottle = bottlename
+            self.__create_bottle(bottlename)
+        elif selectedbottle == self.liststore[0][0]:
+            selectedbottle = None
+        wine.prefixes.use(selectedbottle)
+
+        if self.is_dir:
+            place_at = self.placeinentry.get_text()
+            drive = place_at[0].upper()
+            drives = wine.drives.get(basic=True)
+            if drive not in drives:
+                # Should we allow drive mapping from here?
+                # Note that unknown/read-only drives are already filtered
+                # by the Entry input event handler
+                print("Drive does not exist:", drive, file=sys.stderr)
+                return
+            location = filter(len, place_at[2:].split('\\'))
+            location = '/'.join(location)
+            target = os.path.join(drives[drive]['mapping'], location)
+
+            # This is for the deacticated copy/move code
+            #operation = self.placeoperationcombobox.get_active()
+
+            # make sure the target root exists
+            if not os.path.isdir(os.path.dirname(target)):
+                result = wine.common.run(
+                    ['mkdir', '-p', os.path.dirname(target)],
+                    include_return_code = True
+                )
+                if result[2] != 0:
+                    error_text = _("Couldn't create parent directory: {dir}").format(
+                        dir = os.path.dirname(target)
+                    )
+                    print(
+                        error_text,
+                        file = sys.stderr
+                    )
+                    self.show_error_dialog(error_text)
+                    self.show()
+                    return self.__run_main()
+
+            #if operation == 0:
+            # link
+            try:
+                os.symlink(self.filename, target)
+            except OSError:
+                self.show_error_dialog(
+                    _("Couldn't create symlink. Do you have write permissions for the target directory?")
+                )
+                return self.__run_main()
+            """elif operation in (1, 2):
+                # copy or move
+                # copy
+                if operation == 1:
+                    result = wine.common.run(
+                        ['cp', '-R', self.filename, target],
+                        include_return_code = True
+                    )
+                    if result[2] != 0:
+                        print(
+                            "Couldn't copy folder to ",
+                            target,
+                            file=sys.stderr
+                        )
+                        exit(1)
+                # move
+                else:
+                    try:
+                        os.rename(self.filename, target)
+                    except:
+                        print(
+                            "Couldn't move folder to ",
+                            target,
+                            file=sys.stderr
+                        )
+                        exit(1)"""
+        else:
+            # If there's no internet, self.alsorun_entry will be None
+            if self.alsorun_entry is None:
+                also_run = []
+            else:
+                also_run = filter(len, self.alsorun_entry.get_text().split(' '))
+            # If we should install some "stuff" first
+            if len(also_run):
+                #vineyard.widgets.installers.run_winetricks(also_run)
+                dialog = installer.Winetricks(also_run, callback = self.__ok_run)
+                gtk.main()
+            else:
+                self.__ok_run()
+
+    def __ok_run(self, return_code=None):
+        # Quit the main loop that may have been started for Winetricks
+        if gtk.main_level() > 0:
+            gtk.main_quit()
+        # Finally, run the file
+        if return_code is False:
+            # FIXME: Shouldn't we show some info here?
+            self.__run_main()
+        else:
+            self.__run_file(self.filename)
+
+    def __key_pressed(self, widget, event):
+        # If Enter was pressed
+        if event.keyval == 65293:
+            self.response(gtk.RESPONSE_YES)
+
+    def __key_pressed_placein(self, widget, event):
+        # This is where we do the drive magic for the "Create symlink at"-entry
+
+        # If Enter was pressed
+        if event.keyval == 65293:
+            self.response(gtk.RESPONSE_YES)
+        else:
+            # Ignore non-character events (the keyval is for escape)
+            if not len(event.string) or event.keyval == 65307:
+                return False
+
+            position = self.placeinentry.get_position()
+            text = self.placeinentry.get_text()
+
+            if position == 0:
+                # Don't allow more than one character before ':'
+                if len(text.split(':')[0]):
+                    #print("No more than one drive letter (1)")
+                    return True
+                if event.string.upper() in string.ascii_uppercase:
+                    event.state = event.state | gtk.gdk.SHIFT_MASK
+                    drives = wine.drives.get(basic=True)
+                    if event.string.upper() in drives:
+                        wanted_unix_path = os.path.dirname(
+                            os.path.join(
+                                drives[event.string.upper()]['mapping'],
+                                '/'.join(filter(len, text[1:].split('\\')))
+                            )
+                        )
+                        if (
+                            os.access(
+                                drives[event.string.upper()]['mapping'],
+                                os.W_OK
+                            )
+                        ) or (
+                            os.access(
+                                wanted_unix_path,
+                                os.W_OK
+                            )
+                        ):
+                            if event.string != event.string.upper():
+                                event.keyval = int(gtk.gdk.unicode_to_keyval(
+                                    ord(event.string.upper())
+                                ))
+                                gtk.Entry.do_key_press_event(
+                                    self.placeinentry,
+                                    event
+                                )
+                                return True
+                            else:
+                                return False
+                #print("No permission")
+                return True
+            elif position <= len(text.split(':')[0]) and event.string != ':':
+                #print("No more than one drive letter (2)")
+                return True
+
+            if event.string == '\\':
+                safe_char = True
+            elif event.string == ':':
+                #print(self.placeinentry.get_position())
+                if self.placeinentry.get_position() == 1:
+                    safe_char = True
+                else:
+                    safe_char = False
+            else:
+                safe_char = wine.util.string_safe_win(event.string) == event.string
+
+            if safe_char:
+                return False
+            else:
+                return True
+
+    def __create_bottle(self, bottlename):
+        self.creatingbottledialog = gtk.Dialog('',
+                                               None,
+                                               gtk.DIALOG_DESTROY_WITH_PARENT,
+                                               None)
+        self.creatingbottledialog.set_has_separator(False)
+        vbox = gtk.VBox()
+        self.creatingbottledialog.vbox.add(vbox)
+        vbox.set_spacing(6)
+        vbox.set_border_width(6)
+        self.creatingbottlelabel = gtk.Label(_("Creating configuration \"%s\"") % bottlename)
+        vbox.pack_start(self.creatingbottlelabel, False, False)
+        self.creatingbottleprogress = gtk.ProgressBar()
+        self.creatingbottleprogress.set_pulse_step(0.1)
+        vbox.add(self.creatingbottleprogress)
+        #self.creatingbottledialog.action_area.get_children()[0].connect("activate", self.__create_bottle_cancel)
+        self.creatingbottledialog.show_all()
+        self.bottlename = bottlename
+        self.creatingbottledone = False
+        gobject.timeout_add(60, self.__create_bottle_interface)
+        start_thread(self.__create_bottle_backend)
+
+    def __create_bottle_backend(self):
+        wine.prefixes.add(self.bottlename)
+        self.__create_bottle_backend_version()
+        self.__create_bottle_backend_desktop()
+        self.creatingbottledone = True
+
+    def __get_version_from_combobox(self):
+        version = "winxp"
+        selected = self.version_value.get_model()[self.version_value.get_active()][0]
+        # Fix the special case of Windows 7 being called Windows 2008 in Wine
+        if selected == 'Windows 7':
+            selected = 'Windows 2008'
+        # Remove any " (default)" from the name
+        selected = selected.split(' (')[0]
+        # Convert the name (f.x. Windows 2000) to the version number (f.x. win2k)
+        for i in [ (key, value[0]) for key,value in self._windowsversions.iteritems() ]:
+            if i[1] == selected:
+                version = i[0]
+        return version
+
+    def __create_bottle_backend_version(self):
+        version = self.__get_version_from_combobox()
+        wine.version.set(version)
+
+    def __create_bottle_backend_desktop(self):
+        if self.widget_virtual_desktop.settings['desktop'] is None:
+            wine.desktop.set(False)
+        else:
+            wine.desktop.set(
+                True,
+                size = self.widget_virtual_desktop.settings['desktop']
+            )
+
+    def __create_bottle_interface(self):
+        if self.creatingbottledone == True:
+            self.creatingbottledialog.destroy()
+            return False
+        elif self.creatingbottledone == False:
+            self.creatingbottleprogress.pulse()
+            return True
+
+    def __run_file(self, filename):
+        wine.run([filename])
+
+    def open_appdb(self, *args):
+        def __key_pressed(widget, event, dialog):
+            # If Enter was pressed
+            if event.keyval == 65293:
+                dialog.response(gtk.RESPONSE_ACCEPT)
+
+        dialog = vineyard.IconDialog(
+            '',
+            self,
+            gtk.DIALOG_DESTROY_WITH_PARENT,
+            (
+                gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                gtk.STOCK_OK, gtk.RESPONSE_ACCEPT
+            ),
+            image = 'find',
+            text = _("Look up on AppDB"),
+            text_secondary = _(
+                "Under which title would you like to look up the program?"
+            )
+        )
+
+        entry = gtk.Entry()
+        dialog.innervbox.pack_start(entry, expand=False, fill=True)
+
+        dialog.set_default_response(gtk.RESPONSE_ACCEPT)
+
+        dialog.show_all()
+
+        entry.set_text(self.program_name)
+        entry.select_region(0, len(self.program_name))
+        entry.grab_focus()
+
+        entry.connect('key-press-event', __key_pressed, dialog)
+
+        response = dialog.run()
+
+        if response == gtk.RESPONSE_ACCEPT:
+            url = wine.appdb.get_application_lookup_url(
+                entry.get_text(),
+                gotofirst = True
+            )
+            wine.common.run([
+                'xdg-open',
+                url
+            ])
+        dialog.destroy()
+
+    def show_error_dialog(self, text):
+        error_dialog = gtk.MessageDialog(
+            parent = self,
+            flags = gtk.DIALOG_MODAL,
+            type = gtk.MESSAGE_ERROR,
+            buttons = gtk.BUTTONS_OK,
+            message_format = text
+        )
+        error_dialog.run()
+        error_dialog.destroy()
+
+def start_thread(function):
+    thread = threading.Thread(target=function)
+    thread.start()
+    while thread.isAlive():
+        while gtk.events_pending():
+            gtk.main_iteration()
+
+if __name__ == "__main__":
+    try:
+        if len(sys.argv) > 1 and os.path.lexists(sys.argv[1]):
+            main = Dialog(
+                parent = None,
+                filename = os.path.normpath(sys.argv[1])
+            )
+        else:
+            print("Can't find file or no file name given. Exiting.",
+                   file=sys.stderr)
+            exit(1)
+    finally:
+        pass
+
+gtk.gdk.threads_leave()
+

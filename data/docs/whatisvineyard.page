@@ -1,0 +1,22 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="whatisvineyard">
+<info>
+  <link type="guide" xref="index#info"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <title type="sort">0</title>
+  <desc>What is Vineyard - or why isn't this called Wine Preferences?</desc>
+</info>
+<title>What is Vineyard?</title>
+<p>
+Vineyard is a collection of tools for configuring and using Wine (http://winehq.org).
+At the core there is python-wine, the library that does all the hard work.
+On top of this there is nautilus-wine, which provide the integration with the Gnome file manager, and Wine Preferences that is a multi-configuration (~bottles) Wine configuration tool that includes program management.
+</p>
+</page>

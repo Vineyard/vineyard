@@ -1,0 +1,950 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007-2011 Christian Dannie Storgaard
+#
+# AUTHOR:
+# Christian Dannie Storgaard <cybolic@gmail.com>
+#
+# vineyard is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; either version 2 of the License, or (at
+# your option) any later version.
+#
+# vineyard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with wine-preferences; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+from __future__ import print_function
+
+import vineyard
+
+SHARED_FILES_PATH = vineyard.get_shared_files_path()
+
+import copy, time, os, sys, operator
+
+WINE_DEFAULT_PREFIX_EXISTS = os.path.exists(os.path.expanduser('~/.wine'))
+
+
+from optparse import OptionParser
+import gobject, gtk, pango
+
+import logging
+
+
+class MainApp(vineyard.async.ThreadedClass):
+    def __init__(self, development=False):
+        self.development = development
+        self._changes = []
+        self._loaded_settings = {}
+        self._loading_checker = None
+        self._currently_saving = False
+        self.gobject = gobject.GObject()
+        gobject.signal_new(
+            "loading-settings",
+            gobject.GObject,
+            gobject.SIGNAL_ACTION,
+            gobject.TYPE_NONE,
+            (int,))
+        gobject.signal_new(
+            "settings-changed",
+            gobject.GObject,
+            gobject.SIGNAL_ACTION,
+            gobject.TYPE_NONE,
+            (str, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT))
+        gobject.signal_new(
+            "settings-loaded",
+            gobject.GObject,
+            gobject.SIGNAL_ACTION,
+            gobject.TYPE_NONE,
+            (str, gobject.TYPE_PYOBJECT))
+        gobject.idle_add(self.__initialise__)
+
+    def __initialise__(self):
+        self.__init_environment()
+        self.__init_gui()
+        self.__init_modules()
+        # If the default Wine prefix doesn't exist, start its creation
+        if CMD_ARGS._first_run:
+            self.__init_wine_prefix()
+        self.__init_configurations(callback=self.__show_configurations)
+        return False
+
+
+    def __init_modules(self):
+        """Load all modules. We wait until here to do it so we can show the
+           window sooner."""
+        global wine
+        import wine
+
+
+    def __init_wine_prefix(self):
+        """Create the Wine prefix."""
+        # We are directly using the multi thread class here to make sure
+        # it doesn't end up in a queue
+        vineyard.async.run_in_thread(
+            wine.prefixes.wine_first_run
+        )
+
+    def __init_environment(self):
+        global SHARED_FILES_PATH
+        self.path_shared_files = SHARED_FILES_PATH
+
+    def __init_gui(self):
+        self.widgets = vineyard.LoadWidgets(
+            self,
+            filename='{shared_path}/vineyard-preferences.glade'.format(
+                shared_path = self.path_shared_files
+            ),
+            connect_signals=True
+        )
+        if self.widgets['window'].get_icon_list() is None:
+            icon_list = []
+            for size in ['8', '16', '22', '24', '32', '48', '64', '72', '96', '128', '256', '512', 'scalable']:
+                if os.path.exists('%s/icons/%s' % (self.path_shared_files, size)):
+                    for ext in ['svg', 'png']:
+                        file_name = '%s/icons/%s/vineyard-preferences.%s' % (self.path_shared_files, size, ext)
+                        if os.path.exists(file_name):
+                            try:
+                                pixbuf = gtk.gdk.pixbuf_new_from_file(file_name)
+                                icon_list.append(pixbuf)
+                            except:
+                                continue
+            if len(icon_list):
+                gtk.window_set_default_icon_list(*icon_list)
+
+        self.widgets['button-apply'].set_sensitive(False)
+
+        # If Gtk supports it, add a GtkSpinner
+        if hasattr(gtk, 'Spinner'):
+            self.widgets['spinner-loading'] = gtk.Spinner()
+            self.widgets['hbox-spinner'].pack_end(
+                self.widgets['spinner-loading'],
+                expand = False,
+                fill = False
+            )
+            self.widgets['spinner-loading'].show()
+        # Setup the pages list
+        column = gtk.TreeViewColumn("")
+        column.set_expand(True)
+        column.set_sort_column_id(1)
+        renderer_app_icon = gtk.CellRendererPixbuf()
+        column.pack_start(renderer_app_icon, False)
+        column.set_cell_data_func(renderer_app_icon, vineyard.cell_data_function_icon_markup_icon)
+        renderer_app = gtk.CellRendererText()
+        column.pack_start(renderer_app, True)
+        column.set_cell_data_func(renderer_app, vineyard.cell_data_function_icon_markup_markup)
+        self.widgets['treeview-pages'].append_column(column)
+
+        self.widgets['checkbutton-advanced'].hide()
+
+        self.progress_text_creating = _('Creating default Wine prefix...')
+        self.progress_text_loading = _('Reading settings...')
+        self.progress_text_saving = _('Saving settings...')
+        self.progress_text_closing = _('Closing, please wait...')
+
+        if CMD_ARGS._first_run:
+            text = self.progress_text_creating
+        else:
+            text = self.progress_text_loading
+
+        if CMD_ARGS.show_progressbar:
+            self.widgets['progressbar-loading'].hide()
+            self.widgets['progressbar-loading'].max_fraction = 0
+            self.widgets['progressbar-loading'].set_text(text)
+        else:
+            self.widgets['label-spinner'].set_text(text)
+            self.widgets['vbox-loading'].hide()
+
+        gobject.set_application_name(_('Vineyard Preferences'))
+        self.window_title_base = self.widgets['window'].get_title()
+
+        # This will probably fail until Gtk 3 is standard
+        try:
+            self.widgets['window'].set_property('has-resize-grip', True)
+        except TypeError:
+            pass
+
+        self.widgets['menu-tools'].show_all()
+        self.widgets['window'].show();
+
+    @vineyard.async.async_method
+    def __init_configurations(self):
+        self.configurations = wine.prefixes.list()
+
+    def __show_configurations(self, return_status):
+        self.widgets['combobox-configurations'] = gtk.ComboBox()
+        self.widgets['hbox-configurations-combobox'].pack_start(
+            self.widgets['combobox-configurations'], True, True
+        )
+        cell = gtk.CellRendererText()
+        self.widgets['combobox-configurations'].pack_start(cell, True)
+        self.widgets['combobox-configurations'].add_attribute(cell, 'markup', 1)
+        self.widgets['combobox-configurations'].set_row_separator_func(vineyard.row_separator_function)
+
+        self.widgets['combobox-configurations'].show_all()
+        self.widgets['combobox-configurations'].connect('changed', self.__configuration_changed)
+
+        self.__update_configurations()
+
+        self.__init_pages(callback=self.__show_gui)
+
+    def __update_configurations(self, select_configuration=None):
+        combobox = self.widgets['combobox-configurations']
+        model_old = combobox.get_model()
+        model = gtk.ListStore(str, str)
+        combobox.set_model(model)
+        del model_old
+
+        small_color = vineyard.gdk_color_to_hex(
+            vineyard.gdk_color_mix(
+                combobox.get_style().bg[gtk.STATE_NORMAL],
+                combobox.get_style().fg[gtk.STATE_NORMAL],
+                mix=0.5
+            )
+        )
+
+        model.append(('', _('Default')))
+
+        if len(self.configurations):
+            model.append(('-', '-'))
+
+            # Get the names so we can test for duplicates
+            prefix_names = [
+                data['WINEPREFIXNAME'] for data in self.configurations.values()
+            ]
+            prefix_duplicates = set([
+                name for name in prefix_names if prefix_names.count(name) > 1
+            ])
+            for name, data in sorted(
+                self.configurations.items(),
+                key = lambda item: operator.getitem(item, 0).lower()
+            ):
+                # This name is a duplicate, display prefix path as well
+                if data['WINEPREFIXNAME'] in prefix_duplicates:
+                    text = str(
+                        '{name} '+
+                        '<span foreground="{color}" size="small">{prefix}</span>'
+                    ).format(
+                        name = name,
+                        prefix = data['WINEPREFIXROOT'],
+                        color = small_color
+                    )
+                else:
+                    text = name
+                model.append((
+                    data['WINEPREFIX'], text
+                ))
+
+            combobox.set_sensitive(True)
+        else:
+            combobox.set_sensitive(False)
+
+        configuration = None
+        if select_configuration is not None:
+            configuration = wine.prefixes.get_metadata_from_name_or_prefix(
+                select_configuration
+            )
+        elif CMD_ARGS.configuration is not None:
+            configuration = wine.prefixes.get_metadata_from_name_or_prefix(
+                CMD_ARGS.configuration
+            )
+
+        prefix_set = False
+        if configuration is not None:
+            try:
+                if configuration['WINEPREFIX'] != os.path.expanduser('~/.wine'):
+
+                    rownr = vineyard.model_get_rownr_from_string(
+                        model, configuration['WINEPREFIX']
+                    )
+                    self.widgets['combobox-configurations'].set_active(rownr)
+                    prefix_set = True
+            except KeyError:
+                print(
+                    "Couldn't find configuration \"{0}\". Selecting default.".format(
+                        configuration
+                    ), file=sys.stderr
+                )
+        if not prefix_set:
+            self.widgets['combobox-configurations'].set_active(0)
+
+    def __fix_treeviews(self):
+        """Apply the fix for Gtk's bug in treeview model signals to all treeviews"""
+        for treeview in vineyard.widget_get_children_of_type(self.widgets['window'], gtk.TreeView):
+            vineyard.fix_model(treeview.get_model())
+
+    @vineyard.async.async_method
+    def __init_pages(self):
+        # Go through the list of pages by position info
+        temp_pages = {}
+        pages_positions = dict([ (i.position,[]) for i in vineyard.pages ])
+        for page in vineyard.pages:
+            pages_positions[page.position].append(page)
+        # Next, go through the list of positions, sorted by name
+        for position in sorted(pages_positions.keys()):
+            for page in sorted(pages_positions[position]):
+                pos = len(temp_pages.keys())
+                temp_pages[pos] = page
+        # We now have a properly sorted list of the pages, let's initialize and add them
+        self.pages = {}
+        for position in sorted(temp_pages.keys()):
+            if self.development:
+                self.pages[position] = self.pages[temp_pages[position].id] = (
+                    temp_pages[position].Page(True)
+                )
+            else:
+                self.pages[position] = self.pages[temp_pages[position].id] = (
+                    temp_pages[position].Page()
+                )
+            self.pages[position].id = temp_pages[position].id
+            self.add_page_to_notebook(position)
+
+    @vineyard.async.mainloop_method
+    def add_page_to_notebook(self, position):
+        page = self.pages[position]
+        page.gobject.connect('loading-settings', self.page_loading_settings)
+        page.gobject.connect('settings-loaded', self.set_original_setting)
+        page.gobject.connect('settings-changed', self.add_change)
+        self.widgets['notebook'].append_page(page.widget, tab_label=None)
+        if type(page.icon) == gtk.gdk.Pixbuf:
+            icon = page.icon
+        else:
+            icon = vineyard.pixbuf_new_from_string(page.icon, icon_size=gtk.ICON_SIZE_BUTTON, return_first=True)
+        self.widgets['treeview-pages'].get_model().append((icon, page.name))
+        return False
+
+    def __show_gui(self, return_status):
+        self.__fix_treeviews()
+
+        if CMD_ARGS.show_progressbar:
+            self.widgets['progressbar-loading'].set_pulse_step(0.1)
+        else:
+            self.widgets['spinner-loading'].stop()
+        self.widgets['treeview-pages'].get_selection().set_mode(gtk.SELECTION_BROWSE)
+        # Set the selected configuration, if any
+        if CMD_ARGS.page != None:
+            page_lowered = CMD_ARGS.page.lower()
+            if page_lowered in self.pages.keys():
+                for key, value in self.pages.iteritems():
+                    # Only use integer keys so we have a position
+                    try:
+                        rownr = int(key)
+                        try:
+                            if value.id == page_lowered:
+                                self.widgets['treeview-pages'].set_cursor((rownr,))
+                                break
+                        except AttributeError:
+                            error("Malformed page, no id: %s" % value)
+                    except ValueError:
+                        continue
+        else:
+            self.widgets['treeview-pages'].set_cursor((0,))
+        self.widgets['window'].set_sensitive(True)
+
+        # Show everything
+        #self.widgets['window'].show()
+
+        # Set the pages list to be Elementary styled
+        """
+        #try:
+        bg_colors = self.widgets['window'].get_style().bg
+        fg_colors = self.widgets['label-prefix'].get_style().fg
+        fg_color = vineyard.common.gdk_color_mix(
+            bg_colors[gtk.STATE_NORMAL], fg_colors[gtk.STATE_NORMAL], 0.7
+        )
+        for state in range(5):
+            self.widgets['treeview-pages'].modify_base(
+                state, bg_colors[0]
+            )
+            self.widgets['treeview-pages'].modify_bg(
+                state, bg_colors[0]
+            )
+        self.widgets['treeview-pages'].modify_fg(
+            gtk.STATE_NORMAL, fg_color
+        )
+        self.widgets['treeview-pages'].modify_fg(
+            gtk.STATE_ACTIVE, fg_colors[gtk.STATE_NORMAL]
+        )
+        for column in self.widgets['treeview-pages'].get_columns():
+            for renderer in column.get_cell_renderers():
+                renderer.set_property(
+                    'cell-background-gdk',
+                    bg_colors[gtk.STATE_NORMAL]
+                )
+                renderer.set_property('cell-background-set', True)
+                try:
+                    renderer.set_property(
+                        'foreground-gdk',
+                        fg_color
+                    )
+                except TypeError:
+                    # Doesn't work on Pixbuf renderers, just ignore
+                    pass
+        self.widgets['treeview-pages'].modify_font(
+            pango.FontDescription("Regular")
+        )
+        #except: pass
+        """
+
+        #vineyard.widget_update_position(self.widgets['window'])
+        return False
+
+    def __reload_pages(self):
+        try:
+            self.pages
+        except AttributeError:
+            # If self.pages doesn't exist then we were told to change
+            # configuration before loading the pages
+            # Just return, everything will be loaded by the initialisation
+            return
+        self._changes = []
+        self._loaded_settings = {}
+        for page in self.pages.values():
+            try:
+                page.reset()
+            except AttributeError:
+                pass
+
+        self.__fix_treeviews()
+
+        self.pages[self.widgets['notebook'].get_current_page()].show_page()
+
+    """
+        Settings handling
+    """
+
+    def page_loading_settings(self, page_gobject, number_of_settings=1):
+        self.increase_progress_max_value(number_of_settings)
+        if self._loading_checker is None:
+            self._loading_checker = gobject.timeout_add(500, self.__check_if_loading_finished)
+
+    def __check_if_loading_finished(self):
+        if vineyard.async.get_number_of_running_threads() < 1:
+            self.__progress_done()
+            self._loading_checker = None
+            return False
+        else:
+            return True
+
+    @vineyard.async.async_method
+    def __apply_changes(self):
+        # Filter through the changes to only apply the latest/current
+        done_changes = []
+        for id,func,arguments in self._changes:
+            if id not in done_changes:
+                # If there are multiple changes to this setting, use the latest
+                all_changes_to_this_setting = [ i for i in self._changes if i[0] == id ]
+                id, func, args = all_changes_to_this_setting[-1]
+                func(*args)
+                self._loaded_settings[id] = wine.common.copy(args)
+                done_changes.append(id)
+        # Wait for saving of changes to complete
+        nr_of_threads = vineyard.async.get_number_of_running_threads()
+        # While there's more than one thread (that one being this function)
+        while vineyard.async.get_number_of_running_threads() > 1:
+            time.sleep(0.2)
+            if nr_of_threads != vineyard.async.get_number_of_running_threads():
+                nr_of_threads = vineyard.async.get_number_of_running_threads()
+
+    def __set_gui_saving(self):
+        if CMD_ARGS.show_progressbar:
+            self.widgets['progressbar-loading'].set_text(self.progress_text_saving)
+        else:
+            self.widgets['label-spinner'].set_text(self.progress_text_saving)
+        self.set_progress_max_value(1)
+        return False
+
+    def __set_gui_saving_done(self):
+        self.increase_progress_fraction()
+        if CMD_ARGS.show_progressbar:
+            self.widgets['progressbar-loading'].set_text(self.progress_text_loading)
+        else:
+            self.widgets['label-spinner'].set_text(self.progress_text_loading)
+        return False
+
+    def set_original_setting(self, page_gobject, id, arguments):
+        #print "Loaded setting %s. Total: %s\tLoaded: %s" % (id, self.__max_loaded_fraction, self.__currently_loaded_fraction)
+        if vineyard.async.get_number_of_running_threads() == 0:
+            self.__progress_done()
+        else:
+            self.increase_progress_fraction()
+        self._loaded_settings[id] = wine.common.copy(arguments)
+
+    def add_change(self, page_gobject, id, func, arguments):
+        if not page_gobject.loading:
+            any_changes = True
+
+            # Remove any previous changes to this id
+            for index, (c_id, c_func, c_arguments) in enumerate(self._changes):
+                if c_id == id:
+                    try:
+                        del self._changes[index]
+                    except IndexError:
+                        print((
+                            "Updating changes failed, "+
+                            "couldn't remove number %s that was supposed "+
+                            "to be %s. Update list is: %s").format(
+                                index, (c_id, c_arguments), self._changes
+                            )
+                        )
+
+            # If this change is not the same as the original loaded setting, add it
+            if (
+                id not in self._loaded_settings or
+                self._loaded_settings[id] != arguments
+            ):
+                self._changes.append((id, func, arguments))
+
+            if not len(self._changes):
+                any_changes = False
+
+            self._gui_set_buttons_for_apply_state(any_changes)
+
+    def __apply_changes_done(self, return_code):
+        self._currently_saving = False
+        self._gui_set_buttons_for_apply_state(False)
+        self.widgets['button-close'].set_sensitive(True)
+        self.__set_gui_saving_done()
+        return False
+
+    @vineyard.async.mainloop_method
+    def _gui_set_buttons_for_apply_state(self, state):
+        if state:
+            self.widgets['button-apply'].set_sensitive(True)
+            self.widgets['button-close'].set_label(gtk.STOCK_CANCEL)
+        else:
+            self.widgets['button-apply'].set_sensitive(False)
+            self.widgets['button-close'].set_label(gtk.STOCK_CLOSE)
+
+
+    """
+        Signal handlers - GUI
+    """
+    def _on_quit(self, *args):
+        # Wait for threads to finish
+        # We are still subject to this bug though: http://bugs.python.org/issue5099
+        number_of_threads = vineyard.async.get_number_of_running_threads()
+
+        if self._currently_saving and number_of_threads > 1:
+            start_amount_of_threads = current_amount_of_threads = number_of_threads
+            self.set_progress_max_value(start_amount_of_threads)
+            if CMD_ARGS.show_progressbar:
+                self.widgets['progressbar-loading'].set_text(self.progress_text_closing)
+            else:
+                self.widgets['label-spinner'].set_text(self.progress_text_closing)
+
+            while number_of_threads > 1:
+                if number_of_threads != current_amount_of_threads:
+                    current_amount_of_threads = number_of_threads
+                    self.increase_progress_fraction()
+                gtk.main_iteration_do()
+                number_of_threads = vineyard.async.get_number_of_running_threads()
+        gtk.main_quit()
+
+    def __configuration_changed(self, combobox):
+        selected = combobox.get_model()[combobox.get_active()][0]
+        if selected == combobox.get_model()[0][0]:
+            selected = None
+            self.widgets['menu-tools-remove'].set_sensitive(False)
+        else:
+            self.widgets['menu-tools-remove'].set_sensitive(True)
+        prefix_before = wine.common.ENV['WINEPREFIX']
+        wine.prefixes.use(selected)
+        prefix_now = wine.common.ENV['WINEPREFIX']
+        if prefix_before != prefix_now:
+            self.__reload_pages()
+        # Set window title
+        # NOTE: Seemed like a nice idea, but it's a bit of an information
+        #       redundancy, I mean, the prefix name is just one line down
+        #       from the window title
+        #if selected is None:
+        #    self.widgets['window'].set_title(self.window_title_base)
+        #else:
+        #    self.widgets['window'].set_title(
+        #        '{title}: {prefix}'.format(
+        #            title = self.window_title_base,
+        #            prefix = wine.common.ENV['WINEPREFIXNAME']
+        #        )
+        #    )
+
+
+    def _on_page_cursor_changed(self, treeview):
+        selected = vineyard.treeview_get_selected_path(self.widgets['treeview-pages'])[0]
+        self.set_progress_max_value(0)
+        self.widgets['notebook'].set_current_page(selected)
+        if CMD_ARGS._first_run:
+            vineyard.async.run_in_thread(
+                self._first_run_wait_for_wine_then_select_page, selected
+            )
+            if CMD_ARGS.show_progressbar:
+                self.widgets['progressbar-loading'].set_fraction(0.01)
+                self.widgets['progressbar-loading'].show()
+                self.widgets['vbox-loading'].show()
+            else:
+                self.widgets['spinner-loading'].start()
+                self.widgets['hbox-spinner'].show()
+        else:
+            self.pages[selected].show_page()
+
+    def _first_run_wait_for_wine_then_select_page(self, selected):
+        while not wine.check_setup():
+            time.sleep(0.3)
+            if CMD_ARGS.show_progressbar:
+                vineyard.async.execute_in_mainloop(
+                    self.widgets['progressbar-loading'].pulse
+                )
+        CMD_ARGS._first_run = False
+        if CMD_ARGS.show_progressbar:
+            vineyard.async.execute_in_mainloop(
+                self.widgets['progressbar-loading'].set_text,
+                self.progress_text_loading
+            )
+        else:
+            vineyard.async.execute_in_mainloop(
+                self.widgets['label-spinner'].set_text,
+                self.progress_text_loading
+            )
+        vineyard.async.execute_in_mainloop(
+            self.pages[selected].show_page
+        )
+
+    def _on_button_about(self, button):
+        self.widgets['aboutdialog'].show()
+    def _on_dialog_about_response(self, dialog, response):
+        self.widgets['aboutdialog'].hide()
+
+    @vineyard.async.async_method
+    def _on_button_help(self, button):
+        vineyard.open_help()
+
+    def _on_button_apply(self, button):
+        self._currently_saving = True
+        self.widgets['button-close'].set_sensitive(False)
+        self.widgets['button-apply'].set_sensitive(False)
+        self.__set_gui_saving()
+        self.__apply_changes(callback=self.__apply_changes_done)
+
+    def _on_toggle_advanced(self, button):
+        # FIXME: Nothing here yet, the re-implementation didn't leave anything
+        pass
+
+    def _on_button_tools(self, button):
+        event = gtk.gdk.Event(gtk.gdk.BUTTON_PRESS)
+        self.widgets['menu-tools'].popup(
+            None, None,
+            self.__menu_position_func,
+            1, event.time,
+            button
+        )
+
+    def __menu_position_func(self, menu, button):
+        position_button = button.get_allocation()
+        position_window = button.get_window().get_origin()
+        x = position_button.x + position_window[0]
+        y = position_button.y + position_window[1] + position_button.height
+        return (x, y, False)
+
+
+    def _on_prefix_refresh(self, widget):
+        self.configurations = wine.prefixes.list()
+        self.__update_configurations(
+            wine.common.ENV['WINEPREFIX']
+        )
+
+    def _on_prefix_remove(self, widget):
+        config_model = self.widgets['combobox-configurations'].get_model()
+        config_active_nr = self.widgets['combobox-configurations'].get_active()
+        configuration = config_model[config_active_nr][0]
+        if configuration == config_model[0][0]:
+            configuration = None
+
+        dialog = gtk.MessageDialog(parent=self.widgets['window'],
+                                   flags = gtk.DIALOG_DESTROY_WITH_PARENT,
+                                   type = gtk.MESSAGE_QUESTION,
+                                   buttons = gtk.BUTTONS_OK_CANCEL,
+                                   message_format = _(
+                                       "Remove configuration?"
+                                   ))
+        dialog.set_icon_name('vineyard-preferences')
+        dialog.set_title(_("Remove Windows configuration?"))
+
+        if configuration is None:
+            dialog.format_secondary_markup(_((
+                "Are you sure you want to remove the default configuration?\n"+ \
+                "Removing it will remove all programs installed into it!")) % \
+                {'configuration': configuration}
+            )
+        else:
+            dialog.format_secondary_markup(_((
+                "Are you sure you want to remove the configuration "+ \
+                "<b>%(configuration)s</b>?\n"+ \
+                "Removing it will remove all programs installed into it!")) % \
+                {'configuration': configuration}
+            )
+
+        settings = gtk.settings_get_default()
+
+        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog.connect("response", self._on_dialog_remove_conf_response)
+        dialog.show_all()
+
+    def _on_dialog_remove_conf_response(self, dialog, response):
+        dialog.destroy()
+        if response == -5: # OK pressed
+            wine.prefixes.remove() # if no arg, remove current
+            CMD_ARGS.configuration = None
+            self.__init_configurations(callback=self.__update_configurations)
+
+    def _on_prefix_add(self, widget):
+        dialog = gtk.MessageDialog(parent=self.widgets['window'],
+                                   flags = gtk.DIALOG_DESTROY_WITH_PARENT,
+                                   type = gtk.MESSAGE_QUESTION,
+                                   buttons = gtk.BUTTONS_OK_CANCEL,
+                                   message_format = _(
+                                       "Add new configuration?"
+                                   ))
+        dialog.set_icon_name('vineyard-preferences')
+        dialog.set_title(_("Add new Windows configuration"))
+
+        dialog.format_secondary_text(
+            _("What would you like the new configuration to be called?")
+        )
+        dialog.entry = gtk.Entry()
+        dialog.vbox.pack_start(dialog.entry)
+
+        settings = gtk.settings_get_default()
+
+        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog.entry.connect('activate', self._on_dialog_add_conf_enter, dialog)
+        dialog.connect("response", self._on_dialog_add_conf_response)
+        dialog.show_all()
+
+    def _on_dialog_add_conf_enter(self, entry, dialog):
+        dialog.response(-5)
+
+    def _on_dialog_add_conf_response(self, dialog, response):
+        if response == -5: # OK pressed
+            conf_name = dialog.entry.get_text()
+            dialog.destroy()
+
+            def __update(*args):
+                self.__update_configurations(select_configuration = conf_name)
+
+            if len(conf_name.strip()):
+                wine.prefixes.add(
+                    conf_name
+                )
+                self.__init_configurations(callback=__update)
+        else:
+            dialog.destroy()
+
+
+    """
+        Utility functions
+    """
+
+    @vineyard.async.mainloop_method
+    def increase_progress_max_value(self, amount=1):
+        self.set_progress_max_value(self.__max_loaded_fraction+amount)
+
+    @vineyard.async.mainloop_method
+    def set_progress_max_value(self, value):
+        """
+            Set the amount of settings we expect to load so the user interface can update accordingly
+        """
+        self.__max_loaded_fraction = value
+        self.__currently_loaded_fraction = 0
+
+        if (
+            hasattr(self.pages[self.widgets['notebook'].get_current_page()], 'no_loading')
+        ) and (
+            self.pages[self.widgets['notebook'].get_current_page()].no_loading
+        ):
+            return None
+
+        if value > 0:
+            if CMD_ARGS.show_progressbar:
+                self.widgets['progressbar-loading'].set_fraction(0.01)
+                self.widgets['progressbar-loading'].show()
+                self.widgets['vbox-loading'].show()
+                if value == 1:
+                    self.__timeout_loading_pulse = gobject.timeout_add(40, self.__progress_pulse)
+                else:
+                    gobject.source_remove(self.__timeout_loading_pulse)
+            else:
+                self.widgets['spinner-loading'].start()
+                self.widgets['hbox-spinner'].show()
+        else:
+            if CMD_ARGS.show_progressbar:
+                self.widgets['progressbar-loading'].hide()
+                self.widgets['vbox-loading'].hide()
+            else:
+                self.widgets['spinner-loading'].stop()
+                self.widgets['hbox-spinner'].hide()
+
+    def __progress_pulse(self):
+        if self.__currently_loaded_fraction >= 1:
+            self.widgets['progressbar-loading'].hide()
+            self.widgets['vbox-loading'].hide()
+            return False
+        else:
+            self.widgets['progressbar-loading'].pulse()
+            return True
+
+    def __progress_done(self):
+        self.__currently_loaded_fraction = self.__max_loaded_fraction - 1
+        self.increase_progress_fraction()
+
+    @vineyard.async.mainloop_method
+    def increase_progress_fraction(self):
+        """
+            Increase the amount of settings we've loaded so the user interface can update accordingly
+        """
+        try:
+            self.__currently_loaded_fraction += 1
+        except AttributeError:
+            self.__currently_loaded_fraction = 1
+        try:
+            value = 1.0 / self.__max_loaded_fraction * self.__currently_loaded_fraction
+        except ZeroDivisionError:
+            # We've reached a value of 1.0 or a setting finished loading
+            # before it got to say that it was... threading... :P
+            value = 1.0
+
+        if (
+            hasattr(self.pages[self.widgets['notebook'].get_current_page()], 'no_loading')
+        ) and (
+            self.pages[self.widgets['notebook'].get_current_page()].no_loading
+        ):
+            return None
+
+        if value < 1.0 and value > 0.0:
+            if CMD_ARGS.show_progressbar:
+                self.widgets['progressbar-loading'].set_fraction(value)
+                self.widgets['progressbar-loading'].show()
+                self.widgets['vbox-loading'].show()
+            pass
+        else:
+            if CMD_ARGS.show_progressbar:
+                self.widgets['progressbar-loading'].hide()
+                self.widgets['vbox-loading'].hide()
+            else:
+                self.widgets['spinner-loading'].stop()
+                self.widgets['hbox-spinner'].hide()
+        return False
+
+
+
+
+def main():
+    global _, CMD_ARGS
+    _ = vineyard.setup_translation(path='%s/locale' % SHARED_FILES_PATH)
+    usage =  _("usage")+": %prog [-h | --help] | [ [-a | --show-advanced] [-e | --enable-bottles] [-c | --select-configuration CONFIGURATION] [--debug LOGGING_LEVEL] ]"
+    parser = OptionParser(usage)
+    parser.add_option("-a", "--show-advanced",
+                          action="store_true", dest="enable_advanced",
+                          help=_("show the advanced controls on startup"))
+    parser.add_option("-e", "--enable-configurations",
+                          action="store_true", dest="enable_configurations",
+                          help=_("show the controls for managing multiple configurations"))
+    parser.add_option("-c", "--select-configuration",
+                          action="store", dest="configuration",
+                          help=_("select the given configuration (bottle)"))
+    parser.add_option("-s", "--select-page",
+                          action="store", dest="page",
+                          help=_("select the given page on startup"))
+    parser.add_option("-p", "--show-progressbar",
+                          action="store_true", dest="show_progressbar",
+                          help=_("show the old style progressbar instead of the spinner"))
+    parser.add_option("-d", "--development",
+                          action="store_true", dest="development",
+                          help=_("enable unstable / under development features"))
+    parser.add_option("--debug",
+                          action="store", dest="logging_level",
+                          help=_("print debug information of level (one of debug, info, warning, error, critical)"))
+    parser.add_option("--create-profile",
+                          action="store_true", dest="create_profile",
+                          help=_("profile vineyard-preferences while running"))
+    parser.add_option("--display-profile",
+                          action="store_true", dest="create_profile",
+                          help=_("show the created profile of vineyard-preferences"))
+    (options, args) = parser.parse_args()
+
+    logging_levels = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
+        'critical': logging.CRITICAL
+    }
+    if options.logging_level != None and options.logging_level.lower() in logging_levels.keys():
+        logging.basicConfig(level = logging_levels[options.logging_level.lower()])
+    else:
+        logging.basicConfig(level = logging.ERROR)
+
+    logger = logging.getLogger("Wine Preferences")
+    debug, info, warning, error, critical = logger.debug, logger.info, logger.warning, logger.error, logger.critical
+
+    CMD_ARGS = options
+
+    gtk.icon_theme_get_default().append_search_path('%s/icons' % SHARED_FILES_PATH)
+
+    if not hasattr(gtk, 'Spinner'):
+        CMD_ARGS.show_progressbar = True
+
+    CMD_ARGS._first_run = not WINE_DEFAULT_PREFIX_EXISTS
+
+    #vineyard.crashhandler.initialize()
+
+    gobject.threads_init()
+    gtk.gdk.threads_init()
+    gtk.gdk.threads_enter()
+
+    #def idle_add(*args):
+    #    print "Adding Gobject idle function:",args[0]
+    #    gobject._idle_add(*args)
+    #gobject._idle_add = gobject.idle_add
+    #gobject.idle_add = idle_add
+
+    main = MainApp(options.development)
+
+    gtk.main()
+    gtk.gdk.threads_leave()
+
+
+if __name__ == "__main__":
+    if '--create-profile' in sys.argv:
+        import cProfile
+        modulename = os.path.basename(sys.argv[0]).split('.')[0]
+        sys.argv.pop(1)
+        cProfile.run(
+            #'import {0}; {0}.main()'.format(modulename),
+            'main()',
+            '/tmp/{0}-profile.tmp'.format(modulename)
+        )
+    elif '--display-profile' in sys.argv:
+        import pstats
+        modulename = os.path.basename(sys.argv[0]).split('.')[0]
+        profile_file = '/tmp/{0}-profile.tmp'.format(modulename)
+        if os.path.exists(profile_file):
+            p = pstats.Stats(profile_file)
+            p.sort_stats('cumulative').print_stats()
+        else:
+            print(
+                "No profile created. "+
+                "Please run vineyard-preferences with --create-profile first.",
+                file=sys.stderr
+            )
+            exit(1)
+    else:
+        try:
+            main()
+        finally:
+            pass

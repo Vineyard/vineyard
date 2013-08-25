@@ -1,0 +1,23 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="createconf">
+<info>
+  <link type="guide" xref="index#task"/>
+  <link type="topic" xref="whatisconf"/>
+  <link type="seealso" xref="differenceprogramconf"/>
+
+  <credit type="author">
+    <name>Christian Dannie Storgaard</name>
+    <email>cybolic@gmail.com</email>
+    <years>2010</years>
+  </credit>
+
+  <desc>How to create a new configuration.</desc>
+</info>
+<title>Creating a new configuration</title>
+<p>To create a new configuration, you have two options:</p>
+<list type="numbered">
+<item><p>Open the Wine Preferences (from <guiseq><gui>System</gui><gui>Preferences</gui><gui>Wine Preferences</gui></guiseq>), and click the <gui style="checkbox">Advanced</gui> check box in the lower left corner. In the top of the window you can now click the newly appeared "Add new configuration" button (look for a plus sign or similar, depending on your desktop appearance).</p></item>
+<item><p>Right click a Microsoft Windows executable, select <gui style="menuitem">Run in Wine configuration</gui> and select to create a new configuration. Note that the selected executable will be run when clicking <gui style="button">OK</gui>, so it's advisable to select an installation executable and then cancel the installation as soon as you can or better yet, a program you can quickly exit without any change to your system, a good example of this is something like Notepad.</p></item>
+</list>
+</page>
