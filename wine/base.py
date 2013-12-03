@@ -28,7 +28,8 @@ def check_setup():
         #"%s/dosdevices/c:/windows/profiles/%s" % (common.ENV['WINEPREFIX'], common.ENV['USER']),
         "%s/dosdevices/c:/windows/system32" % common.ENV['WINEPREFIX'],
         "%s/system.reg" % common.ENV['WINEPREFIX'],
-        "%s/userdef.reg" % common.ENV['WINEPREFIX'],
+        # Newer versions of Wine don't create the userdef.reg file anymore.
+        #"%s/userdef.reg" % common.ENV['WINEPREFIX'],
         "%s/user.reg" % common.ENV['WINEPREFIX'],
     ]
     return all([os.path.exists(path) for path in paths])

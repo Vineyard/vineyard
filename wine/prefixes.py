@@ -44,12 +44,13 @@
 # The spec is available at: http://wiki.winehq.org/BottleSpec
 #
 # python-wine also supports a few of the extra variables proposed by Alexey:
-#  wc_winedllpath
-#  wc_wineserver
+#  ww_winedllpath
+#  ww_wineserver
 #
-# python-wine adds two extra variables to the spec:
-#  wc_xdgconfig  - the path used for XDG_CONFIG_HOME
-#  wc_xdgdata    - the path used for XDG_DATA_HOME and prepended to XDG_DATA_DIRS
+# python-wine adds three extra variables to the spec:
+#  ww_xdgconfig  - the path used for XDG_CONFIG_HOME
+#  ww_xdgdata    - the path used for XDG_DATA_HOME and prepended to XDG_DATA_DIRS
+#  ww_winearch
 #
 # Also, I think I'm the only one calling it "the unified format", just to know
 
@@ -97,7 +98,7 @@ def is_valid_prefix(prefix_path, accept_legacy=False):
             in (
                 'dosdevices',
                 'system.reg',
-                'userdef.reg',
+                #'userdef.reg',
                 'user.reg'
             )
         ])
@@ -130,7 +131,7 @@ def get_default_metadata():
     _set('WINELOADER', common.which('wine'))
     _set('WINESERVER', common.which('wineserver'))
     _set('WINE', common.which('wine'))
-    _set('WINEARCH', None)
+    _set('WINEARCH', 'WIN32')
     _set('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
     _set('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
     _set('XDG_DATA_DIRS', ':'.join(filter(len, [
@@ -303,7 +304,8 @@ def write_metadata(prefix_path=None, data=None):
         ('WINESERVER', 'ww_wineserver'),
         ('WINE', 'ww_wine'),
         ('XDG_CONFIG_HOME', 'ww_xdgconfig'),
-        ('XDG_DATA_HOME', 'ww_xdgdata')
+        ('XDG_DATA_HOME', 'ww_xdgdata'),
+        ('WINEARCH', 'ww_winearch')
     ]:
         # Get variable, first try given data, then common.ENV, then saved info
         var = data.get(key, common.ENV.get(key, info.get(key, None)))
@@ -495,7 +497,8 @@ def add(prefix_name, prefix_path=None):
             os.symlink(drive_path, drive_symlink)
             break"""
 
-    if returncode == 0:
+    #if returncode == 0:
+    if returncode:
         return prefix_path
     else:
         return False
@@ -569,6 +572,7 @@ def create_dir_name(name=None):
                     nr = nr
                 )
             )
+            nr += 1
 
     return prefix_path
 
@@ -610,11 +614,17 @@ def wine_first_run():
         env=common.ENV_NO_DISPLAY()
     )
     # Regedit isn't always actually finished when it says it is, so check it first
-    while base.check_setup() is False:
+    checks = 1
+    while base.check_setup() is False and checks < 500:
         time.sleep(0.2)
-    appearance.set_menu_style(True)
-    shellfolders.setdefaults()
-    return returncode
+        checks += 1
+    if base.check_setup():
+        appearance.set_menu_style(True)
+        shellfolders.setdefaults()
+        return True
+    else:
+        return False
+    #return returncode
 
 def reboot():
     return common.system(
