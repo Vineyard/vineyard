@@ -70,7 +70,7 @@ def set(foldername, target):
         #folderpath = "%s/drive_c/%s/%s" % (common.ENV['WINEPREFIX'], "/".join(userpath[3:].split("\\")[:-1]), foldername)
         folder_path = registry.get('HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders', FOLDER_REG_NAMES[foldername.lower()])
         # If the registy folder path is a symlink from inside the configuration, change the symlink
-        if '\\windows\\' or '\\users\\' in folder_path:
+        if isinstance(folder_path, basestring) and ('\\windows\\' or '\\users\\' in folder_path):
             folder_path = util.wintounix(folder_path)
             try:
                 os.remove(folder_path)
