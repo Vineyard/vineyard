@@ -1,4 +1,4 @@
-vineyard (0.1.5) karmic lucid maverick natty oneiric precise quantal raring saucy; urgency=medium
+vineyard (0.1.5) karmic lucid maverick natty oneiric precise quantal raring saucy trusty; urgency=medium
 
   * This is not a release. This info is only to allow Launchpad to get the version.
   * Please see Bazaar log or http://vineyardproject.org for changes.
