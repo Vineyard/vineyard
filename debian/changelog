@@ -1,4 +1,4 @@
-vineyard (0.1.5) precise quantal raring saucy trusty utopic vivid; urgency=medium
+vineyard (0.1.5) precise quantal raring saucy trusty utopic vivid wily xenial; urgency=medium
 
   * This is not a release. This info is only to allow Launchpad to get the version.
   * Please see Bazaar log or http://vineyardproject.org for changes.
