@@ -263,7 +263,7 @@ the Wine-Doors Project</property>
                 <property name="events">GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Tools</property>
-                <property name="stock_id">gtk-properties</property>
+                <property name="icon_name">preferences-other</property>
                 <signal name="clicked" handler="_on_button_tools" swapped="no"/>
               </object>
               <packing>
