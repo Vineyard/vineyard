@@ -304,6 +304,7 @@ def parse_command(command, env=None, run_in_path=None):
                     os.path.exists(link_unix) and
                     util.file_get_mimetype(link_unix) not in common.WINDOWS_FORMATS
                 ):
+                    print("Not normal Windows format, using xdg-open instead: ", util.file_get_mimetype(link_unix))
                     executable = 'xdg-open'
                     command = [link_unix]
                     run_in_path = None
