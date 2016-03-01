@@ -1321,7 +1321,7 @@ def open_terminal(cwd=None, configuration_name=None, arguments=[], disable_pulse
             '  . /etc/profile; '+
             'fi; '+
             'if [ -f {home}/.bash_profile ]; then '+
-            '  . {home}/bash_.profile; '+
+            '  . {home}/.bash_profile; '+
             'elif [ -f {home}/.bash_login ]; then '+
             '  . {home}/.bash_login; '+
             'elif [ -f {home}/.profile ]; then '+
