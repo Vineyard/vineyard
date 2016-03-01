@@ -131,7 +131,7 @@ def get_default_metadata():
     _set('WINELOADER', common.which('wine'))
     _set('WINESERVER', common.which('wineserver'))
     _set('WINE', common.which('wine'))
-    _set('WINEARCH', 'WIN32')
+    _set('WINEARCH', 'win32')
     _set('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
     _set('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
     _set('XDG_DATA_DIRS', ':'.join(filter(len, [
@@ -185,6 +185,7 @@ def get_metadata(prefix_path=None):
             ('WINELOADER', ('ww_wineloader', 'wc_wineloader', 'WINELOADER')),
             ('WINESERVER', ('ww_wineserver', 'wc_wineserver', 'WINESERVER')),
             ('WINE', ('ww_wine', 'wc_wine', 'WINE')),
+            ('WINEARCH', ('ww_winearch', 'wc_winearch', 'WINEARCH')),
             ('XDG_CONFIG_HOME', ('ww_xdgconfig', 'wc_xdgconfig')),
             ('XDG_DATA_HOME', ('ww_xdgdata', 'wc_xdgdata'))
         )
@@ -461,44 +462,42 @@ def add(prefix_name, prefix_path=None):
     if not os.path.isdir(prefix_basedir):
         if not os.access(os.path.dirname(prefix_basedir), os.W_OK):
             raise IOError, "Couldn't create prefix base path, you don't have the necessary permissions."
-        os.mkdir(prefix_basedir)
+        # Wine will always create a win64 arch prefix if the directory exists
+        # https://bugs.winehq.org/show_bug.cgi?id=29661
+        # os.mkdir(prefix_basedir)
 
-    for path in (
-        prefix_path,
-        os.path.join(prefix_path, 'xdg'),
-        os.path.join(prefix_path, 'xdg', 'local'),
-        os.path.join(prefix_path, 'xdg', 'local', 'share'),
-        os.path.join(prefix_path, 'xdg', 'config'),
-        os.path.join(prefix_path, 'vineyard')
-    ):
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-    write_metadata(prefix_path, data = {
+    # We need to let Wine set up the prefix before we can write to it
+    # so set up an environment that matches what we will write when the prefix exists
+    prefix_data = {
         'WINEPREFIXNAME': prefix_name,
         'WINEPREFIXTYPE': 'unified',
         'XDG_DATA_HOME': os.path.join(prefix_path, 'xdg', 'local', 'share'),
         'XDG_CONFIG_HOME': os.path.join(prefix_path, 'xdg', 'config')
-    })
+    }
+    data = get_default_metadata()
+    data.update(prefix_data)
+    data['WINEPREFIX'] = prefix_path
+    common.ENV.update(data)
 
-    use(prefix_path)
-
+    # Now let Wine set up the prefix
     returncode = wine_first_run()
 
-    # DEPRECATED: In the unified format, we're using the WINEPREFIX directly
-    #             and it already has a matching symlink.
-    """# Add a link to the main drive in its directory
-    for drive_letter in ['c', 'C']:
-        drive_path = '%s/dosdevices/%s:' % (common.ENV['WINEPREFIX'], drive_letter)
-        if os.path.exists(drive_path):
-            drive_symlink = '%s/main drive' % path
-            if os.path.lexists(drive_symlink):
-                os.remove(drive_symlink)
-            os.symlink(drive_path, drive_symlink)
-            break"""
-
-    #if returncode == 0:
+    # Now create our extra files and folders
     if returncode:
+        for path in (
+            prefix_path,
+            os.path.join(prefix_path, 'xdg'),
+            os.path.join(prefix_path, 'xdg', 'local'),
+            os.path.join(prefix_path, 'xdg', 'local', 'share'),
+            os.path.join(prefix_path, 'xdg', 'config'),
+            os.path.join(prefix_path, 'vineyard')
+        ):
+            if not os.path.exists(path):
+                os.mkdir(path)
+
+        write_metadata(prefix_path, prefix_data)
+
+        use(prefix_path)
         return prefix_path
     else:
         return False
@@ -608,12 +607,13 @@ def set_name(name, prefix_path=None):
 ### PREFIX SYSTEM FUNCTIONS ###
 
 def wine_first_run():
-    # Create Wine structure (in place of wineprefixcreate, since it's depricated)
+    # Create Wine structure
     returncode = common.system(
-        ['regedit', '/E', '-', 'HKEY_CURRENT_USER\\Software\\Wine'],
+        ['wineboot', '-i'],
         env=common.ENV_NO_DISPLAY()
     )
-    # Regedit isn't always actually finished when it says it is, so check it first
+
+    # The init process isn't always actually finished when it says it is, so check it first
     checks = 1
     while base.check_setup() is False and checks < 500:
         time.sleep(0.2)
