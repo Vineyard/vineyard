@@ -156,12 +156,14 @@ WINDOWS_FORMATS = ('application/dos-exe',
                    'application/x-msdownload',
                    'application/exe',
                    'application/x-exe',
+                   'application/x-dosexec',
                    'application/x-winexe',
                    'application/x-zip-compressed',
                    'application/x-executable',
                    'application/x-msi',
                    'vms/exe',
-                   'application/octet-stream' # This is not strictly a Wine format, but EXEs are sometimes reported as it
+                   'application/octet-stream', # This is not strictly a Wine format, but EXEs are sometimes reported as it
+                   'application/x-ms-shortcut' # This is normally read and changed to a xdg-open cmd, but better safe...
 )
 
 BUILTIN_EXECUTABLES = [
