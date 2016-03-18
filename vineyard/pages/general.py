@@ -4,7 +4,7 @@
 # Copyright (c) 2007-2010 Christian Dannie Storgaard
 #
 import page
-from vineyard.widgets import configuration_name, version, files_show_hidden
+from vineyard.widgets import configuration_name, version, files_show_hidden, wine_arch, wine_binary, wine_loader, wine_server
 
 id = 'general'
 position = 0.0
@@ -23,5 +23,11 @@ class Page(page.VineyardPage):
                 ]),
                 (_('Hidden Files'), [
                     files_show_hidden
+                ]),
+                (_('Wine Environment'), [
+                    wine_arch,
+                    wine_binary,
+                    wine_loader,
+                    wine_server
                 ])
             ])

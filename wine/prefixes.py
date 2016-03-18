@@ -131,7 +131,7 @@ def get_default_metadata():
     _set('WINELOADER', common.which('wine'))
     _set('WINESERVER', common.which('wineserver'))
     _set('WINE', common.which('wine'))
-    _set('WINEARCH', 'win32')
+    _set('WINEARCH', 'win64')
     _set('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
     _set('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
     _set('XDG_DATA_DIRS', ':'.join(filter(len, [
@@ -206,7 +206,7 @@ def get_metadata(prefix_path=None):
             if len(parts) < 2:
                 continue
             # If this key is a valid one for a prefix, use it
-            if parts[0] in info_default.keys() + ['WINEARCH']:
+            if parts[0] in info_default.keys():
                 var = '='.join(parts[1:])
                 # Ignore default values
                 if len(var) and var != info_default[parts[0]]:
@@ -265,6 +265,8 @@ def get_metadata(prefix_path=None):
                 file=sys.stderr
             )
         info['WINEPREFIXNAME'] = os.path.basename(prefix_path)
+
+    info['WINEARCH'] = get_prefix_arch(prefix_path)
 
     info['VINEYARD_DATA'] = os.path.join(info['WINEPREFIX'], 'vineyard')
 
@@ -593,6 +595,17 @@ def get_prefix_root(prefix_path=None):
         return prefix_path
     else:
         raise IOError, "prefix_path doesn't exist"
+
+
+def get_prefix_arch(prefix_path):
+    if prefix_path is None:
+        prefix_path = common.ENV['WINEPREFIX']
+
+    if os.path.exists("%s/dosdevices/c:/windows/syswow64" % prefix_path):
+        return 'win64'
+    else:
+        return 'win32'
+
 
 
 ### SHORTCUT FUNCTIONS ###
