@@ -646,6 +646,34 @@ def clear_cache(cache_key):
     return decorator
 
 
+def get_wine_version(wine_binary=None):
+    if wine_binary is None:
+        wine_binary = ENV['WINE']
+
+    version = run([wine_binary, '--version'], env=ENV_NO_DISPLAY())[0].split("wine-")[1].strip()
+
+    version_parts = [
+        int(''.join([ i for i in part.split('-')[0] if i in list('0123456789') ]))
+        for part in version.split('.')
+    ]
+    version_major, version_minor, version_micro = version_parts + [0]*(3 -len(version_parts))
+
+    if '(' in version:
+        version_extra = version.split('(')[-1].split(')')[0].strip()
+    else:
+        version_extra = '-'.join(version.split('-')[1:]).strip()
+
+    version_float = float(version_major) + float(version_minor)*0.1 + float(version_micro)*0.01
+
+    return {
+        'version' : version,
+        'major'   : version_major,
+        'minor'   : version_minor,
+        'micro'   : version_micro,
+        'extra'   : version_extra,
+        'float'   : version_float
+    }
+
 #ENV = copy.deepcopy(os.environ) # This doesn't seem to actually deepcopy :/
 ENV = copy(os.environ)
 
@@ -733,15 +761,8 @@ for path in (
         os.mkdir(path)
 
 
-VERSION = run([ENV['WINE'], '--version'], env=ENV_NO_DISPLAY())[0].split("wine-")[1].strip()
-#VERSION = '1.2'
-
-version_parts = [
-    int(''.join([ i for i in part.split('-')[0] if i in list('0123456789') ]))
-    for part in VERSION.split('.')
-]
-VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO = version_parts + [0]*(3 -len(version_parts))
-VERSION_EXTRA = '-'.join(VERSION.split('-')[1:])
+VERSION_INFO = get_wine_version()
+VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO, VERSION_EXTRA = (VERSION_INFO[k] for k in ['version', 'major', 'minor', 'micro', 'extra'])
 
 DONT_PARSE_EXECUTABLES_WITH_SIZE_ABOVE_MB = 50
 
