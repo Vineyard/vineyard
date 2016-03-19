@@ -131,7 +131,10 @@ def get_default_metadata():
     _set('WINELOADER', common.which('wine'))
     _set('WINESERVER', common.which('wineserver'))
     _set('WINE', common.which('wine'))
-    _set('WINEARCH', 'win64')
+    if common.get_wine_version(default['WINE'])['float'] < 1.2:
+        _set('WINEARCH', 'win32')
+    else:
+        _set('WINEARCH', 'win64')
     _set('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
     _set('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
     _set('XDG_DATA_DIRS', ':'.join(filter(len, [
