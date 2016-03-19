@@ -450,7 +450,7 @@ def list_to_english_or(list_object):
     # E.g. ['parrot', 'norwegian', 'polly'] becomes "parrot, norwegian or polly"
     list_object = list(list_object)
     if len(list_object) > 1:
-        return '%s or %s' % (', '.join(list_object[:-1]), list_object[-1])
+        return _("%s or %s") % (', '.join(list_object[:-1]), list_object[-1])
     else:
         return list_object[0]
 
@@ -460,7 +460,7 @@ def list_to_english_and(list_object):
     # E.g. ['parrot', 'norwegian', 'polly'] becomes "parrot, norwegian and polly"
     list_object = list(list_object)
     if len(list_object) > 1:
-        return '%s and %s' % (', '.join(list_object[:-1]), list_object[-1])
+        return _("%s and %s") % (', '.join(list_object[:-1]), list_object[-1])
     else:
         return list_object[0]
 
