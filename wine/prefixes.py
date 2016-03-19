@@ -597,7 +597,7 @@ def get_prefix_root(prefix_path=None):
         raise IOError, "prefix_path doesn't exist"
 
 
-def get_prefix_arch(prefix_path):
+def get_prefix_arch(prefix_path=None):
     if prefix_path is None:
         prefix_path = common.ENV['WINEPREFIX']
 
