@@ -456,7 +456,7 @@ def remove(prefix_path=None):
     return common.system(["rm", "-rf", path]) == 0
 
 
-def add(prefix_name, prefix_path=None):
+def add(prefix_name, prefix_path=None, env=None):
     if prefix_name is None or not len(prefix_name.strip()):
         raise ValueError, prefix_name
     if prefix_path is None:
@@ -482,6 +482,8 @@ def add(prefix_name, prefix_path=None):
     data = get_default_metadata()
     data.update(prefix_data)
     data['WINEPREFIX'] = prefix_path
+    if env is not None:
+        data.update(env)
     common.ENV.update(data)
 
     # Now let Wine set up the prefix
