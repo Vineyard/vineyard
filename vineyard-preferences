@@ -162,6 +162,19 @@ class MainApp(vineyard.async.ThreadedClass):
             self.widgets['label-spinner'].set_text(text)
             self.widgets['vbox-loading'].hide()
 
+        # Set up future widgets
+        self.filechooserdialog_wine_binaries = vineyard.common.filechooserdialog_new_with_filters(
+            title = _('Select a Wine executable'),
+            parent = self.widgets['window'],
+            filters = [
+                 vineyard.common.filefilters['all']
+                ,vineyard.common.filefilters['wine_binary']
+            ],
+            default_filter = 'wine_binary',
+            action = gtk.FILE_CHOOSER_ACTION_OPEN,
+            on_response_func = self._on_dialog_add_conf_filechooser_browser_response
+        )
+
         gobject.set_application_name(_('Vineyard Preferences'))
         self.window_title_base = self.widgets['window'].get_title()
 
@@ -703,47 +716,102 @@ class MainApp(vineyard.async.ThreadedClass):
             self.__init_configurations(callback=self.__update_configurations)
 
     def _on_prefix_add(self, widget):
-        dialog = gtk.MessageDialog(parent=self.widgets['window'],
-                                   flags = gtk.DIALOG_DESTROY_WITH_PARENT,
-                                   type = gtk.MESSAGE_QUESTION,
-                                   buttons = gtk.BUTTONS_OK_CANCEL,
-                                   message_format = _(
-                                       "Add new configuration?"
-                                   ))
-        dialog.set_icon_name('vineyard-preferences')
-        dialog.set_title(_("Add new Windows configuration"))
-
-        dialog.format_secondary_text(
-            _("What would you like the new configuration to be called?")
-        )
-        dialog.entry = gtk.Entry()
-        dialog.vbox.pack_start(dialog.entry)
-
-        settings = gtk.settings_get_default()
-
-        dialog.set_default_response(gtk.RESPONSE_OK)
-        dialog.entry.connect('activate', self._on_dialog_add_conf_enter, dialog)
-        dialog.connect("response", self._on_dialog_add_conf_response)
-        dialog.show_all()
-
-    def _on_dialog_add_conf_enter(self, entry, dialog):
-        dialog.response(-5)
-
-    def _on_dialog_add_conf_response(self, dialog, response):
-        if response == -5: # OK pressed
-            conf_name = dialog.entry.get_text()
-            dialog.destroy()
-
-            def __update(*args):
-                self.__update_configurations(select_configuration = conf_name)
-
-            if len(conf_name.strip()):
-                wine.prefixes.add(
-                    conf_name
-                )
-                self.__init_configurations(callback=__update)
+        self.widgets['entry-add-prefix-name'].set_text('')
+        if wine.common.ENV['WINEARCH'] == 'win64':
+            self.widgets['radiobutton-win64'].set_active(True)
         else:
-            dialog.destroy()
+            self.widgets['radiobutton-win32'].set_active(True)
+        self.widgets['entry-add-prefix-wine-binary'].set_text(wine.common.ENV['WINE'])
+        self.widgets['entry-add-prefix-wine-loader'].set_text(wine.common.ENV['WINELOADER'])
+        self.widgets['entry-add-prefix-wine-server'].set_text(wine.common.ENV['WINESERVER'])
+        self.widgets['add-prefix-dialog'].show_all()
+        self.widgets['vbox-add-prefix-creating'].hide()
+        self.widgets['entry-add-prefix-name'].grab_focus()
+
+    def _on_dialog_add_conf_filechooser_browser_binary(self, button):
+        self.filechooserdialog_wine_binaries.target_widget = 'entry-add-prefix-wine-binary'
+        self.filechooserdialog_wine_binaries.set_title(_('Select a Wine executable'))
+        self.filechooserdialog_wine_binaries.unselect_all()
+        self.filechooserdialog_wine_binaries.show_all()
+
+    def _on_dialog_add_conf_filechooser_browser_loader(self, button):
+        self.filechooserdialog_wine_binaries.target_widget = 'entry-add-prefix-wine-loader'
+        self.filechooserdialog_wine_binaries.set_title(_('Select a Wine loader executable'))
+        self.filechooserdialog_wine_binaries.unselect_all()
+        self.filechooserdialog_wine_binaries.show_all()
+
+    def _on_dialog_add_conf_filechooser_browser_server(self, button):
+        self.filechooserdialog_wine_binaries.target_widget = 'entry-add-prefix-wine-server'
+        self.filechooserdialog_wine_binaries.set_title(_('Select a Wine server executable'))
+        self.filechooserdialog_wine_binaries.unselect_all()
+        self.filechooserdialog_wine_binaries.show_all()
+
+    def _on_dialog_add_conf_filechooser_browser_response(self, dialog, response):
+        if response == gtk.RESPONSE_OK:
+            filename = dialog.get_filename()
+            self.widgets[ self.filechooserdialog_wine_binaries.target_widget ].set_text( filename )
+        self.filechooserdialog_wine_binaries.hide()
+
+    def _on_dialog_add_conf_filechooser_set_binary(self, filechooser):
+        self.widgets['entry-add-prefix-wine-binary'].set_text(filechooser.get_filename())
+    def _on_dialog_add_conf_filechooser_set_loader(self, filechooser):
+        self.widgets['entry-add-prefix-wine-loader'].set_text(filechooser.get_filename())
+    def _on_dialog_add_conf_filechooser_set_server(self, filechooser):
+        self.widgets['entry-add-prefix-wine-server'].set_text(filechooser.get_filename())
+
+    def _on_dialog_add_conf_cancel(self, widget):
+        self.widgets['add-prefix-dialog'].hide_all()
+
+    def _on_dialog_add_conf_ok(self, widget):
+        name = self.widgets['entry-add-prefix-name'].get_text()
+
+        if len(name.strip()):
+            self.widgets['vbox-add-prefix'].set_sensitive(False)
+            self.widgets['vbox-add-prefix-creating'].show_all()
+
+            env = {
+                'WINE'       : self.widgets['entry-add-prefix-wine-binary'].get_text(),
+                'WINELOADER' : self.widgets['entry-add-prefix-wine-loader'].get_text(),
+                'WINESERVER' : self.widgets['entry-add-prefix-wine-server'].get_text()
+            }
+            if self.widgets['radiobutton-win64'].get_active():
+                env['WINEARCH'] = 'win64'
+            else:
+                env['WINEARCH'] = 'win32'
+
+
+            self.__timeout_creating_prefix_pulse = gobject.timeout_add(40, self.__add_conf_progress)
+            self.__creating_prefix_name = name
+            self._add_conf(name, env)
+
+
+    @vineyard.async.async_method
+    def _add_conf(self, name, env):
+        self.__creating_prefix_done = False
+        wine.prefixes.add(
+            name,
+            None,
+            env
+        )
+        self.__creating_prefix_done = True
+
+    def __add_conf_progress(self):
+        if self.__creating_prefix_done:
+            self._add_conf_done()
+            return False
+        else:
+            self.widgets['progressbar-add-prefix'].pulse()
+            return True
+        
+    @vineyard.async.mainloop_method
+    def _add_conf_done(self):
+        def __update(*args):
+            self.__update_configurations(select_configuration = self.__creating_prefix_name)
+            self.__reload_pages()
+
+        # gobject.source_remove(self.__timeout_creating_prefix_pulse)
+        self.widgets['add-prefix-dialog'].hide_all()
+        self.__init_configurations(callback=__update)
 
 
     """
@@ -839,7 +907,6 @@ class MainApp(vineyard.async.ThreadedClass):
                 self.widgets['spinner-loading'].stop()
                 self.widgets['hbox-spinner'].hide()
         return False
-
 
 
 

@@ -1,94 +1,440 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.20"/>
+  <!-- interface-naming-policy project-wide -->
   <object class="GtkAction" id="action1"/>
-  <object class="GtkAboutDialog" id="aboutdialog">
+  <object class="GtkDialog" id="add-prefix-dialog">
+    <property name="width_request">400</property>
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
-    <property name="title" translatable="yes">About Vineyard Preferences</property>
-    <property name="window_position">center-on-parent</property>
+    <property name="border_width">6</property>
+    <property name="title" translatable="yes">Add new Windows configuration</property>
     <property name="destroy_with_parent">True</property>
-    <property name="icon_name">vineyard</property>
-    <property name="type_hint">normal</property>
-    <property name="skip_taskbar_hint">True</property>
-    <property name="transient_for">window</property>
-    <property name="opacity">0.84999999999999998</property>
-    <property name="program_name">Vineyard Preferences</property>
-    <property name="copyright" translatable="yes">© 2009-2011 Christian Dannie Storgaard</property>
-    <property name="comments" translatable="yes">Vineyard Preferences is a part of the Vineyard Project</property>
-    <property name="website">http://vineyardproject.org</property>
-    <property name="license" translatable="yes">Vineyard is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
-
-Vineyard is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</property>
-    <property name="authors">Design and programming by:
-Christian Dannie Storgaard &lt;cybolic@gmail.com&gt;
-
-The unified Wine prefix specification by:
-Christian Dannie Storgaard (Vineyard)
-Dan Kegel (Winetricks)
-Miro Hrončok (Wibom)
-Alexey S. Malakhov (Q4Wine) and
-Vincent Povirk (Wine)
-
-Various utility functions by (or based on work by):
-Endolith / KillerKiwi / Johannes Roith
-    (Gtk/Gnome colour scraper)
-Sébastien Keim
-    (bitfield manipulator)
-Simon Vermeersch
-    (DBus example code)
-
-Parts of Vineyard were inspired by ideas posted
-by Scott Ritchie at:
-https://wiki.ubuntu.com/karmic-wine-integration
-
-BeautifulSoup is created and copyrighted by
-Leonard Richardson, more info at:
-http://www.crummy.com/software/BeautifulSoup/</property>
-    <property name="translator_credits" translatable="yes">Full list of translators at:
-    https://translations.launchpad.net/vineyard</property>
-    <property name="artists">Vineyard and Wine icons by:
-Christian Dannie Storgaard &lt;cybolic@gmail.com&gt;
-
-Monochrome indicator icon by:
-Connor Carney
-
-Icons modified for better view in different sizes
-and original regedit icon by:
-Joel Holdsworth &lt;joel@airwebreathe.org.uk&gt;
-
-Other icons are by or based on icons by:
-the Tango Project and
-the Wine-Doors Project</property>
-    <property name="logo_icon_name">vineyard</property>
-    <property name="wrap_license">True</property>
-    <property name="license_type">gpl-2-0</property>
-    <signal name="response" handler="_on_dialog_about_response" swapped="no"/>
+    <property name="icon_name">vineyard-preferences</property>
+    <property name="type_hint">dialog</property>
     <child internal-child="vbox">
-      <object class="GtkBox" id="dialog-vbox1">
+      <object class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox" id="dialog-action_area1">
+        <child>
+          <object class="GtkVBox" id="vbox-add-prefix">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkHBox" id="hbox7">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="image-add-prefix">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">document-new</property>
+                    <property name="icon-size">6</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">6</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Add new prefix</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkHBox" id="hbox1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="label2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">_Name: </property>
+                    <property name="use_underline">True</property>
+                    <property name="mnemonic_widget">entry-add-prefix-name</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="entry-add-prefix-name">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">●</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkExpander" id="expander1">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child>
+                  <object class="GtkTable" id="table2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="n_rows">4</property>
+                    <property name="n_columns">2</property>
+                    <child>
+                      <object class="GtkLabel" id="label4">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Architecture: </property>
+                      </object>
+                      <packing>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options">GTK_FILL</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label5">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Wine Binary: </property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options">GTK_FILL</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label6">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Wine Loader: </property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options">GTK_FILL</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label7">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Wine Server: </property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options">GTK_FILL</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHBox" id="hbox2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkRadioButton" id="radiobutton-win64">
+                            <property name="label" translatable="yes">64-bit</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="radiobutton-win32">
+                            <property name="label" translatable="yes">32-bit</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">radiobutton-win64</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHBox" id="hbox4">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkEntry" id="entry-add-prefix-wine-binary">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">●</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button1">
+                            <property name="label">gtk-open</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="clicked" handler="_on_dialog_add_conf_filechooser_browser_binary" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHBox" id="hbox5">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkEntry" id="entry-add-prefix-wine-loader">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">●</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button2">
+                            <property name="label">gtk-open</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="clicked" handler="_on_dialog_add_conf_filechooser_browser_loader" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHBox" id="hbox6">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkEntry" id="entry-add-prefix-wine-server">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">●</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button3">
+                            <property name="label">gtk-open</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="clicked" handler="_on_dialog_add_conf_filechooser_browser_server" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+                <child type="label">
+                  <object class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">_Advanced</property>
+                    <property name="use_underline">True</property>
+                    <property name="mnemonic_widget">entry-add-prefix-name</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="button-add-prefix-cancel">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="_on_dialog_add_conf_cancel" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button-add-prefix-ok">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="_on_dialog_add_conf_ok" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
         <child>
-          <placeholder/>
+          <object class="GtkVBox" id="vbox-add-prefix-creating">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkProgressBar" id="progressbar-add-prefix">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="activity_mode">True</property>
+                <property name="show_text">True</property>
+                <property name="text" translatable="yes">Creating prefix...</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
         </child>
       </object>
     </child>
+    <action-widgets>
+      <action-widget response="0">button-add-prefix-cancel</action-widget>
+      <action-widget response="0">button-add-prefix-ok</action-widget>
+    </action-widgets>
   </object>
+  <object class="GtkFileFilter" id="filefilter1"/>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -114,15 +460,6 @@ the Wine-Doors Project</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-about</property>
   </object>
-  <object class="GtkListStore" id="liststore-configurations"/>
-  <object class="GtkListStore" id="liststore-pages">
-    <columns>
-      <!-- column-name icon -->
-      <column type="GdkPixbuf"/>
-      <!-- column-name markup -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkMenu" id="menu-tools">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -131,7 +468,6 @@ the Wine-Doors Project</property>
         <property name="label" translatable="yes">Add a _new prefix</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="image">image1</property>
         <property name="use_stock">False</property>
@@ -144,7 +480,6 @@ the Wine-Doors Project</property>
         <property name="label" translatable="yes">Re_move the current prefix</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="image">image2</property>
         <property name="use_stock">False</property>
@@ -163,7 +498,6 @@ the Wine-Doors Project</property>
         <property name="label" translatable="yes">_Refresh the list of prefixes</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="image">image3</property>
         <property name="use_stock">False</property>
@@ -182,7 +516,6 @@ the Wine-Doors Project</property>
         <property name="label" translatable="yes">_Help</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="image">image4</property>
         <property name="use_stock">False</property>
@@ -195,7 +528,6 @@ the Wine-Doors Project</property>
         <property name="label" translatable="yes">_About</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="image">image5</property>
         <property name="use_stock">False</property>
@@ -203,6 +535,15 @@ the Wine-Doors Project</property>
         <signal name="activate" handler="_on_button_about" swapped="no"/>
       </object>
     </child>
+  </object>
+  <object class="GtkListStore" id="liststore-configurations"/>
+  <object class="GtkListStore" id="liststore-pages">
+    <columns>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name markup -->
+      <column type="gchararray"/>
+    </columns>
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
@@ -224,7 +565,6 @@ the Wine-Doors Project</property>
               <object class="GtkToolItem" id="toolobject-configurations">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="is_important">True</property>
                 <child>
                   <object class="GtkHBox" id="hbox-configurations-combobox">
@@ -261,7 +601,6 @@ the Wine-Doors Project</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="events">GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Tools</property>
                 <property name="icon_name">preferences-other</property>
                 <signal name="clicked" handler="_on_button_tools" swapped="no"/>
@@ -303,9 +642,6 @@ the Wine-Doors Project</property>
                         <property name="headers_visible">False</property>
                         <property name="enable_search">False</property>
                         <signal name="cursor-changed" handler="_on_page_cursor_changed" swapped="no"/>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection" id="treeview-selection1"/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -340,7 +676,7 @@ the Wine-Doors Project</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHBox" id="hbox1">
+                  <object class="GtkHBox" id="hbox3">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">6</property>
@@ -350,7 +686,6 @@ the Wine-Doors Project</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="_on_toggle_advanced" swapped="no"/>
@@ -429,9 +764,9 @@ the Wine-Doors Project</property>
                       <object class="GtkProgressBar" id="progressbar-loading">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="show_text">True</property>
                         <property name="pulse_step">0.0099999997764800008</property>
                         <property name="text">Reading settings...</property>
-                        <property name="show_text">True</property>
                       </object>
                     </child>
                   </object>
@@ -449,7 +784,7 @@ the Wine-Doors Project</property>
               </packing>
             </child>
             <child>
-              <object class="GtkHBox" id="hbox2">
+              <object class="GtkHBox" id="hbox8">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">3</property>
@@ -458,7 +793,6 @@ the Wine-Doors Project</property>
                   <object class="GtkButton" id="button-about">
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <signal name="clicked" handler="_on_button_about" swapped="no"/>
                     <child>
                       <object class="GtkImage" id="image-button-about">
@@ -478,7 +812,6 @@ the Wine-Doors Project</property>
                   <object class="GtkButton" id="button-help">
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <signal name="clicked" handler="_on_button_help" swapped="no"/>
                     <child>
                       <object class="GtkImage" id="image-button-help">
@@ -507,7 +840,6 @@ the Wine-Doors Project</property>
                         <property name="can_focus">True</property>
                         <property name="can_default">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                         <signal name="clicked" handler="_on_button_apply" swapped="no"/>
                       </object>
@@ -523,7 +855,6 @@ the Wine-Doors Project</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                         <signal name="clicked" handler="_on_quit" swapped="no"/>
                       </object>
@@ -552,6 +883,83 @@ the Wine-Doors Project</property>
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAboutDialog" id="aboutdialog">
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">About Vineyard Preferences</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="icon_name">vineyard</property>
+    <property name="type_hint">normal</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="transient_for">window</property>
+    <property name="opacity">0.84999999999999998</property>
+    <property name="program_name">Vineyard Preferences</property>
+    <property name="copyright" translatable="yes">© 2009-2011 Christian Dannie Storgaard</property>
+    <property name="comments" translatable="yes">Vineyard Preferences is a part of the Vineyard Project</property>
+    <property name="website">http://vineyardproject.org</property>
+    <property name="license" translatable="yes">Vineyard is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+Vineyard is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</property>
+    <property name="authors">Design and programming by:
+Christian Dannie Storgaard &lt;cybolic@gmail.com&gt;
+
+The unified Wine prefix specification by:
+Christian Dannie Storgaard (Vineyard)
+Dan Kegel (Winetricks)
+Miro Hrončok (Wibom)
+Alexey S. Malakhov (Q4Wine) and
+Vincent Povirk (Wine)
+
+Various utility functions by (or based on work by):
+Endolith / KillerKiwi / Johannes Roith
+    (Gtk/Gnome colour scraper)
+Sébastien Keim
+    (bitfield manipulator)
+Simon Vermeersch
+    (DBus example code)
+
+Parts of Vineyard were inspired by ideas posted
+by Scott Ritchie at:
+https://wiki.ubuntu.com/karmic-wine-integration
+
+BeautifulSoup is created and copyrighted by
+Leonard Richardson, more info at:
+http://www.crummy.com/software/BeautifulSoup/</property>
+    <property name="translator_credits" translatable="yes">Full list of translators at:
+    https://translations.launchpad.net/vineyard</property>
+    <property name="artists">Vineyard and Wine icons by:
+Christian Dannie Storgaard &lt;cybolic@gmail.com&gt;
+
+Monochrome indicator icon by:
+Connor Carney
+
+Icons modified for better view in different sizes
+and original regedit icon by:
+Joel Holdsworth &lt;joel@airwebreathe.org.uk&gt;
+
+Other icons are by or based on icons by:
+the Tango Project and
+the Wine-Doors Project</property>
+    <property name="logo_icon_name">vineyard</property>
+    <property name="wrap_license">True</property>
+    <signal name="response" handler="_on_dialog_about_response" swapped="no"/>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox1">
+        <property name="can_focus">False</property>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area1">
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>
