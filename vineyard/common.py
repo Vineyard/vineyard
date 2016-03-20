@@ -170,6 +170,9 @@ mimetypes = {
     'msstyles': (
         'application/octet-stream',
         'application/x-ms-dos-executable'
+    ),
+    'executable': (
+        'application/x-executable',
     )
 }
 
@@ -179,7 +182,8 @@ filefilters = {
     'windows_executables': gtk.FileFilter(),
     'windows_executables_and_images': gtk.FileFilter(),
     'archives': gtk.FileFilter(),
-    'msstyles': gtk.FileFilter()
+    'msstyles': gtk.FileFilter(),
+    'wine_binary': gtk.FileFilter()
 }
 filefilters['all'].set_name(_("All Files"))
 filefilters['images'].set_name(_("Image Files"))
@@ -187,17 +191,31 @@ filefilters['windows_executables'].set_name(_("Windows Executables"))
 filefilters['windows_executables_and_images'].set_name(_("Windows Executables And Image Files"))
 filefilters['archives'].set_name(_("Archives"))
 filefilters['msstyles'].set_name(_("Microsoft XP Style"))
+filefilters['wine_binary'].set_name(_("Wine Binaries"))
+
 
 filefilters['all'].add_pattern('*')
 
 filefilters['images'].add_pixbuf_formats()
 filefilters['windows_executables_and_images'].add_pixbuf_formats()
 
+# for mimetype in mimetypes['executable']:
+#     filefilters['wine_binary'].add_mime_type(mimetype)
+# filefilters['wine_binary'].add_pattern('*wine*')
+filefilters['wine_binary'].add_custom(
+    gtk.FILE_FILTER_DISPLAY_NAME| gtk.FILE_FILTER_MIME_TYPE,
+    lambda filter_info, data: (
+        'wine' in filter_info[2].lower() and
+        filter_info[3] in mimetypes['executable']
+    ),
+    None
+)
+
 filefilters['msstyles'].add_custom(
     gtk.FILE_FILTER_DISPLAY_NAME | gtk.FILE_FILTER_MIME_TYPE,
     lambda filter_info, data: (
-        filter_info[3] in mimetypes['msstyles'] and  # DISPLAY_NAME
-        filter_info[2].lower().endswith('.msstyles') # MIME_TYPE
+        filter_info[3] in mimetypes['msstyles'] and  # MIME_TYPE
+        filter_info[2].lower().endswith('.msstyles') # DISPLAY_NAME
     ),
     None
 )
@@ -205,7 +223,8 @@ filefilters['msstyles'].add_custom(
 for key, mtypes in mimetypes.iteritems():
     if key == 'msstyles': continue
     for mimetype in mtypes:
-        filefilters[key].add_mime_type(mimetype)
+        if key in filefilters:
+            filefilters[key].add_mime_type(mimetype)
 
 for mimetype in mimetypes['images']:
     filefilters['windows_executables_and_images'].add_mime_type(mimetype)
