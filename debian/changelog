@@ -1,4 +1,12 @@
-vineyard (0.1.5) precise quantal raring saucy trusty utopic vivid wily xenial; urgency=medium
+vineyard (0.1.6) precise quantal raring saucy trusty utopic vivid wily xenial; urgency=medium
+
+  * This is not a release. This info is only to allow Launchpad to get the version.
+  * Please see Git log or http://vineyardproject.org for changes.
+  * Git log: https://github.com/Cybolic/vineyard/commits/master
+
+ -- Christian Dannie Storgaard <cybolic@gmail.com>  Mon, 21 Mar 2016 21:15:11 +0200
+
+ vineyard (0.1.5) precise quantal raring saucy trusty utopic vivid wily xenial; urgency=medium
 
   * This is not a release. This info is only to allow Launchpad to get the version.
   * Please see Bazaar log or http://vineyardproject.org for changes.
