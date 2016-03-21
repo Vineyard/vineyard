@@ -721,12 +721,60 @@ class MainApp(vineyard.async.ThreadedClass):
             self.widgets['radiobutton-win64'].set_active(True)
         else:
             self.widgets['radiobutton-win32'].set_active(True)
+
+        small_color = vineyard.gdk_color_to_hex(
+            vineyard.gdk_color_mix(
+                self.widgets['combobox-add-prefix-wine-version'].get_style().bg[gtk.STATE_NORMAL],
+                self.widgets['combobox-add-prefix-wine-version'].get_style().fg[gtk.STATE_NORMAL],
+                mix=0.5
+            )
+        )
+        # Build the names of the installations so we can sort them
+        installation_list = {}
+        wine_installations = wine.detect_wine_installations()
+        for path in wine_installations:
+            version_info = wine_installations[path]
+            name = str(
+                '{version} '+
+                '<span foreground="{color}" size="small">{path}</span>'
+            ).format(
+                version = version_info['version'],
+                path = '/wine'.join(path.split('/wine')[:-1]).replace(wine.common.ENV['HOME'], '~'),
+                color = small_color
+            )
+            installation_list[name] = path
+        # Now sort the installations and add them to the combobox model
+        model = gtk.ListStore(str, str)
+        for name in sorted(installation_list):
+            model.append((installation_list[name], name))
+        model.append(('', _("Custom")))
+        self.widgets['combobox-add-prefix-wine-version'].set_model(model)
+        cell = gtk.CellRendererText()
+        self.widgets['combobox-add-prefix-wine-version'].clear()
+        self.widgets['combobox-add-prefix-wine-version'].pack_start(cell, True)
+        self.widgets['combobox-add-prefix-wine-version'].add_attribute(cell, 'markup', 1)
+        # self.widgets['combobox-add-prefix-wine-version'].set_active(len(model)-1)
+        self.widgets['combobox-add-prefix-wine-version'].set_active(0)
+
         self.widgets['entry-add-prefix-wine-binary'].set_text(wine.common.ENV['WINE'])
         self.widgets['entry-add-prefix-wine-loader'].set_text(wine.common.ENV['WINELOADER'])
         self.widgets['entry-add-prefix-wine-server'].set_text(wine.common.ENV['WINESERVER'])
         self.widgets['add-prefix-dialog'].show_all()
         self.widgets['vbox-add-prefix-creating'].hide()
+        self.widgets['alignment-add-prefix-wine-version'].hide()
         self.widgets['entry-add-prefix-name'].grab_focus()
+
+    def _on_dialog_add_prefix_wine_combo_changed(self, combobox):
+        selected = combobox.get_model()[combobox.get_active()]
+        path = selected[0]
+        name = selected[1]
+        if path == '':
+            self.widgets['alignment-add-prefix-wine-version'].show_all()
+        else:
+            self.widgets['alignment-add-prefix-wine-version'].hide()
+            self.widgets['entry-add-prefix-wine-binary'].set_text(path)
+            self.widgets['entry-add-prefix-wine-loader'].set_text(path + '')
+            self.widgets['entry-add-prefix-wine-server'].set_text(path + 'server')
 
     def _on_dialog_add_conf_filechooser_browser_binary(self, button):
         self.filechooserdialog_wine_binaries.target_widget = 'entry-add-prefix-wine-binary'
