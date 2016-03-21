@@ -742,11 +742,15 @@ class MainApp(vineyard.async.ThreadedClass):
                 path = '/wine'.join(path.split('/wine')[:-1]).replace(wine.common.ENV['HOME'], '~'),
                 color = small_color
             )
-            installation_list[name] = path
+            installation_list[name] = {
+                'path': path,
+                'version': version_info
+            }
+        self.widgets['combobox-add-prefix-wine-version'].installations = installation_list
         # Now sort the installations and add them to the combobox model
         model = gtk.ListStore(str, str)
-        for name in sorted(installation_list):
-            model.append((installation_list[name], name))
+        for name in reversed(sorted(installation_list)):
+            model.append((installation_list[name]['path'], name))
         model.append(('', _("Custom")))
         self.widgets['combobox-add-prefix-wine-version'].set_model(model)
         cell = gtk.CellRendererText()
@@ -772,6 +776,15 @@ class MainApp(vineyard.async.ThreadedClass):
             self.widgets['alignment-add-prefix-wine-version'].show_all()
         else:
             self.widgets['alignment-add-prefix-wine-version'].hide()
+
+            version_info = self.widgets['combobox-add-prefix-wine-version'].installations[name]['version']
+            if version_info['float'] < 1.2:
+                self.widgets['radiobutton-win32'].set_active(True)
+                self.widgets['radiobutton-win64'].set_sensitive(False)
+            else:
+                self.widgets['radiobutton-win64'].set_active(True)
+                self.widgets['radiobutton-win64'].set_sensitive(True)
+
             self.widgets['entry-add-prefix-wine-binary'].set_text(path)
             self.widgets['entry-add-prefix-wine-loader'].set_text(path + '')
             self.widgets['entry-add-prefix-wine-server'].set_text(path + 'server')
