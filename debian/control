@@ -2,9 +2,9 @@ Source: vineyard
 Section: misc
 Priority: optional
 Maintainer: Christian Dannie Storgaard <cybolic@gmail.com>
-Build-Depends: debhelper (>= 7), dh-python | python-support, perl
-XS-Python-Version: >= 2.4
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 7), python (>= 2.4), dh-python | python-support, perl
+X-Python-Version: >= 2.4
+Standards-Version: 3.9.6
 Vcs-Bzr: lp:vineyard
 Vcs-Git: https://github.com/Cybolic/vineyard.git
 Vcs-Browser: https://github.com/Cybolic/vineyard
@@ -15,7 +15,7 @@ Architecture: all
 Depends: wine, icoutils, cabextract, unzip, python-glade2, ${misc:Depends}, ${python:Depends}
 Provides: wine-preferences, nautilus-wine, python-wine
 Replaces: wine-preferences, nautilus-wine, python-wine
-XB-Python-Version: ${python:Versions}
+X-Python-Version: >= 2.4
 Description: Easy to use Wine configuration program
  Vineyard is a user friendly configuration tool for Wine that offers all the
  features of winecfg (with the exception of the unfinished theme-support) as
