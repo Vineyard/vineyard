@@ -34,6 +34,30 @@ def check_setup():
     ]
     return all([os.path.exists(path) for path in paths])
 
+def detect_wine_installations(extra_paths = None):
+    installations = {}
+    paths = common.ENV['PATH'].split(':') + [
+    ]
+    if extra_paths is not None:
+        path += extra_paths
+    for path in paths:
+        wine_binary = os.path.join(path, 'wine')
+        if os.path.exists(wine_binary):
+            version = common.get_wine_version(wine_binary)
+            installations[wine_binary] = version
+
+    search_paths = [
+        "/opt/",
+        "%s/.PlayOnLinux/wine/linux-amd64/" % common.ENV['HOME'],
+        "%s/.PlayOnLinux/wine/linux-x86/" % common.ENV['HOME']
+    ]
+    for search_path in search_paths:
+        for file in os.listdir(search_path):
+            wine_binary = os.path.join(search_path, file, 'bin', 'wine')
+            if os.path.exists(wine_binary):
+                version = common.get_wine_version(wine_binary)
+                installations[wine_binary] = version
+    return installations
 
 def winetricks_installed():
     """"Return the path to winetricks, if installed, else return False.
