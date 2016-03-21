@@ -663,7 +663,7 @@ def get_wine_version(wine_binary=None):
     else:
         version_extra = '-'.join(version.split('-')[1:]).strip()
 
-    version_float = float(version_major) + float(version_minor)*0.1 + float(version_micro)*0.01
+    version_float = float('%s.%s%s' % (version_major, version_minor, version_micro))
 
     return {
         'version' : version,
