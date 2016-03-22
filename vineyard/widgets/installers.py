@@ -26,7 +26,7 @@ INSTALLERS_PROGRAMS = [
 INSTALLERS_EXTRAS = [
     ('d3dx9', 'directx', 'Direct3D', _("Direct3D from DirectX 9")),
     ('flash', 'flash', 'Adobe Flash', _('Adobe Flash Player ActiveX and Firefox plugins')),
-    ('divx', 'package-x-generic', 'DivX', _('DivX video codec')),
+    # ('divx', 'package-x-generic', 'DivX', _('DivX video codec')),
     ('xvid', 'package-x-generic', 'Xvid', _('Xvid video codec')),
     ('gdiplus', 'windows-library', 'GDI+', _('Microsoft Windows GDI+ library')),
     ('mfc40', 'windows-library', 'Microsoft Foundation Classes', _('MFC module from Microsoft Visual C++')),

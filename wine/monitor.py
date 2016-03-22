@@ -489,9 +489,9 @@ class Winetricks(Program):
         print(executable)
         if executable is not None and len(executable):
             if type(command_arg) in (__builtin__.list, tuple):
-                command_arg = [executable] + command_arg
+                command_arg = [executable, '-q', '--verbose'] + command_arg
             else:
-                command_arg = "%s -q '%s'" % (executable, command_arg)
+                command_arg = "%s -q --verbose '%s'" % (executable, command_arg)
         print(executable)
 
         self.has_standard_output = False
@@ -568,7 +568,7 @@ class Winetricks(Program):
                     else:
                         package = filter(len,
                             std_output.split('already installed')
-                        )[0].split('\n')[1].strip()
+                        )[-2].split('\n')[-1].strip()
                     return ('already installed', package)
 
                 elif 'Archive: ' in std_lines[-1]:
@@ -594,4 +594,13 @@ class Winetricks(Program):
 
                 elif 'returned status' in std_output and 'Aborting.' in std_output:
                     return ('failed', std_output.split('returned status')[1].split('.')[0].strip())
+
+                elif not self.is_alive():
+                    # TODO: We need to be able to read a fail state here.
+                    # if len(self.read_stderr().strip()):
+                    #     print("failed")
+                    #     return ('failed', self.read_stderr().strip())
+                    # else:
+                    print("done")
+                    return ('done', )
 

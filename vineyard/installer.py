@@ -291,7 +291,7 @@ class Winetricks:
                 self._DOWNLOAD_DIALOG.set_markup_second(_(
                     "Everything successfully installed"
                 ))
-                return_status = False
+                return_status = True
 
             elif status[0] == 'failed':
                 self._DOWNLOAD_DIALOG.progressbar.set_text(
@@ -310,7 +310,7 @@ class Winetricks:
             return False
         elif return_status is False:
             self._DOWNLOAD_DIALOG.progressbar.set_fraction(0.0)
-            self._DOWNLOAD_DIALOG.progressbar.hide()
+            # self._DOWNLOAD_DIALOG.progressbar.hide()
             self._DOWNLOAD_DIALOG.button.set_label('gtk-close')
             self._DOWNLOAD_DIALOG.button.set_use_stock(True)
             return False
