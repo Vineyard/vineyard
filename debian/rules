@@ -10,4 +10,4 @@
 	dh $@
 
 override_dh_builddeb:
-	dh_builddeb -- -Zbzip2 -z9
+	dh_builddeb -- -z9
