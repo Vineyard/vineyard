@@ -22,10 +22,11 @@ import struct, binascii
 CPU_NAME = {
     0x0184: u"Alpha AXP",
     0x01c0: u"ARM",
-    0x014C: u"Intel 80386",
+    0x014C: u"Intel 80386",    # standard 32-bit
     0x014D: u"Intel 80486",
     0x014E: u"Intel Pentium",
-    0x0200: u"Intel IA64",
+    0x0200: u"Intel IA64",     # standard 64-bit according to the spec, actually only Intel Itanium and never really used
+    0x8664: u"AMD 64",         # standard 64-bit, but not in the spec
     0x0268: u"Motorola 68000",
     0x0266: u"MIPS",
     0x0284: u"Alpha AXP 64 bits",
@@ -244,7 +245,7 @@ VERSION_INFO_OS = {
     0x00000000L: 'Unknown'
 }
 
-LOG = True
+LOG = False
 def Log(*messages):
     if LOG:
         print(*messages)
@@ -320,24 +321,45 @@ class windows_executable(object):
                 )
             )
 
-        self.header_optional = {
-            'MajorLinkerVersion': (
-                struct.unpack('<B', file.read(1))[0]),
-            'MinorLinkerVersion': (
-                struct.unpack('<B', file.read(1))[0]),
-            'SizeOfCode': (
-                struct.unpack('<L', file.read(4))[0]),
-            'SizeOfInitializedData': (
-                struct.unpack('<L', file.read(4))[0]),
-            'SizeOfUninitializedData': (
-                struct.unpack('<L', file.read(4))[0]),
-            'AddressOfEntryPoint': (
-                struct.unpack('<L', file.read(4))[0]),
-            'BaseOfCode': (
-                struct.unpack('<L', file.read(4))[0]),
-            'BaseOfData': (
-                struct.unpack('<L', file.read(4))[0]),
-        }
+        # Standard IMAGE_NT_HEADERS32
+        if '64' not in self.header_coff['Machine']:
+            self.header_optional = {
+                'MajorLinkerVersion': (
+                    struct.unpack('<B', file.read(1))[0]),
+                'MinorLinkerVersion': (
+                    struct.unpack('<B', file.read(1))[0]),
+                'SizeOfCode': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'SizeOfInitializedData': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'SizeOfUninitializedData': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'AddressOfEntryPoint': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'BaseOfCode': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'BaseOfData': (
+                    struct.unpack('<L', file.read(4))[0]),
+            }
+        # IMAGE_NT_HEADERS64
+        else:
+            self.header_optional = {
+                'MajorLinkerVersion': (
+                    struct.unpack('<B', file.read(1))[0]),
+                'MinorLinkerVersion': (
+                    struct.unpack('<B', file.read(1))[0]),
+                'SizeOfCode': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'SizeOfInitializedData': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'SizeOfUninitializedData': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'AddressOfEntryPoint': (
+                    struct.unpack('<L', file.read(4))[0]),
+                'BaseOfCode': (
+                    struct.unpack('<L', file.read(4))[0]),
+            }
+
         if self._optional_header_format == 'pe32':
             self.header_optional['ImageBase'] = (
                 struct.unpack('<L', file.read(4))[0])
@@ -1012,6 +1034,9 @@ class windows_executable(object):
             with open(output, 'wb') as _file:
                 _file.write(ico)
             return True
+
+    def is_64bit(self):
+        return ('64' in self.header_coff['Machine'])
 
 
 
