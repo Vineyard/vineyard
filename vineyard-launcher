@@ -125,9 +125,20 @@ class Dialog(gtk.Dialog):
             except:
                 self.program_name = os.path.basename(filename)
 
+            try:
+                if wine.binary.windows_executable(filename).is_64bit():
+                    self.architecture = "64-bit"
+                    self.winearch = 'win64'
+                else:
+                    self.architecture = "32-bit"
+                    self.winearch = 'win32'
+            except:
+                self.architecture = "32-bit"
+                self.winearch = 'win32'
+
             self.label_intro.set_text((
-                _("Run {0} in this prefix:")
-            ).format(self.program_name))
+                _("Run {0} ({1}) in this prefix:")
+            ).format(self.program_name, self.architecture))
         self.label_intro.set_alignment(0.0, 0.5)
         self.innervbox.pack_start(self.label_intro, expand=False, fill=True)
 
@@ -167,6 +178,20 @@ class Dialog(gtk.Dialog):
             prefix_dict.items(),
             key = lambda item: operator.getitem(item, 0).lower()
         ):
+            if 'WINEARCH' in data:
+                # Don't encourage 64bit executables to run in 32bit prefixes
+                if self.winearch == 'win64' and data['WINEARCH'] != 'win64':
+                    name_text = '<span foreground="{color}">{name}</span>'
+                else:
+                    name_text = '{name}'
+                name = str(
+                    name_text+
+                    ' <span foreground="{color}">({architecture})</span>'
+                ).format(
+                    name = name,
+                    architecture = ("64-bit" if data['WINEARCH'] == 'win64' else "32-bit"),
+                    color = small_color
+                )
             # This name is a duplicate, display prefix path as well
             if data['WINEPREFIXNAME'] in prefix_duplicates:
                 text = str(
