@@ -52,11 +52,12 @@ def detect_wine_installations(extra_paths = None):
         "%s/.PlayOnLinux/wine/linux-x86/" % common.ENV['HOME']
     ]
     for search_path in search_paths:
-        for file in os.listdir(search_path):
-            wine_binary = os.path.join(search_path, file, 'bin', 'wine')
-            if os.path.exists(wine_binary):
-                version = common.get_wine_version(wine_binary)
-                installations[wine_binary] = version
+        if os.path.isdir(search_path):
+            for file in os.listdir(search_path):
+                wine_binary = os.path.join(search_path, file, 'bin', 'wine')
+                if os.path.exists(wine_binary):
+                    version = common.get_wine_version(wine_binary)
+                    installations[wine_binary] = version
     return installations
 
 def winetricks_installed():
