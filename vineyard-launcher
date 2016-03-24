@@ -117,7 +117,7 @@ class Dialog(gtk.Dialog):
         if is_dir:
             self.dir_name = os.path.basename(filename)
             self.label_intro.set_markup((
-                _("Add the folder <b>{0}</b> to this configuration:")
+                _("Add the folder <b>{0}</b> to this prefix:")
             ).format(self.dir_name))
         else:
             try:
@@ -126,7 +126,7 @@ class Dialog(gtk.Dialog):
                 self.program_name = os.path.basename(filename)
 
             self.label_intro.set_text((
-                _("Run {0} in this configuration:")
+                _("Run {0} in this prefix:")
             ).format(self.program_name))
         self.label_intro.set_alignment(0.0, 0.5)
         self.innervbox.pack_start(self.label_intro, expand=False, fill=True)
@@ -150,7 +150,7 @@ class Dialog(gtk.Dialog):
         )
         self.prefixes = [
             (None, _('Default')),
-            (-1, _("New configuration")),
+            (-1, _("New prefix")),
             (-1, '-')
         ]
         prefix_dict = wine.prefixes.list()
@@ -234,7 +234,7 @@ class Dialog(gtk.Dialog):
         self.entryhbox.pack_start(self.entry)
         self.newvbox.pack_start(self.entryhbox, False, False)
 
-        self.expander = gtk.Expander(_("New configuration options"))
+        self.expander = gtk.Expander(_("New prefix options"))
 
         self.table = gtk.Table(rows=2, columns=2, homogeneous=False)
         table_rownr = 0
@@ -719,7 +719,7 @@ class Dialog(gtk.Dialog):
         self.creatingbottledialog.vbox.add(vbox)
         vbox.set_spacing(6)
         vbox.set_border_width(6)
-        self.creatingbottlelabel = gtk.Label(_("Creating configuration \"%s\"") % bottlename)
+        self.creatingbottlelabel = gtk.Label(_("Creating prefix \"%s\"") % bottlename)
         vbox.pack_start(self.creatingbottlelabel, False, False)
         self.creatingbottleprogress = gtk.ProgressBar()
         self.creatingbottleprogress.set_pulse_step(0.1)
