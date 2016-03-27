@@ -238,6 +238,7 @@ class Widget(widget.VineyardWidget):
         if not os.path.isdir(folder):
             folder = os.path.dirname(folder)
         self.filechooserdialog_path.set_current_folder(folder)
+        self.filechooserdialog_path.add_shortcut_folder(wine.common.ENV['WINEPREFIX'])
         self.filechooserdialog_path.show()
 
     def path_dialog_response(self, dialog, response):
@@ -251,6 +252,7 @@ class Widget(widget.VineyardWidget):
         if not os.path.isdir(folder):
             folder = os.path.dirname(folder)
         self.filechooserdialog_device.set_current_folder(folder)
+        self.filechooserdialog_device.add_shortcut_folder(wine.common.ENV['WINEPREFIX'])
         self.filechooserdialog_device.show()
 
     def device_dialog_response(self, dialog, response):
