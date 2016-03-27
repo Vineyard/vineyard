@@ -239,6 +239,16 @@ class MainApp(vineyard.async.ThreadedClass):
                 self.configurations.items(),
                 key = lambda item: operator.getitem(item, 0).lower()
             ):
+                # Add the prefix architecture to the name
+                if 'WINEARCH' in data:
+                    name = str(
+                        '{name} '+
+                        '<span foreground="{color}">({arch})</span>'
+                    ).format(
+                        name = name,
+                        arch = ('64-bit' if data['WINEARCH'] == 'win64' else '32-bit'),
+                        color = small_color
+                    )
                 # This name is a duplicate, display prefix path as well
                 if data['WINEPREFIXNAME'] in prefix_duplicates:
                     text = str(
@@ -759,7 +769,7 @@ class MainApp(vineyard.async.ThreadedClass):
         self.widgets['combobox-add-prefix-wine-version'].add_attribute(cell, 'markup', 1)
         # self.widgets['combobox-add-prefix-wine-version'].set_active(len(model)-1)
         self.widgets['combobox-add-prefix-wine-version'].set_active(0)
-        
+
         self.widgets['add-prefix-dialog'].show_all()
         self.widgets['vbox-add-prefix-creating'].hide()
         self.widgets['alignment-add-prefix-wine-version'].hide()
