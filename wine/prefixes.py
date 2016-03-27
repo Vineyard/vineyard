@@ -166,6 +166,9 @@ def get_metadata(prefix_path=None):
     info['WINEPREFIXTYPE'] = info_default['WINEPREFIXTYPE']
 
     if prefix_path == os.path.expanduser('~/.wine'):
+        # Set options that may not match the defaults
+        info_default['WINEARCH'] = get_prefix_arch(prefix_path)
+        # Return info
         return info_default
 
     if not os.access(prefix_path, os.R_OK):
