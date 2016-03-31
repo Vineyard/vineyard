@@ -305,7 +305,7 @@ class VineyardWidgetFileChooserButton(VineyardWidget):
 
     def _build_interface(self):
         self.table = gtk.Table(rows=1, columns=2, homogeneous=False)
-        wine.drives.get_main_drive(use_registry=False)
+        # wine.drives.get_main_drive(use_registry=False)
         self.label = gtk.Label(self.title)
         self.label.set_alignment(0.0, 0.5)
         self.table.attach(self.label, 0,1, 0,1, gtk.FILL|gtk.EXPAND,0, 0,0)

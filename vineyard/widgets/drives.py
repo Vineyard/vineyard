@@ -221,7 +221,10 @@ class Widget(widget.VineyardWidget):
                 self.settings[self.settings_key]['new_list'][active_text]['mapping']
             )
 
-            self.settings[self.settings_key]['new_list'][active_text]['device'] = new_device
+            if new_device != '':
+                self.settings[self.settings_key]['new_list'][active_text]['device'] = new_device
+            else:
+                self.settings[self.settings_key]['new_list'][active_text]['device'] = None
             self.emit_change()
 
     def device_toggled(self, widget=None):
@@ -297,11 +300,16 @@ class Widget(widget.VineyardWidget):
 
     def button_auto_clicked(self, button):
         drives = wine.drives.get_auto_detect()
-        for drive in drives.keys():
-            if 'type' not in drives[drive]:
-                drives[drive]['type'] = ''
-            if 'mapping' not in drives[drive]:
-                del drives[drive]
+        drives = dict(
+            (drive_letter[0], drives[drive_letter])
+            for drive_letter
+            in sorted(drives.keys())
+        )
+        for drive_letter in drives.keys():
+            if 'type' not in drives[drive_letter]:
+                drives[drive_letter]['type'] = ''
+            if 'mapping' not in drives[drive_letter]:
+                del drives[drive_letter]
         self.settings[self.settings_key]['new_list'] = drives
         self.emit_change()
         self.fill_widgets(emit_loaded=False)

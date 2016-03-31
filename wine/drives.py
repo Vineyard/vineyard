@@ -27,15 +27,20 @@ def drive_mapping_to_reg(driveletter, mapping):
 def get_main_drive(drives=None, use_registry=True):
     if drives == None:
         drives = get(use_registry=use_registry)
-    return drives[ sorted(drives.keys())[0] ]
+    if len(drives.keys()):
+        return drives[ sorted(drives.keys())[0] ]
+    else:
+        return 
 
 def add(driveletter, mapping, label=None, serial=None, drive_type=None, device_file=None):
-    """Add a new drive or update and existing one."""
-    driveletter = driveletter.lower()
+    """Add a new drive or update an existing one."""
+    driveletter = driveletter.lower()[0]
     drivemapping = os.path.normpath(
         "%s/dosdevices/%s:" % (common.ENV['WINEPREFIX'], driveletter)
     )
     mapping = os.path.normpath(mapping)
+    if mapping.startswith(common.ENV['WINEPREFIX']):
+        mapping = os.path.relpath(mapping, '%s/dosdevices' % common.ENV['WINEPREFIX'])
 
     # If the directory does not already exist and is a link that is already
     # set to what we need.
@@ -124,6 +129,7 @@ def set_type(driveletter, drive_type):
     registry.set({'HKEY_LOCAL_MACHINE\\Software\\Wine\\Drives': {"%s:" % driveletter: drive_type}})
 
 def set_device(drive_letter, device_path):
+    drive_letter = drive_letter[0]
     for driverletter_case in (drive_letter.upper(), drive_letter.lower()):
         symlink_path = '{wineprefix}/dosdevices/{drive}::'.format(
             wineprefix = common.ENV['WINEPREFIX'],
