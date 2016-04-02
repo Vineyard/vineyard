@@ -341,7 +341,7 @@ def pipe(commands, **kwargs):
         return processes[-1].communicate()
 
 
-def which(command, env=None):
+def which(command, env=None, extra_paths=None):
     # Adapted from the which() function in pexpect
     # Original copyright 2008 Noah Spurrier under an Open Source license
     # Please see original code at http://pexpect.sourceforge.net/ for full license.
@@ -355,7 +355,7 @@ def which(command, env=None):
         return None
 
     # If command is directly executable, return it as is
-    if os.access(command, os.X_OK):
+    if (command[0] == '/' or command[0] == './') and os.access(command, os.X_OK):
         return command
 
     if env == None:
@@ -367,6 +367,9 @@ def which(command, env=None):
         paths = env['PATH']
 
     pathlist = paths.split(str(os.pathsep))
+
+    if extra_paths != None:
+        pathlist += extra_paths
 
     for path in pathlist:
         filename = os.path.join(path, command)
