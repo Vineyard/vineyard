@@ -93,7 +93,7 @@ def _writeRegistry(registrycontent):
         regfile.write(registrycontent)
     #print("Running regedit with no display output")
     process = common.Popen(
-        ["regedit", regfilename],
+        [common.ENV['WINE'], "regedit", regfilename],
         stdout = 'null', stderr = 'null',
         env = common.ENV_NO_DISPLAY(common.ENV_NO_GECKO())
     )
@@ -115,7 +115,7 @@ def __get_branch(branch=None, quiet=True, only_use_regedit=False):
 
     debug("Using regedit to read registry.")
     _initWine()
-    process_args = ["regedit", "/E", "-"]
+    process_args = [common.ENV['WINE'], "regedit", "/E", "-"]
     if branch != None:
         process_args.append(branch)
     else:
@@ -361,7 +361,7 @@ def set_from_file(filename):
 
 def _initWine():
     _wineprocess = common.Popen(
-        "wineserver -p10",
+        "%s -p10" % common.ENV['WINESERVER'],
         shell = True,
         stdin = 'null',
         stdout = 'null',

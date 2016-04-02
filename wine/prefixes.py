@@ -56,7 +56,7 @@
 
 from __future__ import print_function
 
-import os, sys, time
+import os, sys, time, re
 import common, base, util
 # These are used when creating new prefixes
 import appearance, shellfolders
@@ -124,17 +124,20 @@ def get_default_metadata():
         'WINEPREFIXNAME': '',
         'WINEPREFIXTYPE': 'simple'
     }
-    _set('WINEDLLPATH', ':'.join(filter(len, [
-        '{0}/wine'.format(path) for path
-        in os.environ.get('LD_LIBRARY_PATH', '/usr/local/lib:/usr/lib').split(':')
-    ])))
-    _set('WINELOADER', common.which('wine'))
-    _set('WINESERVER', common.which('wineserver'))
-    _set('WINE', common.which('wine'))
+    _set('WINE'      , common.ENV_BASE['WINE'])
+    _set('WINELOADER', common.ENV_BASE['WINE'])
+    _set('WINESERVER', common.ENV_BASE['WINESERVER'])
     if common.get_wine_version(default['WINE'])['float'] < 1.2:
         _set('WINEARCH', 'win32')
     else:
         _set('WINEARCH', 'win64')
+    _set('WINEDLLPATH', ':'.join(filter(len, [
+        '{0}/wine'.format(path) for path
+        in os.environ.get('LD_LIBRARY_PATH', '/usr/local/lib:/usr/lib').split(':') + [
+            re.sub('/bin/wine$', ('/lib' if default['WINEARCH'] == 'win32' else '/lib64'), default['WINE']),
+            re.sub('/bin/wine$', ('/lib64' if default['WINEARCH'] == 'win32' else '/lib'), default['WINE'])
+        ]
+    ])))
     _set('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
     _set('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
     _set('XDG_DATA_DIRS', ':'.join(filter(len, [

@@ -708,8 +708,24 @@ ENV = copy(os.environ)
 WINE_ORIGINAL = which('wine')
 
 if WINE_ORIGINAL is None:
-    print("Error: Wine is not installed.", file=sys.stderr)
-    exit(1)
+    wine_versions = detect_wine_installations()
+    if len(wine_versions.keys()):
+        wine_versions = {
+            version_info['float']: binary_path for
+            binary_path, version_info in wine_versions.items()
+        }
+        WINE_ORIGINAL = wine_versions[ sorted(wine_versions.keys())[-1] ]
+
+        if ENV.has_key('WINE'):
+            print("Notice: The Wine binary set in the environment variable 'WINE' doesn't exist. Using '%s' instead." % WINE_ORIGINAL)
+        else:
+            print("Notice: Wine was not found in PATH. Using '%s' instead." % WINE_ORIGINAL)
+        ENV['WINE'] = WINE_ORIGINAL
+        ENV['WINELOADER'] = WINE_ORIGINAL
+        ENV['WINESERVER'] = WINE_ORIGINAL+'server'
+    else:
+        print("Error: Wine is not installed.", file=sys.stderr)
+        exit(1)
 
 if 'HOME' not in ENV:
     ENV['HOME'] = os.path.expanduser('~')
@@ -778,6 +794,8 @@ if 'PATH' in ENV:
     )
 else:
     ENV['PATH'] = _paths
+
+ENV_BASE = copy(ENV)
 
 
 for path in (
