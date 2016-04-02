@@ -646,6 +646,31 @@ def clear_cache(cache_key):
     return decorator
 
 
+def detect_wine_installations(extra_paths = None):
+    installations = {}
+    paths = ENV['PATH'].split(':')
+    if extra_paths is not None:
+        path += extra_paths
+    for path in paths:
+        wine_binary = os.path.join(path, 'wine')
+        if os.path.exists(wine_binary):
+            version = get_wine_version(wine_binary)
+            installations[wine_binary] = version
+
+    search_paths = [
+        "/opt/",
+        "%s/.PlayOnLinux/wine/linux-amd64/" % ENV['HOME'],
+        "%s/.PlayOnLinux/wine/linux-x86/" % ENV['HOME']
+    ]
+    for search_path in search_paths:
+        if os.path.isdir(search_path):
+            for file in os.listdir(search_path):
+                wine_binary = os.path.join(search_path, file, 'bin', 'wine')
+                if os.path.exists(wine_binary):
+                    version = get_wine_version(wine_binary)
+                    installations[wine_binary] = version
+    return installations
+
 def get_wine_version(wine_binary=None):
     if wine_binary is None:
         wine_binary = ENV['WINE']

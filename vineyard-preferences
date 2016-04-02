@@ -741,7 +741,7 @@ class MainApp(vineyard.async.ThreadedClass):
         )
         # Build the names of the installations so we can sort them
         installation_list = {}
-        wine_installations = wine.detect_wine_installations()
+        wine_installations = wine.common.detect_wine_installations()
         for path in wine_installations:
             version_info = wine_installations[path]
             name = str(
