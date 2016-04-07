@@ -113,9 +113,12 @@ def is_valid_prefix(prefix_path, accept_legacy=False):
 
 def get_default_metadata():
     """Return the metadata (environment) as it would optimally be set by the system."""
-    def _set(key, value):
+    def _set(key, value, use_base = False):
         # If os.environ has the key use it's value else use given value
-        default[key] = os.environ.get(key, value)
+        if use_base:
+            default[key] = common.ENV_BASE.get(key, value)
+        else:
+            default[key] = os.environ.get(key, value)
         if default[key] is None:
             del default[key]
 
@@ -124,9 +127,9 @@ def get_default_metadata():
         'WINEPREFIXNAME': '',
         'WINEPREFIXTYPE': 'simple'
     }
-    _set('WINE'      , common.ENV_BASE['WINE'])
-    _set('WINELOADER', common.ENV_BASE['WINE'])
-    _set('WINESERVER', common.ENV_BASE['WINESERVER'])
+    _set('WINE'      , 'WINE', True)
+    _set('WINELOADER', 'WINE', True)
+    _set('WINESERVER', 'WINESERVER', True)
     if common.get_wine_version(default['WINE'])['float'] < 1.2:
         _set('WINEARCH', 'win32')
     else:
