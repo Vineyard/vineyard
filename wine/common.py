@@ -735,6 +735,10 @@ if 'WINEDEBUG' not in ENV:
     ENV['WINEDEBUG'] = 'fixme-all,trace-all'
 if 'WINE' not in ENV:
     ENV['WINE'] = WINE_ORIGINAL
+if 'WINELOADER' not in ENV:
+    ENV['WINELOADER'] = WINE_ORIGINAL
+if 'WINESERVER' not in ENV:
+    ENV['WINESERVER'] = WINE_ORIGINAL+'server'
 ENV['VINEYARD_DATA'] = os.path.join(ENV['WINEPREFIX'], 'vineyard')
 
 _current_file_dir = os.path.abspath(os.path.curdir)
