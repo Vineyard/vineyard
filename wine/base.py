@@ -151,7 +151,7 @@ def parse_command(command, env=None, run_in_path=None):
             else:
                 break
         command = command[1+index:]
-    if command[0] == 'wine':
+    if command[0] == 'wine' or command[0] == common.ENV['WINE'] or re.search(r'/.*/wine$', command[0]) is not None:
         del command[0]
         executable = common.ENV['WINE']
     if len(command) == 1:
