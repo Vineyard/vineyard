@@ -670,8 +670,12 @@ def detect_wine_installations(extra_paths = None):
             for file in os.listdir(search_path):
                 wine_binary = os.path.join(search_path, file, 'bin', 'wine')
                 if os.path.exists(wine_binary):
-                    version = get_wine_version(wine_binary)
-                    installations[wine_binary] = version
+                    try:
+                        version = get_wine_version(wine_binary)
+                        installations[wine_binary] = version
+                    except:
+                        print("Couldn't get version of %s, not using." % wine_binary)
+                        continue
     return installations
 
 def get_wine_version(wine_binary=None):
