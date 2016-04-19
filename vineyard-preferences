@@ -745,10 +745,10 @@ class MainApp(vineyard.async.ThreadedClass):
         for path in wine_installations:
             version_info = wine_installations[path]
             name = str(
-                '{version} '+
+                '{name} '+
                 '<span foreground="{color}" size="small">{path}</span>'
             ).format(
-                version = version_info['version'],
+                name = "%s %s" % (version_info['name'], version_info['version']),
                 path = '/wine'.join(path.split('/wine')[:-1]).replace(wine.common.ENV['HOME'], '~'),
                 color = small_color
             )
@@ -785,16 +785,16 @@ class MainApp(vineyard.async.ThreadedClass):
             self.widgets['alignment-add-prefix-wine-version'].hide()
 
             version_info = self.widgets['combobox-add-prefix-wine-version'].installations[name]['version']
-            if version_info['float'] < 1.2:
-                self.widgets['radiobutton-win32'].set_active(True)
-                self.widgets['radiobutton-win64'].set_sensitive(False)
-            else:
+            if version_info['supports']['64bit']:
                 self.widgets['radiobutton-win64'].set_active(True)
                 self.widgets['radiobutton-win64'].set_sensitive(True)
+            else:
+                self.widgets['radiobutton-win32'].set_active(True)
+                self.widgets['radiobutton-win64'].set_sensitive(False)
 
-            self.widgets['entry-add-prefix-wine-binary'].set_text(path)
-            self.widgets['entry-add-prefix-wine-loader'].set_text(path + '')
-            self.widgets['entry-add-prefix-wine-server'].set_text(path + 'server')
+            self.widgets['entry-add-prefix-wine-binary'].set_text(version_info['binaries']['wine'])
+            self.widgets['entry-add-prefix-wine-loader'].set_text(version_info['binaries']['wineloader'])
+            self.widgets['entry-add-prefix-wine-server'].set_text(version_info['binaries']['wineserver'])
 
     def _on_dialog_add_conf_filechooser_browser_binary(self, button):
         self.filechooserdialog_wine_binaries.target_widget = 'entry-add-prefix-wine-binary'
