@@ -9,7 +9,7 @@
 
 from __future__ import print_function
 
-import subprocess, os, sys, copy, struct
+import subprocess, os, sys, copy, struct, re
 import copy as _copy
 
 XDG_MENU_CATEGORIES = (
@@ -694,20 +694,43 @@ def get_wine_version(wine_binary=None):
     if wine_binary is None:
         wine_binary = ENV['WINE']
 
-    version = run([wine_binary, '--version'], env=ENV_NO_DISPLAY())[0].split("wine-")[1].strip()
+    name = "Wine"
+    version = run([wine_binary, '--version'], env=ENV_NO_DISPLAY())[0]
+    if version.startswith('wine-'):
+        if 'staging' in version.lower():
+            name = "Wine Staging"
+        elif 'wine-devel' in wine_binary:
+            name = "Wine Development"
+        version = version.split('wine-')[1].strip()
+    # CrossOver type version info
+    elif 'product name' in version.lower() and 'product version' in version.lower():
+        # Split by lines
+        version = re.split('\n+', version)
+        # Split by ':', maximum two entries per line, ignore empty lines
+        version = [ re.split('\s?:\s?', line, 2) for line in version if len(line) ]
+        # Lower case the first entry of each line and build dictionary from result
+        version_info = dict([ [ entry[0].lower(), entry[1].strip() ] for entry in version ])
+        version = version_info['product version']
+        name    = version_info['product name']
 
     version_parts = [
         int(''.join([ i for i in part.split('-')[0] if i in list('0123456789') ]))
         for part in version.split('.')
     ]
-    version_major, version_minor, version_micro = version_parts + [0]*(3 -len(version_parts))
+    version_major, version_minor, version_micro, version_nano = version_parts[:4] + [0]*(4 -len(version_parts))
 
     if '(' in version:
         version_extra = version.split('(')[-1].split(')')[0].strip()
     else:
         version_extra = '-'.join(version.split('-')[1:]).strip()
+    if version_extra is None and version_nano != None:
+        version_extra = version_nano
+    # Ignore "Staging", we already set the name variable for this case
+    if version_extra.lower() == 'staging':
+        # version_extra = None
+        version = re.sub(r'\s*\([Ss]taging\)\s*', '', version)
 
-    version_float = float('%s.%s%s' % (version_major, version_minor, version_micro))
+    version_float = float('%s.%s%s%s' % (version_major, version_minor, version_micro, version_nano))
 
     return {
         'version' : version,
@@ -715,7 +738,8 @@ def get_wine_version(wine_binary=None):
         'minor'   : version_minor,
         'micro'   : version_micro,
         'extra'   : version_extra,
-        'float'   : version_float
+        'float'   : version_float,
+        'name'    : name
     }
 
 #ENV = copy.deepcopy(os.environ) # This doesn't seem to actually deepcopy :/
