@@ -13,6 +13,7 @@ class Widget(widget.VineyardWidgetComboBox):
         windows_versions = [
             _('%s (default)') % v[0] if k.endswith('xp') else v[0]
             for (k,v) in _windowsversions
+            if k is not "winxp64"  # python-wine knows to set "winxp" as "winxp64" on 64bit prefixes
         ]
         match_values = [
             ('*%s*' % value[0], key)

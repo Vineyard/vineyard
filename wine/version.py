@@ -210,4 +210,9 @@ def __translate_version_string(version, strict=False):
         return DEFAULT
     elif version == "win2000":
         return "win2k"
+    elif version == "winxp":
+        if common.ENV['WINEARCH'] == 'win64':
+            return "winxp64"
+        else:
+            return "winxp"
     return version
