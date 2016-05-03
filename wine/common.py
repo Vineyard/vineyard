@@ -693,14 +693,23 @@ def detect_wine_installations(extra_paths = None):
         else:
             installations[wine_binary]['binaries']['wineserver'] = wine_binary
 
-        installations[wine_binary]['supports'] = {}
-        installations[wine_binary]['supports']['64bit'] = installations[wine_binary]['float'] >= 1.2
-        if (
-            os.path.exists(os.path.join(os.path.abspath(wine_binary+'/../../'), 'lib', 'wine', 'wined3d-csmt.dll.so')) or
-            os.path.exists(os.path.join(os.path.abspath(wine_binary+'/../../'), 'lib64', 'wine', 'wined3d-csmt.dll.so'))
-        ):
-            installations[wine_binary]['supports']['csmt'] = True
-            installations[wine_binary]['supports']['csmt_type'] = 'dll'
+        installations[wine_binary]['supports'] = {
+            'csmt': False,
+            '64bit': installations[wine_binary]['float'] >= 1.2
+        }
+
+        base_path = os.path.abspath(wine_binary+'/../../')
+        for dll_path in ('lib64', 'lib', 'lib/x86_64-linux-gnu'):
+            if not installations[wine_binary]['supports']['csmt']:
+                if os.path.exists(os.path.join(base_path, dll_path, 'wine', 'wined3d-csmt.dll.so')):
+                    installations[wine_binary]['supports']['csmt'] = True
+                    installations[wine_binary]['supports']['csmt_type'] = 'dll'
+                elif os.path.exists(os.path.join(base_path, dll_path, 'wine', 'wined3d.dll.so')):
+                    for line in open(os.path.join(base_path, dll_path, 'wine', 'wined3d.dll.so')):
+                        if 'wined3d_device_get_bo' in line:
+                            installations[wine_binary]['supports']['csmt'] = True
+                            installations[wine_binary]['supports']['csmt_type'] = 'registry'
+                            break
 
     return installations
 
