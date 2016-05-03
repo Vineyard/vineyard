@@ -11,62 +11,47 @@ import common, registry
 # wine/programs/winecfg/appdefaults.c
 DEFAULT = 'winxp'
 windowsversions_sorted = common.sorteddict(
+
+    ("win10", [
+        "Windows 10",       10,  0, 0x2800,"WIN32_NT", " ", 0, 0, "WinNT"]),
+    ("win81", [
+        "Windows 8.1",       6,  3, 0x2580,"WIN32_NT", " ", 0, 0, "WinNT"]),
+    ("win8", [
+        "Windows 8",         6,  2, 0x23F0,"WIN32_NT", " ", 0, 0, "WinNT"]),
+    ("win2008r2", [
+        "Windows 2008 R2",   6,  1, 0x1DB1,"WIN32_NT", "Service Pack 1", 1, 0, "ServerNT"]),
     ("win7", [
-        "Windows 7", 6,1,
-        7601, "WIN32_NT", "Service Pack 1", 0, 0, "WinNT"
-    ]),
+        "Windows 7",         6,  1, 0x1DB1,"WIN32_NT", "Service Pack 1", 1, 0, "WinNT"]),
     ("win2008", [
-        "Windows 2008", 6,0,
-        6001, "WIN32_NT", "Service Pack 1", 0, 0, "ServerNT"
-    ]),
+        "Windows 2008",      6,  0, 0x1772,"WIN32_NT", "Service Pack 2", 2, 0, "ServerNT"]),
     ("vista", [
-        "Windows Vista", 6,0,
-        6000, "WIN32_NT", "Service Pack 2", 2, 0, "WinNT"
-    ]),
+        "Windows Vista",     6,  0, 0x1772,"WIN32_NT", "Service Pack 2", 2, 0, "WinNT"]),
     ("win2003", [
-        "Windows 2003", 5,2,
-        3790, "WIN32_NT", "Service Pack 1", 1, 0, "ServerNT"
-    ]),
+        "Windows 2003",      5,  2, 0xECE, "WIN32_NT", "Service Pack 2", 2, 0, "ServerNT"]),
+
+    ("winxp64", [
+        "Windows XP",        5,  2, 0xECE, "WIN32_NT", "Service Pack 2", 2, 0, "WinNT"]),
+
     ("winxp", [
-        "Windows XP", 5,1,
-        2600, "WIN32_NT", "Service Pack 3", 2, 0, "WinNT"
-    ]),
+        "Windows XP",        5,  1, 0xA28, "WIN32_NT", "Service Pack 3", 3, 0, "WinNT"]),
     ("win2k", [
-        "Windows 2000", 5,0,
-        2195, "WIN32_NT", "Service Pack 4", 4, 0, "WinNT"
-    ]),
+        "Windows 2000",      5,  0, 0x893, "WIN32_NT", "Service Pack 4", 4, 0, "WinNT"]),
     ("winme", [
-        "Windows ME", 4,90,
-        3000, "WIN32_WINDOWS", " ", 0, 0, ""
-    ]),
+        "Windows ME",        4, 90, 0xBB8, "WIN32_WINDOWS", " ", 0, 0, ""]),
     ("win98", [
-        "Windows 98", 4,10,
-        2222, "WIN32_WINDOWS", " A ", 0, 0, ""
-    ]),
+        "Windows 98",        4, 10, 0x8AE, "WIN32_WINDOWS", " A ", 0, 0, ""]),
     ("win95", [
-        "Windows 95", 4,0,
-        950, "WIN32_WINDOWS", "", 0, 0, ""
-    ]),
+        "Windows 95",        4,  0, 0x3B6, "WIN32_WINDOWS", "", 0, 0, ""]),
     ("nt40", [
-        "Windows NT 4.0", 4,0,
-        1381, "WIN32_NT", "Service Pack 6a", 6, 0, "WinNT"
-    ]),
+        "Windows NT 4.0",    4,  0, 0x565, "WIN32_NT", "Service Pack 6a", 6, 0, "WinNT"]),
     ("nt351", [
-        "Windows NT 3.5", 3,51,
-        1057, "WIN32_NT", "Service Pack 2", 0, 0, "WinNT"
-    ]),
+        "Windows NT 3.51",   3, 51, 0x421, "WIN32_NT", "Service Pack 5", 5, 0, "WinNT"]),
     ("win31", [
-        "Windows 3.1", 2,10,
-        0, "WIN32s", "Win32s 1.3", 0, 0, ""
-    ]),
+        "Windows 3.1",       3, 10,     0, "WIN32S", "Win32s 1.3", 0, 0, ""]),
     ("win30", [
-        "Windows 3.0", 3,0,
-        0, "WIN32s", "Win32s 1.3", 0, 0, ""
-    ]),
+        "Windows 3.0",       3,  0,     0, "WIN32S", "Win32s 1.3", 0, 0, ""]),
     ("win20", [
-        "Windows 2.0", 2,0,
-        0, "WIN32s", "Win32s 1.3", 0, 0, ""
-    ])
+        "Windows 2.0",       2,  0,     0, "WIN32S", "Win32s 1.3", 0, 0, ""])
 )
 windowsversions = windowsversions_sorted.dict()
 versions = [ i for i in reversed(windowsversions_sorted.keys()) ]
