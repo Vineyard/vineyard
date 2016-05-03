@@ -662,6 +662,7 @@ def detect_wine_installations(extra_paths = None):
 
     search_paths = [
         "/opt/",
+        "%s/.local/share/wineversions/" % ENV['HOME'],
         "%s/.PlayOnLinux/wine/linux-amd64/" % ENV['HOME'],
         "%s/.PlayOnLinux/wine/linux-x86/" % ENV['HOME']
     ]
