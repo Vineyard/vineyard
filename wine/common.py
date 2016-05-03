@@ -654,11 +654,11 @@ def detect_wine_installations(extra_paths = None):
     paths = ENV['PATH'].split(':')
     if extra_paths is not None:
         path += extra_paths
+    binaries_found = []
     for path in paths:
         wine_binary = os.path.join(path, 'wine')
         if os.path.exists(wine_binary):
-            version = get_wine_version(wine_binary)
-            installations[wine_binary] = version
+            binaries_found.append(wine_binary)
 
     search_paths = [
         "/opt/",
@@ -670,24 +670,31 @@ def detect_wine_installations(extra_paths = None):
             for file in os.listdir(search_path):
                 wine_binary = os.path.join(search_path, file, 'bin', 'wine')
                 if os.path.exists(wine_binary):
-                    try:
-                        version = get_wine_version(wine_binary)
-                        installations[wine_binary] = version
-                    except:
-                        print("Couldn't get version of %s, not using." % wine_binary)
-                        continue
-                    installations[wine_binary]['binaries'] = {}
-                    installations[wine_binary]['binaries']['wine'] = wine_binary
-                    if os.path.exists(wine_binary+'loader'):
-                        installations[wine_binary]['binaries']['wineloader'] = wine_binary+'loader'
-                    else:
-                        installations[wine_binary]['binaries']['wineloader'] = wine_binary
-                    if os.path.exists(wine_binary+'server'):
-                        installations[wine_binary]['binaries']['wineserver'] = wine_binary+'server'
-                    else:
-                        installations[wine_binary]['binaries']['wineserver'] = wine_binary
-                    installations[wine_binary]['supports'] = {}
-                    installations[wine_binary]['supports']['64bit'] = installations[wine_binary]['float'] >= 1.2
+                    binaries_found.append(wine_binary)
+
+    # Now that we've found a number of Wine binaries
+    # let's get their versions and figure out their environment and features
+    for wine_binary in binaries_found:
+        try:
+            version = get_wine_version(wine_binary)
+            installations[wine_binary] = version
+        except:
+            print("Couldn't get version of %s, not using." % wine_binary)
+            continue
+        installations[wine_binary]['binaries'] = {}
+        installations[wine_binary]['binaries']['wine'] = wine_binary
+        if os.path.exists(wine_binary+'loader'):
+            installations[wine_binary]['binaries']['wineloader'] = wine_binary+'loader'
+        else:
+            installations[wine_binary]['binaries']['wineloader'] = wine_binary
+        if os.path.exists(wine_binary+'server'):
+            installations[wine_binary]['binaries']['wineserver'] = wine_binary+'server'
+        else:
+            installations[wine_binary]['binaries']['wineserver'] = wine_binary
+
+        installations[wine_binary]['supports'] = {}
+        installations[wine_binary]['supports']['64bit'] = installations[wine_binary]['float'] >= 1.2
+
     return installations
 
 def get_wine_version(wine_binary=None):
