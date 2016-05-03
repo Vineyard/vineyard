@@ -694,6 +694,12 @@ def detect_wine_installations(extra_paths = None):
 
         installations[wine_binary]['supports'] = {}
         installations[wine_binary]['supports']['64bit'] = installations[wine_binary]['float'] >= 1.2
+        if (
+            os.path.exists(os.path.join(os.path.abspath(wine_binary+'/../../'), 'lib', 'wine', 'wined3d-csmt.dll.so')) or
+            os.path.exists(os.path.join(os.path.abspath(wine_binary+'/../../'), 'lib64', 'wine', 'wined3d-csmt.dll.so'))
+        ):
+            installations[wine_binary]['supports']['csmt'] = True
+            installations[wine_binary]['supports']['csmt_type'] = 'dll'
 
     return installations
 
