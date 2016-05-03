@@ -160,18 +160,19 @@ def _parseWineVersionFromRegistry():
     # need for Wine... but you never know ;)
     # http://techsupt.winbatch.com/TS/T000001074F4.html
     versionnt = registry.get(KeyNT, "CurrentVersion")
-    version9x = registry.get(Key9x, "VersionNumber")
     best = DEFAULT # hardcoded fallback (same as in winecfg)
 
     if versionnt:
         version = versionnt
         platform = "WIN32_NT"
         build = int(registry.get(KeyNT, "CurrentBuildNumber"))
-    elif version9x:
-        version = version9x
-        platform = "WIN32_WINDOWS"
     else:
-        return best
+        version9x = registry.get(Key9x, "VersionNumber")
+        if version9x:
+            version = version9x
+            platform = "WIN32_WINDOWS"
+        else:
+            return best
 
     # Strip non-legal characters, if needed
     try:
