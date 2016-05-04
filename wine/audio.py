@@ -275,3 +275,34 @@ def disable_driver(driver):
     if driver in DRIVER_NAMES and DRIVER_NAMES[driver] in drivers:
         drivers.remove(DRIVER_NAMES[driver])
         registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\Drivers': {"Audio": ','.join(drivers)}})
+
+def get_eax_support(program=None):
+    if program:
+        bits = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\DirectSound' % \
+            program, "EAXEnabled", quiet=True)
+    else:
+        enabled = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\DirectSound',
+            "EAXEnabled", quiet=True)
+    if enabled:
+        return common.value_as_bool(enabled) or False
+    else:
+        return False
+
+def set_eax_support(value, program=None):
+    """
+        Enables or disables support for EAX on the CPU
+    """
+    value = common.value_as_bool(value)
+    if value == None:
+        raise ValueError("type of value should something convertable to a boolean")
+    elif value == True:
+        value = 'Y'
+    else:
+        value = None
+    if program:
+        registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\DirectSound' % program: {
+            "EAXEnabled": value}})
+    else:
+        registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DirectSound': {
+            "EAXEnabled": value}})
+        
