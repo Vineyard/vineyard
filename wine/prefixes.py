@@ -439,6 +439,15 @@ def use(prefix_name_or_path):
     data = get_default_metadata()
     data.update(prefix_data)
     common.ENV.update(data)
+
+    wine_versions = common.detect_wine_installations()
+    if data['WINE'] in wine_versions:
+        for key, value in wine_versions[data['WINE']]['supports'].items():
+            if value == True or value == False:
+                value = 'true' if value == True else 'false'
+            common.ENV['WINE_SUPPORTS_'+key.upper()] = str(value)
+    else:
+        error("Couldn't read Wine features.")
     if (
         common.ENV['WINEPREFIX'] == os.path.expanduser('~.wine') and
         not os.path.exists(common.ENV['WINEPREFIX'])
