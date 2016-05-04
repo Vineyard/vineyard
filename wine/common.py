@@ -698,7 +698,8 @@ def detect_wine_installations(extra_paths = None):
         installations[wine_binary]['supports'] = {
             '64bit': installations[wine_binary]['float'] >= 1.2,
             'csmt': False,
-            'dxva2_vaapi': False
+            'dxva2_vaapi': False,
+            'eax': False
         }
 
         base_path = os.path.abspath(wine_binary+'/../../')
@@ -720,6 +721,13 @@ def detect_wine_installations(extra_paths = None):
                     for line in open(os.path.join(base_path, dll_path, 'wine', 'dxva2.dll.so')):
                         if 'vaapi.c' in line: # or 'Software\\Wine\\DXVA2'
                             installations[wine_binary]['supports']['dxva2_vaapi'] = True
+                            break
+
+            if not installations[wine_binary]['supports']['eax']:
+                if os.path.exists(os.path.join(base_path, dll_path, 'wine', 'dsound.dll.so')):
+                    for line in open(os.path.join(base_path, dll_path, 'wine', 'dsound.dll.so')):
+                        if 'ds_eax_enabled' in line:
+                            installations[wine_binary]['supports']['eax'] = True
                             break
 
     return installations
