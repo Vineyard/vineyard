@@ -5,7 +5,7 @@
 #
 import page
 from vineyard.widgets import direct3d_vertexshader, direct3d_pixelshader, direct3d_allow_multisampling, direct3d_antialiasing, direct3d_offscreen_rendering, direct3d_video_memory_size, directx_capture_mouse, directinput_mouse_warp, graphics_xrandr, direct3d_csmt, direct3d_dxva2_vaapi
-from vineyard.widgets import sound_driver, sound_directsound_acceleration, sound_directsound_samplerate, sound_directsound_bitdepth, sound_directsound_emulation
+from vineyard.widgets import sound_driver, sound_directsound_acceleration, sound_directsound_samplerate, sound_directsound_bitdepth, sound_directsound_emulation, sound_directsound_eax
 
 id = 'devices'
 position = 0.3
@@ -44,6 +44,9 @@ class Page(page.VineyardPage):
                         sound_directsound_samplerate,
                         sound_directsound_bitdepth,
                         sound_directsound_emulation
+                    ]),
+                    (_('DirectSound Staging Features'), [
+                        sound_directsound_eax
                     ])
                 ])
             ])
