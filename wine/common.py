@@ -403,6 +403,7 @@ def value_as_bool(value):
     ) or (
         type(value) in (str, unicode) and (
             value.strip().lower() == 'true' or
+            value.strip().lower() == 'enabled' or
             'y' in '%s' % value.lower()
         )
     ):
@@ -412,6 +413,7 @@ def value_as_bool(value):
     ) or (
         type(value) in (str, unicode) and (
             value.strip().lower() == 'false' or
+            value.strip().lower() == 'disabled' or
             'n' in '%s' % value.lower()
         )
     ):
