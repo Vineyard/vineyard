@@ -258,33 +258,22 @@ def set_mouse_warp(state='enable'):
     registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DirectInput': {'MouseWarpOverride': reg_state}})
     CACHE['xinput-mouse-warp'] = reg_state
 
-def get_csmt_supported():
-    wine_versions = common.detect_wine_installations()
-    if common.ENV['WINE'] in wine_versions:
-        return wine_versions[common.ENV['WINE']]['supports']['csmt']
-    else:
-        raise Exception("current wine binary '%s' could not be probed" % common.ENV['WINE'])
-
 def get_csmt():
-    wine_versions = common.detect_wine_installations()
-    if common.ENV['WINE'] in wine_versions:
-        if wine_versions[common.ENV['WINE']]['supports']['csmt']:
-            if wine_versions[common.ENV['WINE']]['supports']['csmt_type'] == 'dll':
-                dll_overrides = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects')
-                try:
-                    return dll_overrides['wined3d'] == 'wined3d-csmt.dll'
-                except (KeyError, SyntaxError):
-                    return False
-            else:
-                direct3d_settings = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\Direct3D')
-                try:
-                    return direct3d_settings['CSMT'] == 'enabled'
-                except (KeyError, SyntaxError):
-                    return False
+    if common.ENV.get('WINE_SUPPORTS_CSMT') == 'true':
+        if common.ENV.get('WINE_SUPPORTS_CSMT_TYPE') == 'dll':
+            dll_overrides = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects')
+            try:
+                return dll_overrides['wined3d'] == 'wined3d-csmt.dll'
+            except (KeyError, SyntaxError):
+                return False
         else:
-            return None
+            direct3d_settings = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\Direct3D')
+            try:
+                return direct3d_settings['CSMT'] == 'enabled'
+            except (KeyError, SyntaxError):
+                return False
     else:
-        raise Exception("current wine binary '%s' could not be probed" % common.ENV['WINE'])
+        return None
 
 def set_csmt(value, program=None):
     value = common.value_as_bool(value)
@@ -294,27 +283,24 @@ def set_csmt(value, program=None):
         value = 'enabled'
     else:
         value = 'disabled'
-    wine_versions = common.detect_wine_installations()
-    if common.ENV['WINE'] in wine_versions:
-        if wine_versions[common.ENV['WINE']]['supports']['csmt']:
-            if wine_versions[common.ENV['WINE']]['supports']['csmt_type'] == 'dll':
-                if value == 'enabled':
-                    value = 'wined3d-csmt.dll'
-                else:
-                    value = None
-                if program:
-                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\DllRedirects' % program: {'wined3d': value}})
-                else:
-                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects': {'wined3d': value}})
+        
+    if common.ENV.get('WINE_SUPPORTS_CSMT') == 'true':
+        if common.ENV.get('WINE_SUPPORTS_CSMT_TYPE') == 'dll':
+            if value == 'enabled':
+                value = 'wined3d-csmt.dll'
             else:
-                if program:
-                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\Direct3D' % program: {'CSMT': value}})
-                else:
-                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\Direct3D': {'CSMT': value}})
+                value = None
+            if program:
+                registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\DllRedirects' % program: {'wined3d': value}})
+            else:
+                registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects': {'wined3d': value}})
         else:
-            return None
+            if program:
+                registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\Direct3D' % program: {'CSMT': value}})
+            else:
+                registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\Direct3D': {'CSMT': value}})
     else:
-        raise Exception("current wine binary '%s' could not be probed" % common.ENV['WINE'])
+        return None
 
 def set_dxva2_vaapi(value, program=None):
     value = common.value_as_bool(value)
@@ -331,15 +317,11 @@ def set_dxva2_vaapi(value, program=None):
         registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DXVA2': {'backend': value}})
 
 def get_dxva2_vaapi():
-    wine_versions = common.detect_wine_installations()
-    if common.ENV['WINE'] in wine_versions:
-        if wine_versions[common.ENV['WINE']]['supports']['csmt']:
-            settings = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\DXVA2')
-            try:
-                return settings['backend'].lower() == 'va'
-            except (KeyError, SyntaxError):
-                return False
-        else:
-            return None
+    if common.ENV.get('WINE_SUPPORTS_DXVA2_VAAPI') == 'true':
+        settings = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\DXVA2')
+        try:
+            return settings['backend'].lower() == 'va'
+        except (KeyError, SyntaxError):
+            return False
     else:
-        raise Exception("current wine binary '%s' could not be probed" % common.ENV['WINE'])
+        return None
