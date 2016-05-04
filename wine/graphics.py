@@ -286,23 +286,59 @@ def get_csmt():
     else:
         raise Exception("current wine binary '%s' could not be probed" % common.ENV['WINE'])
 
-def set_csmt(state):
-    if state in ('enabled', 'disabled'):
-        reg_state = state
-    elif state == True:
-        reg_state = 'enabled'
+def set_csmt(value, program=None):
+    value = common.value_as_bool(value)
+    if value == None:
+        raise ValueError("type of value should something convertable to a boolean")
+    elif value == True:
+        value = 'enabled'
     else:
-        reg_state = 'disabled'
+        value = 'disabled'
     wine_versions = common.detect_wine_installations()
     if common.ENV['WINE'] in wine_versions:
         if wine_versions[common.ENV['WINE']]['supports']['csmt']:
             if wine_versions[common.ENV['WINE']]['supports']['csmt_type'] == 'dll':
-                if reg_state == 'enabled':
-                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects': {'wined3d': 'wined3d-csmt.dll'}})
+                if value == 'enabled':
+                    value = 'wined3d-csmt.dll'
                 else:
-                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects': {'wined3d': None}})
+                    value = None
+                if program:
+                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\DllRedirects' % program: {'wined3d': value}})
+                else:
+                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DllRedirects': {'wined3d': value}})
             else:
-                registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\Direct3D': {'CSMT': reg_state}})
+                if program:
+                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\Direct3D' % program: {'CSMT': value}})
+                else:
+                    registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\Direct3D': {'CSMT': value}})
+        else:
+            return None
+    else:
+        raise Exception("current wine binary '%s' could not be probed" % common.ENV['WINE'])
+
+def set_dxva2_vaapi(value, program=None):
+    value = common.value_as_bool(value)
+    if value == None:
+        raise ValueError("type of value should something convertable to a boolean")
+    elif value == True:
+        value = 'va'
+    else:
+        value = None
+
+    if program:
+        registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\DXVA2' % program: {'backend': value}})
+    else:
+        registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\DXVA2': {'backend': value}})
+
+def get_dxva2_vaapi():
+    wine_versions = common.detect_wine_installations()
+    if common.ENV['WINE'] in wine_versions:
+        if wine_versions[common.ENV['WINE']]['supports']['csmt']:
+            settings = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\DXVA2')
+            try:
+                return settings['backend'].lower() == 'va'
+            except (KeyError, SyntaxError):
+                return False
         else:
             return None
     else:
