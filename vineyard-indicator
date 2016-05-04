@@ -161,7 +161,7 @@ class Indicator():
         else:
             textview_out.get_buffer().set_text(_(
                 'No output yet.\n'+
-                'You may not actually see any here until the program exits.'
+                'You may not see anything here until the program exits.'
             ))
         textview_err.get_buffer().set_text(stderr)
 
