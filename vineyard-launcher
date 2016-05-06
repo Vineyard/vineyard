@@ -359,6 +359,12 @@ class Dialog(gtk.Dialog):
             self.innervbox.pack_start(self.expander_alsorun, expand=True, fill=True)
 
         if not is_dir:
+            self.hbox_run_in_terminal = gtk.HBox()
+            self.hbox_run_in_terminal.set_spacing(6)
+            self.checkbutton_run_in_terminal = gtk.CheckButton(_('Run in a terminal'))
+            self.hbox_run_in_terminal.pack_end(self.checkbutton_run_in_terminal, expand=False, fill=False)
+            self.innervbox.pack_start(self.hbox_run_in_terminal, expand=True, fill=True)
+
             self.appdb_widget = gtk.Button(_("Check _AppDB"))
             self.appdb_widget.set_tooltip_text(_("Search for this program on AppDB"))
 
@@ -799,6 +805,7 @@ class Dialog(gtk.Dialog):
 
     def __run_file(self, filename):
         wine.run([filename])
+        wine.run([filename], use_terminal=bool(self.checkbutton_run_in_terminal.get_active()))
 
     def open_appdb(self, *args):
         def __key_pressed(widget, event, dialog):
