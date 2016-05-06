@@ -1291,7 +1291,7 @@ def run_in_terminal(shellcommand):
     )
 
 
-def open_terminal(cwd=None, configuration_name=None, arguments=[], disable_pulseaudio=False):
+def open_terminal(cwd=None, configuration_name=None, cmd=None, arguments=[], disable_pulseaudio=False, keep_open=False):
     terminal, args = get_default_terminal()
     shell = get_user_default_shell()
 
@@ -1339,23 +1339,33 @@ def open_terminal(cwd=None, configuration_name=None, arguments=[], disable_pulse
         def _arg_escape(arg):
             shell_chars = (' ', '"', "'", '(', ')', '`', '$', '!')
             if common.any_in_string(shell_chars, arg):
-                return "'{0}'".format(string_escape_char(arg, "'"))
+                # return "'{0}'".format(string_escape_char(arg, "'"))
+                return "'{0}'".format(arg.replace("'", """'"'"'"""))
             else:
                 return arg
 
-        shell_commands = '{0}'.format(' '.join(
+        shell_commands = '{0} {1}'.format(
+            ('' if cmd == None else cmd),
+            ' '.join(
                 _arg_escape(arg)
                 for arg
                 in arguments
-        ))
+            )
+        )
         if disable_pulseaudio:
             arguments = ['-c', 'killall pulseaudio; {0}; pulseaudio &'.format(
                 shell_commands
             )]
         else:
-            arguments = ['-c', '{0}'.format(
-                shell_commands
-            )]
+            if keep_open:
+                arguments = ['-c', '{0};echo; echo "{1}";read'.format(
+                    shell_commands,
+                    _("Press enter to close the terminal.")
+                )]
+            else:
+                arguments = ['-c', '{0}'.format(
+                    shell_commands
+                )]
 
     print([terminal]+args+[shell]+shell_args+arguments)
     process = subprocess.Popen(
