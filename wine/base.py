@@ -447,8 +447,10 @@ Note that disable_pulseaudio only works when use_terminal is True."""
                 return util.open_terminal(
                     cwd = kwargs.get('cwd', None),
                     configuration_name = name,
+                    cmd = command['command'],
                     arguments = command['arguments'],
-                    disable_pulseaudio = disable_pulseaudio
+                    disable_pulseaudio = disable_pulseaudio,
+                    keep_open = True
                 )
             else:
                 return sys.modules['wine.monitor'].Program(
@@ -469,8 +471,10 @@ Note that disable_pulseaudio only works when use_terminal is True."""
                 return util.open_terminal(
                     cwd = kwargs.get('cwd', None),
                     configuration_name = name,
+                    cmd = command['command'],
                     arguments = command_list,
-                    disable_pulseaudio = disable_pulseaudio
+                    disable_pulseaudio = disable_pulseaudio,
+                    keep_open = True
                 )
             else:
                 return common.Popen(
