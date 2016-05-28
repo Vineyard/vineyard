@@ -447,7 +447,7 @@ def use(prefix_name_or_path):
                 value = 'true' if value == True else 'false'
             common.ENV['WINE_SUPPORTS_'+key.upper()] = str(value)
     else:
-        error("Couldn't read Wine features.")
+        print("Error: Couldn't read Wine features.")
     if (
         common.ENV['WINEPREFIX'] == os.path.expanduser('~.wine') and
         not os.path.exists(common.ENV['WINEPREFIX'])
@@ -465,7 +465,7 @@ def remove(prefix_path=None):
 
 
     if not os.path.isdir(path):
-        error("Bottle doesn't exist.")
+        print("Error: Prefix doesn't exist.")
         return False
 
     if prefix_data['WINEPREFIXTYPE'] == 'legacy':
