@@ -325,3 +325,27 @@ def get_dxva2_vaapi():
             return False
     else:
         return None
+
+def set_check_float_constants(value, program=None):
+    value = common.value_as_bool(value)
+    if value == None:
+        raise ValueError("type of value should something convertable to a boolean")
+    elif value == True:
+        value = 'enabled'
+    else:
+        value = None
+
+    if program:
+        registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\%s\\Direct3D' % program: {'CheckFloatConstants': value}})
+    else:
+        registry.set({'HKEY_CURRENT_USER\\Software\\Wine\\Direct3D': {'CheckFloatConstants': value}})
+
+def get_check_float_constants():
+    if common.ENV.get('WINE_SUPPORTS_CHECK_FLOAT_CONSTANTS') == 'true':
+        settings = registry.get('HKEY_CURRENT_USER\\Software\\Wine\\Direct3D\\CheckFloatConstants')
+        try:
+            return settings['backend'].lower() == 'enabled'
+        except (KeyError, SyntaxError):
+            return False
+    else:
+        return None

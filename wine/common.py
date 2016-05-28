@@ -698,6 +698,7 @@ def detect_wine_installations(extra_paths = None):
         installations[wine_binary]['supports'] = {
             '64bit': installations[wine_binary]['float'] >= 1.2,
             'csmt': False,
+            'check_float_constants': False,
             'dxva2_vaapi': False,
             'eax': False
         }
@@ -714,6 +715,13 @@ def detect_wine_installations(extra_paths = None):
                         if 'wined3d_device_get_bo' in line:
                             installations[wine_binary]['supports']['csmt'] = True
                             installations[wine_binary]['supports']['csmt_type'] = 'registry'
+                            break
+
+            if not installations[wine_binary]['supports']['check_float_constants']:
+                if os.path.exists(os.path.join(base_path, dll_path, 'wine', 'wined3d.dll.so')):
+                    for line in open(os.path.join(base_path, dll_path, 'wine', 'wined3d.dll.so')):
+                        if 'CheckFloatConstants' in line:
+                            installations[wine_binary]['supports']['check_float_constants'] = True
                             break
 
             if not installations[wine_binary]['supports']['dxva2_vaapi']:
