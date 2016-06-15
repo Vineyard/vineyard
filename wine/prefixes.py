@@ -111,6 +111,44 @@ def is_valid_prefix(prefix_path, accept_legacy=False):
             _test_path(os.path.join(prefix_path, '.wine'))
         )
 
+def get_file_variables(file, path = None):
+    # Run a file through a shell and get its variables
+    ## NOTE: If this looks a bit complicated, what we do is list the vars
+    ## that we need and use a list construct to create the script in the
+    ## next step.
+    variables = (
+        ('WINEPREFIXNAME', ('ww_name', 'wc_name')),
+        ('WINEDLLPATH', ('ww_winedllpath', 'wc_winedllpath', 'WINEDLLPATH')),
+        ('WINELOADER', ('ww_wineloader', 'wc_wineloader', 'WINELOADER')),
+        ('WINESERVER', ('ww_wineserver', 'wc_wineserver', 'WINESERVER')),
+        ('WINE', ('ww_wine', 'wc_wine', 'WINE')),
+        ('WINEARCH', ('ww_winearch', 'wc_winearch', 'WINEARCH')),
+        ('WINEDEBUG', ('ww_winedebug', 'wc_winedebug', 'WINEDEBUG')),
+        ('XDG_CONFIG_HOME', ('ww_xdgconfig', 'wc_xdgconfig')),
+        ('XDG_DATA_HOME', ('ww_xdgdata', 'wc_xdgdata'))
+    )
+    for line in filter(len, common.run([
+        'sh', '-c', '. "{file}"; {script}'.format(
+            file = file,
+            script = '; '.join([
+                'echo "{variable}="${{{keys}{closure}'.format(
+                    variable = variable,
+                    keys = ':-${'.join(keys),
+                    closure = '}' * len(keys)
+                )
+                for variable, keys
+                in variables
+            ]))
+    ], cwd=path)[0].split('\n')):
+        parts = line.strip().split('=')
+        if len(parts) < 2:
+            continue
+        else:
+            var = '='.join(parts[1:])
+            # Ignore empty values>
+            if len(var):
+                yield (parts[0], var)
+
 def get_default_metadata():
     """Return the metadata (environment) as it would optimally be set by the system."""
     def _set(key, value, use_base = False):
@@ -187,42 +225,12 @@ def get_metadata(prefix_path=None):
     # Unified format
     if os.access(path_wrapper, os.R_OK):
         info['WINEPREFIXTYPE'] = 'unified'
-        # Run the wrapper.cfg through a shell and get it's variables
-        ## NOTE: If this looks a bit complicated, what we do is list the vars
-        ## that we need and use a list construct to create the script in the
-        ## next step.
-        variables = (
-            ('WINEPREFIXNAME', ('ww_name', 'wc_name')),
-            ('WINEDLLPATH', ('ww_winedllpath', 'wc_winedllpath', 'WINEDLLPATH')),
-            ('WINELOADER', ('ww_wineloader', 'wc_wineloader', 'WINELOADER')),
-            ('WINESERVER', ('ww_wineserver', 'wc_wineserver', 'WINESERVER')),
-            ('WINE', ('ww_wine', 'wc_wine', 'WINE')),
-            ('WINEARCH', ('ww_winearch', 'wc_winearch', 'WINEARCH')),
-            ('XDG_CONFIG_HOME', ('ww_xdgconfig', 'wc_xdgconfig')),
-            ('XDG_DATA_HOME', ('ww_xdgdata', 'wc_xdgdata'))
-        )
-        for line in filter(len, common.run([
-            'sh', '-c', '. "{wrapper}"; {script}'.format(
-                wrapper = path_wrapper,
-                script = '; '.join([
-                    'echo "{variable}="${{{keys}{closure}'.format(
-                        variable = variable,
-                        keys = ':-${'.join(keys),
-                        closure = '}' * len(keys)
-                    )
-                    for variable, keys
-                    in variables
-                ]))
-        ], cwd=prefix_path)[0].split('\n')):
-            parts = line.strip().split('=')
-            if len(parts) < 2:
-                continue
+        for key, var in get_file_variables(path_wrapper, prefix_path):
             # If this key is a valid one for a prefix, use it
-            if parts[0] in info_default.keys():
-                var = '='.join(parts[1:])
+            if key in info_default.keys():
                 # Ignore default values
-                if len(var) and var != info_default[parts[0]]:
-                    info[parts[0]] = var
+                if var != info_default[key]:
+                    info[key] = var
         if 'XDG_DATA_HOME' in info.keys():
             info['XDG_DATA_DIRS'] = ':'.join(filter(len, [
                 info['XDG_DATA_HOME'] ] +
