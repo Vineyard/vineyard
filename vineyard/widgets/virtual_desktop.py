@@ -87,7 +87,6 @@ class Widget(widget.VineyardWidget):
         else:
             self.table_values.set_sensitive(False)
             self.settings['desktop'] = None
-        print("Changed:", self.settings['desktop'])
         self.gobject.emit('settings-changed', 'virtual-desktop', self.save_settings, (self.settings['desktop'],))
 
     def load_settings(self):
