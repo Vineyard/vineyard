@@ -265,7 +265,7 @@ class windows_executable(object):
             self._header_offset = struct.unpack("<L", file.read(4))[0]
             file.seek(self._header_offset)
             if file.read(4) != "PE\0\0":
-                raise ParserError(
+                raise ValueError(
                     "Invalid PE header signature in {0}".format(
                         file_path
             ))
