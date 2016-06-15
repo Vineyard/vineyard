@@ -958,14 +958,17 @@ def get_program_name(exe):
     a capitalised version of the filename."""
     collected_names = []
 
-    version_info = binary.windows_executable(exe).get_version_fast()
+    try:
+        version_info = binary.windows_executable(exe).get_version_fast()
+        if 'ProductName' in version_info:
+            collected_names.append(version_info['ProductName'])
+        if 'FileDescription' in version_info:
+            collected_names.append(version_info['FileDescription'])
+        if 'Comments' in version_info:
+            collected_names.append(version_info['Comments'])
+    except:
+        pass
 
-    if 'ProductName' in version_info:
-        collected_names.append(version_info['ProductName'])
-    if 'FileDescription' in version_info:
-        collected_names.append(version_info['FileDescription'])
-    if 'Comments' in version_info:
-        collected_names.append(version_info['Comments'])
     manifest = common.run(['wrestool', '--extract', '--raw', '-t24', exe])[0]
     try:
         collected_names.append(
