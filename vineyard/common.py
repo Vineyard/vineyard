@@ -1341,6 +1341,16 @@ def icon_name_is_stock(icon_name):
         if i.startswith('STOCK_')
     ]
 
+def icon_names_usable(icon_names):
+    if type(icon_names) != list:
+        icon_names = [ icon_names ]
+
+    icon_theme_icon_list = gtk.icon_theme_get_default().list_icons()
+    return [
+        icon for icon in icon_names
+        if icon in icon_theme_icon_list
+    ]
+
 def pixbuf_new_from_string(icon, icon_size=gtk.ICON_SIZE_BUTTON, widget=None, return_first=False):
     if type(icon) == list:
         icons = []
