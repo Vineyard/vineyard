@@ -130,6 +130,13 @@ class MainApp(vineyard.async.ThreadedClass):
                 fill = False
             )
             self.widgets['spinner-loading'].show()
+
+        # Select an appropriate icon for the global menu
+        menu_icons = vineyard.common.icon_names_usable(['open-menu', 'open-menu-symbolic', 'preferences-other-symbolic'])
+        # Make sure we have an icon at all, if none of the above are usable
+        menu_icons.append('preferences-system')
+        self.widgets['button-tools'].set_icon_name(menu_icons[0])
+
         # Setup the pages list
         column = gtk.TreeViewColumn("")
         column.set_expand(True)
