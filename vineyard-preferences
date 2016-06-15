@@ -256,6 +256,14 @@ class MainApp(vineyard.async.ThreadedClass):
                         arch = ('64-bit' if data['WINEARCH'] == 'win64' else '32-bit'),
                         color = small_color
                     )
+                if data['WINEPREFIXTYPE'] == 'playonlinux':
+                    name = str(
+                        '{name} '+
+                        '<span foreground="{color}">(POL)</span>'
+                    ).format(
+                        name = name,
+                        color = small_color
+                    )
                 # This name is a duplicate, display prefix path as well
                 if data['WINEPREFIXNAME'] in prefix_duplicates:
                     text = str(
