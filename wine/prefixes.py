@@ -61,7 +61,7 @@ import common, base, util
 # These are used when creating new prefixes
 import appearance, shellfolders
 
-PREFIXDIRS = "~/.local/share/wineprefixes:~/.winebottles"
+PREFIXDIRS = "~/.local/share/wineprefixes:~/.winebottles:~/.PlayOnLinux/wineprefix"
 
 
 def get_prefix_paths(ignore_missing=True, paths=None):
@@ -122,7 +122,7 @@ def get_file_variables(file, path = None):
         ('WINELOADER', ('ww_wineloader', 'wc_wineloader', 'WINELOADER')),
         ('WINESERVER', ('ww_wineserver', 'wc_wineserver', 'WINESERVER')),
         ('WINE', ('ww_wine', 'wc_wine', 'WINE')),
-        ('WINEARCH', ('ww_winearch', 'wc_winearch', 'WINEARCH')),
+        ('WINEARCH', ('ww_winearch', 'wc_winearch', 'WINEARCH', 'ARCH')),
         ('WINEDEBUG', ('ww_winedebug', 'wc_winedebug', 'WINEDEBUG')),
         ('XDG_CONFIG_HOME', ('ww_xdgconfig', 'wc_xdgconfig')),
         ('XDG_DATA_HOME', ('ww_xdgdata', 'wc_xdgdata'))
@@ -219,6 +219,7 @@ def get_metadata(prefix_path=None):
         return None
 
     path_wrapper = os.path.join(prefix_path, 'wrapper.cfg')
+    path_wrapper_pol = os.path.join(prefix_path, 'playonlinux.cfg')
     path_namefile = os.path.join(prefix_path, 'vineyard', 'name')
     path_namefile_legacy = os.path.join(prefix_path, '..', '.name')
 
@@ -252,6 +253,24 @@ def get_metadata(prefix_path=None):
         with open(path_namefile_legacy, 'r') as _file:
             info['WINEPREFIXNAME'] = _file.read().strip()
 
+    # PlayOnLinux format (basically same as unified, but using different filename and no variable sandboxing)
+    elif os.access(path_wrapper_pol, os.R_OK):
+        info['WINEPREFIXTYPE'] = 'playonlinux'
+        for key, var in get_file_variables(path_wrapper_pol, prefix_path):
+            # If this key is a valid one for a prefix, use it
+            if key in info_default.keys():
+                # PlayOnLinux doesn't use standard ARCH values, so fix here
+                if key == 'WINEARCH':
+                    if var == 'x86':
+                        var = 'win32'
+                    elif var == 'amd64':
+                        var = 'win64'
+                    else:
+                        var = info_default[key]
+                # Ignore default values
+                if var != info_default[key]:
+                    info[key] = var
+
 
     # Pre-Unified and Legacy don't define if they have custom XDG dirs
     # so we check for them..
@@ -279,7 +298,7 @@ def get_metadata(prefix_path=None):
             ))
 
     if info['WINEPREFIXNAME'] == '':
-        if info['WINEPREFIXTYPE'] != 'simple':
+        if info['WINEPREFIXTYPE'] not in ('simple', 'playonlinux'):
             print(
                 "This prefix is in a weird format, skipping: {0}".format(prefix_path),
                 file=sys.stderr
