@@ -4,6 +4,13 @@
 # Copyright (c) 2007-2010 Christian Dannie Storgaard
 #
 import gtk, glib
+try:
+    import gio
+except ImportError:
+    # Older systems might not have gio,
+    # that's okay, we only use it to check why an icon fails to load.
+    # Ff a system doesn't have gio, there will be no fallback icon
+    pass
 import wine
 import logging
 
@@ -50,9 +57,12 @@ def get_icon_pixbuf_from_program(program=None, executable=None, size=32, force_u
     if icon is None:
         #self.debug("\tIcon lookup returned nothing.")
         try:
-            icon = gtk.icon_theme_get_default().load_icon("application-x-ms-dos-executable", size, 0)
-        except glib.GError:
-            icon = gtk.icon_theme_get_default().load_icon("application-x-executable", size, 0)
+            try:
+                icon = gtk.icon_theme_get_default().load_icon("application-x-ms-dos-executable", size, 0)
+            except glib.GError, gio.Error:
+                icon = gtk.icon_theme_get_default().load_icon("application-x-executable", size, 0)
+        except:
+            icon = None
             #self.debug("\tUsing template icon.")
     return icon
 

@@ -8,6 +8,13 @@ from __future__ import print_function
 
 import copy, os
 import gobject, gtk, widget, wine
+import glib
+IOError = glib.GError
+try:
+    import gio
+    IOError = gio.Error
+except ImportError:
+    pass
 from vineyard import common, program_handler, icons
 import logging
 import pprint
@@ -700,7 +707,7 @@ class DialogEditProgram(gtk.Dialog):
                 'application-x-executable', 48, 0
             )
             self.icon.set_from_pixbuf(pixbuf)
-        except glib.GError:
+        except IOError:
             pass
         #self.icon.set_from_icon_name('application-x-executable', 48)
 
