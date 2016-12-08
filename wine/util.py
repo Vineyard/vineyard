@@ -1264,6 +1264,10 @@ def get_default_terminal():
     elif desktop == "xfce":
         terminal = 'exo-open', ['--launch', 'TerminalEmulator']
     else:
+        terminal = None
+
+    # Konsole doesn't handle --init-file, so fall back to XTerm
+    if terminal == None or terminal[0] == 'konsole':
         terminal = 'xterm', ['-e']
     return terminal
 
