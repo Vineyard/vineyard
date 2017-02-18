@@ -10,8 +10,11 @@ class Widget(widget.VineyardWidgetComboBox):
     def __init__(self):
         # Get a list of the Windows versions sorted by version number, newest first
         _windowsversions = wine.version.windowsversions_sorted.copy()
+        default_windowsversion = wine.version.get_default()
+        # Vineyard regards WinXP as one version, python-wine deals with the 64 bit difference
+        default_windowsversion = default_windowsversion.replace('winxp64', 'winxp')
         windows_versions = [
-            _('%s (default)') % v[0] if k.endswith('xp') else v[0]
+            _('%s (default)') % v[0] if k == default_windowsversion else v[0]
             for (k,v) in _windowsversions
             if k is not "winxp64"  # python-wine knows to set "winxp" as "winxp64" on 64bit prefixes
         ]

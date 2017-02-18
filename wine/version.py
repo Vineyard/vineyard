@@ -8,8 +8,6 @@
 
 import common, registry
 
-# wine/programs/winecfg/appdefaults.c
-DEFAULT = 'winxp'
 windowsversions_sorted = common.sorteddict(
 
     ("win10", [
@@ -71,6 +69,16 @@ KeyWindNT = "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows"
 KeyEnvNT  = "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Session Manager\\Environment"
 
 
+# wine/programs/winecfg/appdefaults.c
+def get_default():
+    if common.get_wine_version(common.ENV['WINE'])['float'] >= 2.2:
+        return 'win7'
+    else:
+        if common.ENV['WINEARCH'] == 'win64':
+            return 'winxp64'
+        else:
+            return 'winxp'
+
 def get(program=None):
     if program:
         version = None
@@ -80,14 +88,14 @@ def get(program=None):
         if program.lower() in programs.keys() and 'Version' in programs[program.lower()]:
             version = programs[program.lower()]['Version']
         if version == None or version not in windowsversions.keys():
-            return DEFAULT
+            return get_default()
         else:
             return version
     else:
         version = registry.get('HKEY_CURRENT_USER\\Software\\Wine', "Version", quiet=True)
         if version:
             if version == None or version not in windowsversions.keys():
-                return DEFAULT
+                return get_default()
             else:
                 return version
         else:
@@ -160,7 +168,7 @@ def _parseWineVersionFromRegistry():
     # need for Wine... but you never know ;)
     # http://techsupt.winbatch.com/TS/T000001074F4.html
     versionnt = registry.get(KeyNT, "CurrentVersion")
-    best = DEFAULT # hardcoded fallback (same as in winecfg)
+    best = get_default() # default fallback (same as in winecfg)
 
     if versionnt:
         version = versionnt
@@ -207,7 +215,7 @@ def get_programs():
 def __translate_version_string(version, strict=False):
     version = version.lower()
     if version == "default":
-        return DEFAULT
+        return get_default()
     elif version == "win2000":
         return "win2k"
     elif version == "winxp":
