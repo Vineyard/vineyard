@@ -1,6 +1,6 @@
 language: python
 python:
-    - 2.7
+  - 2.7
 script: python setup.py install
 deploy:
   provider: launchpad
@@ -9,3 +9,6 @@ deploy:
     secure: DAyRBXAEqegxUk1KRn3xtRjpeyiK9+4feZLXJUaWO4VsHw4Qm83Esa3r159EIjKjNXM8lw+VAq0SlnCk8ojr7gGOb2T9ORzkOTtkoJav/5P2jFbfadHU/Zj8fFaFiw8uk3srJeMkTBCvYw/p+S4q29e7hgFDRz+GF3c4xlOVlAQ=
   oauth_token_secret:
     secure: Mw/W5aIXDpL/KDa8+iOHk7SMbCdXUOtNAdwTWndLKBxkB+zsPGifYOE987xi9j+B6377DPUnkC1NlzHYnGQOVex19ZQGJcjqzlcKrwpT7VRlUcw06M4wAZvNLCXatOTDIya9E+TNCap1VRGvcNXN0fybL80Mq9V5GHGsNdk062Q=
+  skip_cleanup: false
+  on:
+    tags: true
