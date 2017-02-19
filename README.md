@@ -1,5 +1,7 @@
 # Vineyard
 
+[![Build Status](https://travis-ci.org/Cybolic/vineyard.svg?branch=master)](https://travis-ci.org/Cybolic/vineyard)
+
 ## Easy to use Wine configuration programs and libraries
 
 Libraries and graphical utilities for using and configuring Wine from the Gnome desktop.
