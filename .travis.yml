@@ -1,0 +1,11 @@
+language: python
+python:
+    - 2.7
+script: python setup.py install
+deploy:
+  provider: launchpad
+  slug: "~cybolic/vineyard/head"
+  oauth_token:
+    secure: V+ZkUTkBLzKSQIY9uBpc7N309QU8dVW9QrjpJDjQRQ9/yAGjsh+ruWb2WY9GVgqmoqGO0s1IaRMGs4TTAk7T6ZqmhhAbcNXSPA8WdXhcCoJDss5VkcTFX3xKAMi6oeOzuNtoFOKHbPUkJ2DVLiw08KFWYAHz1TDM6xKshZofUY4=
+  oauth_token_secret:
+    secure: W+hMiWHhDytUurIe7heJ/Ym5T8mi4nUB3KbJf1l3gaQFP0WqVQ4FokWqhKawqBB9f9EVBKRaqJlbqxtv+PLaKYXHafAAfYM3L3Sj22Vl2l4Ci05/5QtvAJigbM3m/IRRYRnBPikgZh0tlvFB1l53Ko/U7H+dGzXO5VX4crrJzjI=
