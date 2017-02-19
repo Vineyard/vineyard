@@ -4,8 +4,8 @@ python:
 script: python setup.py install
 deploy:
   provider: launchpad
-  slug: "~cybolic/vineyard/head"
+  slug: "~cybolic/vineyard/+git/main"
   oauth_token:
-    secure: V+ZkUTkBLzKSQIY9uBpc7N309QU8dVW9QrjpJDjQRQ9/yAGjsh+ruWb2WY9GVgqmoqGO0s1IaRMGs4TTAk7T6ZqmhhAbcNXSPA8WdXhcCoJDss5VkcTFX3xKAMi6oeOzuNtoFOKHbPUkJ2DVLiw08KFWYAHz1TDM6xKshZofUY4=
+    secure: DAyRBXAEqegxUk1KRn3xtRjpeyiK9+4feZLXJUaWO4VsHw4Qm83Esa3r159EIjKjNXM8lw+VAq0SlnCk8ojr7gGOb2T9ORzkOTtkoJav/5P2jFbfadHU/Zj8fFaFiw8uk3srJeMkTBCvYw/p+S4q29e7hgFDRz+GF3c4xlOVlAQ=
   oauth_token_secret:
-    secure: W+hMiWHhDytUurIe7heJ/Ym5T8mi4nUB3KbJf1l3gaQFP0WqVQ4FokWqhKawqBB9f9EVBKRaqJlbqxtv+PLaKYXHafAAfYM3L3Sj22Vl2l4Ci05/5QtvAJigbM3m/IRRYRnBPikgZh0tlvFB1l53Ko/U7H+dGzXO5VX4crrJzjI=
+    secure: Mw/W5aIXDpL/KDa8+iOHk7SMbCdXUOtNAdwTWndLKBxkB+zsPGifYOE987xi9j+B6377DPUnkC1NlzHYnGQOVex19ZQGJcjqzlcKrwpT7VRlUcw06M4wAZvNLCXatOTDIya9E+TNCap1VRGvcNXN0fybL80Mq9V5GHGsNdk062Q=
