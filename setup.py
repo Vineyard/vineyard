@@ -8,7 +8,7 @@ with open('%s/debian/changelog' % script_dir, 'r') as file_obj:
     lines = file_obj.readlines()
     deb_version = lines[0].split('(')[1].split(')')[0]
 
-if 'TRAVIS' in os.environ && 'CI' in os.environ:
+if 'TRAVIS' in os.environ and 'CI' in os.environ:
   etc_dir = '../etc'
   deb_version = os.environ['TRAVIS_TAG']
 else:
