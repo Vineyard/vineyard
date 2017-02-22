@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2007-2011 Christian Dannie Storgaard
@@ -268,17 +268,19 @@ class Dialog(gtk.Dialog):
         version_label.set_alignment(0.0, 0.5)
         self.version_value = gtk.combo_box_new_text()
         self._windowsversions = wine.version.windowsversions_sorted.copy()
+        default_windowsversion = wine.version.get_default()
         if 'win2008' in self._windowsversions:
             self._windowsversions['win2008'][0] = "Windows 7"
         windows_versions = [
-            _('%s (default)') % v[0] if k.endswith('xp') else v[0]
+            _('%s (default)') % v[0] if k == default_windowsversion else v[0]
             for (k,v) in self._windowsversions
+            if k is not "winxp64"  # python-wine knows to set "winxp" as "winxp64" on 64bit prefixes
         ]
         for version in windows_versions:
             self.version_value.append_text(version)
         vineyard.combobox_set_active_by_string(
             self.version_value,
-            "Windows XP",
+            self._windowsversions[default_windowsversion][0],
             startswith=True
         )
         self.table.attach(
