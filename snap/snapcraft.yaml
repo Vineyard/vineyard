@@ -1,0 +1,46 @@
+# This file is not yet ready.
+
+name: vineyard
+version: '1.5.1+git'
+summary: Easy to use Wine configuration program
+description: |
+  Libraries and graphical utilities for using and configuring Wine.
+  Includes a Gtk2 replacement for Winecfg with extra functionality and utilities to make using Wine easier,
+  a Wine process managent indicator and a Python library for interacting with Wine.
+
+grade: stable
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+parts:
+  my-part:
+    # See 'snapcraft plugins'
+    plugin: nil
+
+apps:
+  vineyard-preferences:
+    command: vineyard-preferences
+  vineyard-cli:
+    command: vineyard-cli
+  vineyard-launcher:
+    command: vineyard-launcher
+  vineyard-indicator:
+    command: vineyard-indicator
+  vineyard-daemon:
+    command: vineyard-daemon
+
+parts:
+  vineyard-preferences:
+    source: https://github.com/Cybolic/vineyard.git
+    source-type: git
+    plugin: python
+    python-version: 'python2'
+    python-packages:
+      - glade2
+      - dbus
+      - appindicator
+    stage-packages:
+     - wine | wine-staging
+     - icoutils
+     - cabextract
+     - winetricks
+     - unzip
