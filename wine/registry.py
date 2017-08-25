@@ -28,7 +28,7 @@ def get_codepage():
                 util.string_escape_char(branch.lower(), '\\')
             )[1].split('"acp"="')[1].split('"')[0]
         return 'cp{0}'.format(codepage)
-    except (IOError, IndexError):
+    except (IOError, TypeError, IndexError):
         # Windows default
         return 'cp1252'
 
