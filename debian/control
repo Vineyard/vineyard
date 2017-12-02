@@ -19,5 +19,5 @@ X-Python-Version: >= 2.4
 Description: Easy to use Wine configuration program
  Vineyard is a user friendly configuration tool for Wine that offers all the
  features of winecfg (with the exception of the unfinished theme-support) as
- well as bottle-handling and program-management in an easy to use program
+ well as prefix-handling and program-management in an easy to use program
  designed to blend in with the GNOME desktop.
