@@ -213,6 +213,9 @@ def get(use_registry=True, basic=False):
         # Skip device links
         if drive.endswith('::'):
             continue
+        # Skip non-drive links (eg. printers)
+        if drive.endswith(':') == False:
+            continue
 
         drive_letter = drive[0].upper()
         drives[drive_letter] = {}
