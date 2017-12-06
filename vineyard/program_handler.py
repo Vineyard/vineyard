@@ -4,7 +4,10 @@
 # Copyright (c) 2007-2010 Christian Dannie Storgaard
 #
 import gobject, gtk, pango, sys, re, wine
-import dbus
+try:
+    import dbus
+except ImportError:
+    dbus = None
 from vineyard import common, async
 
 THREADING = async.ThreadedClass()
@@ -74,20 +77,23 @@ class MonitoredProgram:
             return False
 
 def _indicator_lives():
-    ## FIXME: Why does this have to be so complex?
-    ##        There has to be an easier method...
-    try:
-        applications = dbus.SessionBus().get_object(
-            'org.ayatana.indicator.application',
-            '/org/ayatana/indicator/application/service'
-        ).get_dbus_method('GetApplications')()
+    if dbus != None:
+        ## FIXME: Why does this have to be so complex?
+        ##        There has to be an easier method...
+        try:
+            applications = dbus.SessionBus().get_object(
+                'org.ayatana.indicator.application',
+                '/org/ayatana/indicator/application/service'
+            ).get_dbus_method('GetApplications')()
 
-        for application in applications:
-            for info in application:
-                if str(info).startswith('/org/ayatana/NotificationItem/vineyard'):
-                    return True
-        return False
-    except dbus.exceptions.DBusException:
+            for application in applications:
+                for info in application:
+                    if str(info).startswith('/org/ayatana/NotificationItem/vineyard'):
+                        return True
+            return False
+        except dbus.exceptions.DBusException:
+            return False
+    else:
         return False
 
 class show_program_error_question:
