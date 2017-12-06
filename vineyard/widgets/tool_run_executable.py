@@ -21,6 +21,7 @@ class Widget(widget.VineyardWidget):
         self.filechooser.add_filter(common.filefilters['all'])
         self.filechooser.add_filter(common.filefilters['windows_executables'])
         self.filechooser.set_filter(common.filefilters['windows_executables'])
+        self.filechooser.connect('file-set', self._on_filechooser_file_set)
         try:
             main_drive = wine.drives.get_main_drive(use_registry=False)['mapping']
             self.filechooser.add_shortcut_folder(main_drive)
@@ -30,6 +31,7 @@ class Widget(widget.VineyardWidget):
         self.button_run = common.button_new_with_image(self.icon, label=_("_Run"), use_underline=True)
         self.hbox.pack_end(self.button_run, False, False)
         self.pack_start(self.hbox, True, False)
+        self.button_run.set_sensitive(False)
         self.show_all()
 
         self.button_run.connect('clicked', self.button_clicked)
@@ -53,5 +55,11 @@ class Widget(widget.VineyardWidget):
         filename = self.filechooser.get_filename()
         if filename != None:
             program_handler.MonitoredProgram([filename], os.path.basename(filename))
+
+    def _on_filechooser_file_set(self, filechooser):
+        file_name = filechooser.get_filename()
+        if file_name is not None:
+            self.button_run.set_sensitive(True)
         else:
             self.button_run.set_sensitive(False)
+
