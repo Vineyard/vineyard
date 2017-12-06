@@ -1257,12 +1257,28 @@ def get_desktop_environment():
 def get_default_terminal():
     desktop = get_desktop_environment()
     if desktop == "gnome":
-        terminal = get_command_output('gconftool-2 --get "/desktop/gnome/applications/terminal/exec"')
-        terminal = (terminal, [get_command_output('gconftool-2 --get "/desktop/gnome/applications/terminal/exec_arg"')])
+        try:
+            terminal = get_command_output('gconftool-2 --get "/desktop/gnome/applications/terminal/exec"')
+            terminal = (terminal, [get_command_output('gconftool-2 --get "/desktop/gnome/applications/terminal/exec_arg"')])
+        except OSError:
+            try:
+                terminal = get_command_output('gconftool --get "/desktop/gnome/applications/terminal/exec"')
+                terminal = (terminal, [get_command_output('gconftool --get "/desktop/gnome/applications/terminal/exec_arg"')])
+            except OSError:
+                terminal = None
+        if terminal == None:
+            terminal = get_command_output('which gnome-terminal')
+            if terminal != '':
+                terminal = (terminal, ['--'])
+            else:
+                terminal = None
     elif desktop == "kde":
-        terminal = get_command_output('kreadconfig --file kdeglobals --group General --key TerminalApplication --default konsole'), ['-e']
+        try:
+            terminal = get_command_output('kreadconfig --file kdeglobals --group General --key TerminalApplication --default konsole'), ['-e']
+        except OSError:
+            terminal = None
     elif desktop == "xfce":
-        terminal = 'exo-open', ['--launch', 'TerminalEmulator']
+        terminal = ('exo-open', ['--launch', 'TerminalEmulator'])
     else:
         terminal = None
 
