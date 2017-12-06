@@ -512,9 +512,10 @@ def add(prefix_name, prefix_path=None, env=None):
     if not os.path.isdir(prefix_basedir):
         if not os.access(os.path.dirname(prefix_basedir), os.W_OK):
             raise IOError, "Couldn't create prefix base path, you don't have the necessary permissions."
-        # Wine will always create a win64 arch prefix if the directory exists
+        # Note that Wine will always create a win64 arch prefix if the directory exists
         # https://bugs.winehq.org/show_bug.cgi?id=29661
-        # os.mkdir(prefix_basedir)
+        # so only create the base dir
+        os.mkdir(prefix_basedir)
 
     # We need to let Wine set up the prefix before we can write to it
     # so set up an environment that matches what we will write when the prefix exists

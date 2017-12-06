@@ -863,23 +863,23 @@ class MainApp(vineyard.async.ThreadedClass):
                 env['WINEARCH'] = 'win32'
 
 
-            self.__timeout_creating_prefix_pulse = gobject.timeout_add(40, self.__add_conf_progress)
-            self.__creating_prefix_name = name
+            self._creating_prefix_name = name
+            self._creating_prefix_done = False
+            self._timeout_creating_prefix_pulse = gobject.timeout_add(40, self._add_conf_progress)
             self._add_conf(name, env)
 
 
     @vineyard.async.async_method
     def _add_conf(self, name, env):
-        self.__creating_prefix_done = False
         wine.prefixes.add(
             name,
             None,
             env
         )
-        self.__creating_prefix_done = True
+        self._creating_prefix_done = True
 
-    def __add_conf_progress(self):
-        if self.__creating_prefix_done:
+    def _add_conf_progress(self):
+        if self._creating_prefix_done:
             self._add_conf_done()
             return False
         else:
@@ -889,10 +889,10 @@ class MainApp(vineyard.async.ThreadedClass):
     @vineyard.async.mainloop_method
     def _add_conf_done(self):
         def __update(*args):
-            self.__update_configurations(select_configuration = self.__creating_prefix_name)
+            self.__update_configurations(select_configuration = self._creating_prefix_name)
             self.__reload_pages()
 
-        # gobject.source_remove(self.__timeout_creating_prefix_pulse)
+        # gobject.source_remove(self._timeout_creating_prefix_pulse)
         self.widgets['add-prefix-dialog'].hide_all()
         self.__init_configurations(callback=__update)
 
