@@ -1274,7 +1274,12 @@ def get_default_terminal():
                 terminal = None
     elif desktop == "kde":
         try:
-            terminal = get_command_output('kreadconfig --file kdeglobals --group General --key TerminalApplication --default konsole'), ['-e']
+            terminal = get_command_output('kreadconfig --file kdeglobals --group General --key TerminalApplication --default konsole')
+            # Konsole doesn't handle --init-file, so don't use it
+            if terminal == 'konsole':
+                terminal = None
+            else:
+                terminal = (terminal, ['-e'])
         except OSError:
             terminal = None
     elif desktop == "xfce":
@@ -1282,9 +1287,17 @@ def get_default_terminal():
     else:
         terminal = None
 
-    # Konsole doesn't handle --init-file, so fall back to XTerm
-    if terminal == None or terminal[0] == 'konsole':
+    if terminal == None:
+        # Try the Debian alternative system
+        try:
+            terminal = os.readlink('/etc/alternatives/x-terminal-emulator')
+            terminal = (terminal, ['-e'])
+        except OSError:
+            terminal = None
+
+    if terminal == None:
         terminal = 'xterm', ['-e']
+    
     return terminal
 
 
