@@ -51,6 +51,7 @@ class Widget(widget.VineyardWidget):
         )
 
         self.list.connect('changed', self.list_changed)
+        self.list.connect('toggled', self.theme_toggled)
         self.button_add.connect('clicked', self.button_add_clicked)
         self.button_remove.connect('clicked', self.button_remove_clicked)
 
@@ -58,6 +59,11 @@ class Widget(widget.VineyardWidget):
 
     def list_changed(self, listwidget, treeview, active_nr, active_text):
         self.button_remove.set_sensitive(active_nr != None)
+    
+    def theme_toggled(self, listwidget, row_nr, col_nr, toggled_value):
+        toggled_theme = self.themes[ listwidget.model[row_nr][1] ]
+        self.settings[self.settings_key]['new_theme'] = toggled_theme['name']
+        self.gobject.emit('settings-changed', self.settings_key, self.set_function, (self.settings[self.settings_key],))
 
     def button_remove_clicked(self, button):
         themes_to_remove = self.list.get_active_text()
