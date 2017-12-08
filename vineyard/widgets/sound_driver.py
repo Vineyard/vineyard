@@ -37,10 +37,10 @@ class Widget(widget.VineyardWidgetComboBox):
             values = [ name for (name, value) in match_values ],
             match_values = match_values,
             settings_key = 'sound-drivers',
-            get_function = self.__get_setting,
-            set_function = self.__set_setting)
+            get_function = self._get_setting,
+            set_function = self._set_setting)
 
-    def __get_setting(self):
+    def _get_setting(self):
         try:
             driver = wine.audio.get_enabled_drivers()[0]
         except IndexError:
@@ -49,5 +49,5 @@ class Widget(widget.VineyardWidgetComboBox):
             return driver
         else:
             return 'alsa'
-    def __set_setting(self, driver):
+    def _set_setting(self, driver):
         wine.audio.set_enabled_drivers([driver])

@@ -10,16 +10,16 @@ class Widget(widget.VineyardWidgetCheckButton):
         widget.VineyardWidgetCheckButton.__init__(self,
             title = _('Allow switching resolution using XRandR'),
             settings_key = 'direct3d-antialiasing',
-            get_function = self.__get_function,
-            set_function = self.__set_function)
+            get_function = self._get_function,
+            set_function = self._set_function)
         self.set_tooltip_text(_(
             "Allow using the XRandR extension to change screen resolution." +
             "\n\n" +
             "If you see a lot of errors with \"X11DRV_XRandR_SetCurrentMode\" try disabling this."
         ))
     
-    def __get_function(self):
+    def _get_function(self):
         return wine.graphics.get_allow_xrandr()
     
-    def __set_function(self, value):
+    def _set_function(self, value):
         return wine.graphics.set_allow_xrandr(value)

@@ -27,13 +27,19 @@ import vineyard
 
 SHARED_FILES_PATH = vineyard.get_shared_files_path()
 
-import copy, time, os, sys, operator
+import copy
+import time
+import os
+import sys
+import operator
 
 WINE_DEFAULT_PREFIX_EXISTS = os.path.exists(os.path.expanduser('~/.wine'))
 
 
 from optparse import OptionParser
-import gobject, gtk, pango
+import gobject
+import gtk
+import pango
 
 import logging
 
@@ -67,24 +73,24 @@ class MainApp(vineyard.async.ThreadedClass):
         gobject.idle_add(self.__initialise__)
 
     def __initialise__(self):
-        self.__init_environment()
-        self.__init_gui()
-        self.__init_modules()
+        self._init_environment()
+        self._init_gui()
+        self._init_modules()
         # If the default Wine prefix doesn't exist, start its creation
         if CMD_ARGS._first_run:
-            self.__init_wine_prefix()
-        self.__init_configurations(callback=self.__show_configurations)
+            self._init_wine_prefix()
+        self._init_configurations(callback=self._show_configurations)
         return False
 
 
-    def __init_modules(self):
+    def _init_modules(self):
         """Load all modules. We wait until here to do it so we can show the
            window sooner."""
         global wine
         import wine
 
 
-    def __init_wine_prefix(self):
+    def _init_wine_prefix(self):
         """Create the Wine prefix."""
         # We are directly using the multi thread class here to make sure
         # it doesn't end up in a queue
@@ -92,11 +98,11 @@ class MainApp(vineyard.async.ThreadedClass):
             wine.prefixes.wine_first_run
         )
 
-    def __init_environment(self):
+    def _init_environment(self):
         global SHARED_FILES_PATH
         self.path_shared_files = SHARED_FILES_PATH
 
-    def __init_gui(self):
+    def _init_gui(self):
         self.widgets = vineyard.LoadWidgets(
             self,
             filename='{shared_path}/vineyard-preferences.glade'.format(
@@ -195,10 +201,10 @@ class MainApp(vineyard.async.ThreadedClass):
         self.widgets['window'].show();
 
     @vineyard.async.async_method
-    def __init_configurations(self):
+    def _init_configurations(self):
         self.configurations = wine.prefixes.list()
 
-    def __show_configurations(self, return_status):
+    def _show_configurations(self, return_status):
         self.widgets['combobox-configurations'] = gtk.ComboBox()
         self.widgets['hbox-configurations-combobox'].pack_start(
             self.widgets['combobox-configurations'], True, True
@@ -209,13 +215,13 @@ class MainApp(vineyard.async.ThreadedClass):
         self.widgets['combobox-configurations'].set_row_separator_func(vineyard.row_separator_function)
 
         self.widgets['combobox-configurations'].show_all()
-        self.widgets['combobox-configurations'].connect('changed', self.__configuration_changed)
+        self.widgets['combobox-configurations'].connect('changed', self._configuration_changed)
 
-        self.__update_configurations()
+        self._update_configurations()
 
-        self.__init_pages(callback=self.__show_gui)
+        self._init_pages(callback=self._show_gui)
 
-    def __update_configurations(self, select_configuration=None):
+    def _update_configurations(self, select_configuration=None):
         combobox = self.widgets['combobox-configurations']
         model_old = combobox.get_model()
         model = gtk.ListStore(str, str)
@@ -313,13 +319,13 @@ class MainApp(vineyard.async.ThreadedClass):
         if not prefix_set:
             self.widgets['combobox-configurations'].set_active(0)
 
-    def __fix_treeviews(self):
+    def _fix_treeviews(self):
         """Apply the fix for Gtk's bug in treeview model signals to all treeviews"""
         for treeview in vineyard.widget_get_children_of_type(self.widgets['window'], gtk.TreeView):
             vineyard.fix_model(treeview.get_model())
 
     @vineyard.async.async_method
-    def __init_pages(self):
+    def _init_pages(self):
         # Go through the list of pages by position info
         temp_pages = {}
         pages_positions = dict([ (i.position,[]) for i in vineyard.pages ])
@@ -358,8 +364,8 @@ class MainApp(vineyard.async.ThreadedClass):
         self.widgets['treeview-pages'].get_model().append((icon, page.name))
         return False
 
-    def __show_gui(self, return_status):
-        self.__fix_treeviews()
+    def _show_gui(self, return_status):
+        self._fix_treeviews()
 
         if CMD_ARGS.show_progressbar:
             self.widgets['progressbar-loading'].set_pulse_step(0.1)
@@ -434,7 +440,7 @@ class MainApp(vineyard.async.ThreadedClass):
         #vineyard.widget_update_position(self.widgets['window'])
         return False
 
-    def __reload_pages(self):
+    def _reload_pages(self):
         try:
             self.pages
         except AttributeError:
@@ -450,7 +456,7 @@ class MainApp(vineyard.async.ThreadedClass):
             except AttributeError:
                 pass
 
-        self.__fix_treeviews()
+        self._fix_treeviews()
 
         self.pages[self.widgets['notebook'].get_current_page()].show_page()
 
@@ -461,18 +467,18 @@ class MainApp(vineyard.async.ThreadedClass):
     def page_loading_settings(self, page_gobject, number_of_settings=1):
         self.increase_progress_max_value(number_of_settings)
         if self._loading_checker is None:
-            self._loading_checker = gobject.timeout_add(500, self.__check_if_loading_finished)
+            self._loading_checker = gobject.timeout_add(500, self._check_if_loading_finished)
 
-    def __check_if_loading_finished(self):
+    def _check_if_loading_finished(self):
         if vineyard.async.get_number_of_running_threads() < 1:
-            self.__progress_done()
+            self._progress_done()
             self._loading_checker = None
             return False
         else:
             return True
 
     @vineyard.async.async_method
-    def __apply_changes(self):
+    def _apply_changes(self):
         # Filter through the changes to only apply the latest/current
         done_changes = []
         for id,func,arguments in self._changes:
@@ -491,7 +497,7 @@ class MainApp(vineyard.async.ThreadedClass):
             if nr_of_threads != vineyard.async.get_number_of_running_threads():
                 nr_of_threads = vineyard.async.get_number_of_running_threads()
 
-    def __set_gui_saving(self):
+    def _set_gui_saving(self):
         if CMD_ARGS.show_progressbar:
             self.widgets['progressbar-loading'].set_text(self.progress_text_saving)
         else:
@@ -499,7 +505,7 @@ class MainApp(vineyard.async.ThreadedClass):
         self.set_progress_max_value(1)
         return False
 
-    def __set_gui_saving_done(self):
+    def _set_gui_saving_done(self):
         self.increase_progress_fraction()
         if CMD_ARGS.show_progressbar:
             self.widgets['progressbar-loading'].set_text(self.progress_text_loading)
@@ -508,9 +514,9 @@ class MainApp(vineyard.async.ThreadedClass):
         return False
 
     def set_original_setting(self, page_gobject, id, arguments):
-        #print "Loaded setting %s. Total: %s\tLoaded: %s" % (id, self.__max_loaded_fraction, self.__currently_loaded_fraction)
+        #print "Loaded setting %s. Total: %s\tLoaded: %s" % (id, self._max_loaded_fraction, self._currently_loaded_fraction)
         if vineyard.async.get_number_of_running_threads() == 0:
-            self.__progress_done()
+            self._progress_done()
         else:
             self.increase_progress_fraction()
         self._loaded_settings[id] = wine.common.copy(arguments)
@@ -545,11 +551,11 @@ class MainApp(vineyard.async.ThreadedClass):
 
             self._gui_set_buttons_for_apply_state(any_changes)
 
-    def __apply_changes_done(self, return_code):
+    def _apply_changes_done(self, return_code):
         self._currently_saving = False
         self._gui_set_buttons_for_apply_state(False)
         self.widgets['button-close'].set_sensitive(True)
-        self.__set_gui_saving_done()
+        self._set_gui_saving_done()
         return False
 
     @vineyard.async.mainloop_method
@@ -586,7 +592,7 @@ class MainApp(vineyard.async.ThreadedClass):
                 number_of_threads = vineyard.async.get_number_of_running_threads()
         gtk.main_quit()
 
-    def __configuration_changed(self, combobox):
+    def _configuration_changed(self, combobox):
         selected = combobox.get_model()[combobox.get_active()][0]
         if selected == combobox.get_model()[0][0]:
             selected = None
@@ -597,7 +603,7 @@ class MainApp(vineyard.async.ThreadedClass):
         wine.prefixes.use(selected)
         prefix_now = wine.common.ENV['WINEPREFIX']
         if prefix_before != prefix_now:
-            self.__reload_pages()
+            self._reload_pages()
         # Set window title
         # NOTE: Seemed like a nice idea, but it's a bit of an information
         #       redundancy, I mean, the prefix name is just one line down
@@ -666,8 +672,8 @@ class MainApp(vineyard.async.ThreadedClass):
         self._currently_saving = True
         self.widgets['button-close'].set_sensitive(False)
         self.widgets['button-apply'].set_sensitive(False)
-        self.__set_gui_saving()
-        self.__apply_changes(callback=self.__apply_changes_done)
+        self._set_gui_saving()
+        self._apply_changes(callback=self._apply_changes_done)
 
     def _on_toggle_advanced(self, button):
         # FIXME: Nothing here yet, the re-implementation didn't leave anything
@@ -677,12 +683,12 @@ class MainApp(vineyard.async.ThreadedClass):
         event = gtk.gdk.Event(gtk.gdk.BUTTON_PRESS)
         self.widgets['menu-tools'].popup(
             None, None,
-            self.__menu_position_func,
+            self._menu_position_func,
             1, event.time,
             button
         )
 
-    def __menu_position_func(self, menu, button):
+    def _menu_position_func(self, menu, button):
         position_button = button.get_allocation()
         position_window = button.get_window().get_origin()
         x = position_button.x + position_window[0]
@@ -692,7 +698,7 @@ class MainApp(vineyard.async.ThreadedClass):
 
     def _on_prefix_refresh(self, widget):
         self.configurations = wine.prefixes.list()
-        self.__update_configurations(
+        self._update_configurations(
             wine.common.ENV['WINEPREFIX']
         )
 
@@ -738,7 +744,7 @@ class MainApp(vineyard.async.ThreadedClass):
         if response == -5: # OK pressed
             wine.prefixes.remove() # if no arg, remove current
             CMD_ARGS.configuration = None
-            self.__init_configurations(callback=self.__update_configurations)
+            self._init_configurations(callback=self._update_configurations)
 
     def _on_prefix_add(self, widget):
         self.widgets['entry-add-prefix-name'].set_text('')
@@ -888,13 +894,13 @@ class MainApp(vineyard.async.ThreadedClass):
         
     @vineyard.async.mainloop_method
     def _add_conf_done(self):
-        def __update(*args):
-            self.__update_configurations(select_configuration = self._creating_prefix_name)
-            self.__reload_pages()
+        def _update(*args):
+            self._update_configurations(select_configuration = self._creating_prefix_name)
+            self._reload_pages()
 
         # gobject.source_remove(self._timeout_creating_prefix_pulse)
         self.widgets['add-prefix-dialog'].hide_all()
-        self.__init_configurations(callback=__update)
+        self._init_configurations(callback=_update)
 
 
     """
@@ -903,15 +909,15 @@ class MainApp(vineyard.async.ThreadedClass):
 
     @vineyard.async.mainloop_method
     def increase_progress_max_value(self, amount=1):
-        self.set_progress_max_value(self.__max_loaded_fraction+amount)
+        self.set_progress_max_value(self._max_loaded_fraction+amount)
 
     @vineyard.async.mainloop_method
     def set_progress_max_value(self, value):
         """
             Set the amount of settings we expect to load so the user interface can update accordingly
         """
-        self.__max_loaded_fraction = value
-        self.__currently_loaded_fraction = 0
+        self._max_loaded_fraction = value
+        self._currently_loaded_fraction = 0
 
         if (
             hasattr(self.pages[self.widgets['notebook'].get_current_page()], 'no_loading')
@@ -926,9 +932,9 @@ class MainApp(vineyard.async.ThreadedClass):
                 self.widgets['progressbar-loading'].show()
                 self.widgets['vbox-loading'].show()
                 if value == 1:
-                    self.__timeout_loading_pulse = gobject.timeout_add(40, self.__progress_pulse)
+                    self._timeout_loading_pulse = gobject.timeout_add(40, self._progress_pulse)
                 else:
-                    gobject.source_remove(self.__timeout_loading_pulse)
+                    gobject.source_remove(self._timeout_loading_pulse)
             else:
                 self.widgets['spinner-loading'].start()
                 self.widgets['hbox-spinner'].show()
@@ -940,8 +946,8 @@ class MainApp(vineyard.async.ThreadedClass):
                 self.widgets['spinner-loading'].stop()
                 self.widgets['hbox-spinner'].hide()
 
-    def __progress_pulse(self):
-        if self.__currently_loaded_fraction >= 1:
+    def _progress_pulse(self):
+        if self._currently_loaded_fraction >= 1:
             self.widgets['progressbar-loading'].hide()
             self.widgets['vbox-loading'].hide()
             return False
@@ -949,8 +955,8 @@ class MainApp(vineyard.async.ThreadedClass):
             self.widgets['progressbar-loading'].pulse()
             return True
 
-    def __progress_done(self):
-        self.__currently_loaded_fraction = self.__max_loaded_fraction - 1
+    def _progress_done(self):
+        self._currently_loaded_fraction = self._max_loaded_fraction - 1
         self.increase_progress_fraction()
 
     @vineyard.async.mainloop_method
@@ -959,11 +965,11 @@ class MainApp(vineyard.async.ThreadedClass):
             Increase the amount of settings we've loaded so the user interface can update accordingly
         """
         try:
-            self.__currently_loaded_fraction += 1
+            self._currently_loaded_fraction += 1
         except AttributeError:
-            self.__currently_loaded_fraction = 1
+            self._currently_loaded_fraction = 1
         try:
-            value = 1.0 / self.__max_loaded_fraction * self.__currently_loaded_fraction
+            value = 1.0 / self._max_loaded_fraction * self._currently_loaded_fraction
         except ZeroDivisionError:
             # We've reached a value of 1.0 or a setting finished loading
             # before it got to say that it was... threading... :P

@@ -45,7 +45,7 @@ OFF_ARGS = ["no", "false", "0", "none", "off"]
 class Main:
     def __init__(self):
         self.openargs = []
-        self.__run_kwargs = {'monitor': True}
+        self._run_kwargs = {'monitor': True}
 
         usage = "usage: %prog [ [--wine-prefix PREFIX | --use-conf CONFIGURATIONNAME] | --add-conf CONFIGURATIONNAME | --remove-conf CONFIGURATIONNAME | --list-confs | --uninstall PROGRAM | --list-uninstall | --list-uninstall-desktop | --windows-version [list | VERSION | EXECUTABLE [VERSION]] | --drive-map [DRIVELETTER DIRECTORY [LABEL [SERIAL] [TYPE]] ] | --set-drive-type DRIVELETTER TYPE | --show-dot-files [[yes|true]|[no|false]] | --print-registry [BRANCH] | --set-registry BRANCH KEY VALUE | --virtual-desktop [[USE_DESKTOP | WIDTHxHEIGHT] | PROGRAM [USE_DESKTOP | WIDTHxHEIGHT]] | --window-grab-mouse [true|false] | --window-decorated [true|false] | --window-managed [true|false] | --audio-drivers [h | [enable|disable] DRIVER ] | --audio-acceleration [h | [PROGRAM] [full | standard | basic | emulation ]] | --audio-sample-rate | --audio-bit-depth | --audio-emulate-driver | --screen-resolution DPI | --vertex-shader [PROGRAM] on|off | --pixel-shader [PROGRAM] on|off | --check-wine | --check-3d | --set-shell-folder DESKTOPFOLDER TARGET | --get-shell-folders | --list-libraries | --override-library [n|b] LIBRARY | --get-overridden-libraries | --get-program-name PROGRAMEXE | --open-desktop NAME WIDTHxHEIGHT | --run EXE | --run-in-dir EXE]"
         parser = OptionParser(usage)
@@ -768,11 +768,11 @@ class Main:
                 print("Error: Arguments for --open-desktop should be \"NAME WIDTHxHEIGHT\"")
 
         if options.nomonitor:
-            self.__run_kwargs['monitor'] = False
+            self._run_kwargs['monitor'] = False
             print("Monitoring disabled for running programs")
 
         if options.nopulseaudio:
-            self.__run_kwargs['pulseaudio'] = False
+            self._run_kwargs['pulseaudio'] = False
             print("PulseAudio disabled while running programs")
 
         if options.cpulimit:
@@ -784,18 +784,18 @@ class Main:
                 cpus = 1
             else:
                 cpus = 1
-            self.__run_kwargs['cpu_limit'] = cpus
+            self._run_kwargs['cpu_limit'] = cpus
 
         if options.run:
             print("Running command...")
-            if 'pulseaudio' in self.__run_kwargs:
+            if 'pulseaudio' in self._run_kwargs:
                 pulseaudio = True
-                del self.__run_kwargs['pulseaudio']
+                del self._run_kwargs['pulseaudio']
                 wine.common.run('killall pulseaudio', shell = True)
             else:
                 pulseaudio = False
 
-            process = wine.run(options.run[0], **self.__run_kwargs)
+            process = wine.run(options.run[0], **self._run_kwargs)
             print("Started in process group:",wine.util.get_pgid_of_pid(process.pid))
 
             if process is not False:
@@ -836,7 +836,7 @@ class Main:
                 print("Failed.")
             os.chdir(original_directory)
 
-    def __run(self, command):
+    def _run(self, command):
         """Execute command with wine.run() while accepting unquoted filenames"""
         _command = wine.util.wintounix(command)
         # If the command wasn't converted to a unix path, try converting the
@@ -844,7 +844,7 @@ class Main:
         if _command == command and os.path.lexists(command):
             _command = wine.util.unixtowin(command)
 
-        return wine.run(command, **self.__run_kwargs)
+        return wine.run(command, **self._run_kwargs)
 
 
     def _variable_callback(self, option, opt_str, value, parser):

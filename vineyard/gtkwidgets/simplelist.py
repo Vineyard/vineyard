@@ -60,14 +60,14 @@ class SimpleList(gtk.VBox):
             rows = []
 
         if len(rows):
-            self.rows = self.__failsafe_rows(rows)
+            self.rows = self._failsafe_rows(rows)
             if types is None:
-                self._cell_types, self._render_types = self.__convert_rows_to_types(self.rows)
+                self._cell_types, self._render_types = self._convert_rows_to_types(self.rows)
             else:
-                self._cell_types, self._render_types = self.__convert_rows_to_types([types])
+                self._cell_types, self._render_types = self._convert_rows_to_types([types])
         elif types is not None:
             self.rows = rows
-            self._cell_types, self._render_types = self.__convert_rows_to_types([types])
+            self._cell_types, self._render_types = self._convert_rows_to_types([types])
         else:
             raise(ValueError, "You need to supply either rows or types.")
 
@@ -144,11 +144,11 @@ class SimpleList(gtk.VBox):
         self.show_all()
 
         self.treeview._drag_start_position = None
-        self.treeview.connect('button-press-event', self.__on_button_press)
-        self.treeview.connect('button-release-event', self.__on_button_release)
-        self.treeview.connect('motion-notify-event', self.__on_motion)
-        self.treeview.connect('drag-begin', self.__on_drag_begin)
-        self.treeview.connect('drag-data-get', self.__on_drag_data_get)
+        self.treeview.connect('button-press-event', self._on_button_press)
+        self.treeview.connect('button-release-event', self._on_button_release)
+        self.treeview.connect('motion-notify-event', self._on_motion)
+        self.treeview.connect('drag-begin', self._on_drag_begin)
+        self.treeview.connect('drag-data-get', self._on_drag_data_get)
 
     def get(self):
         return list(self.iter())
@@ -316,7 +316,7 @@ class SimpleList(gtk.VBox):
 
         self.emit('changed', row, column_nr, combo_active)
 
-    def __failsafe_rows(self, rows):
+    def _failsafe_rows(self, rows):
         new_rows = []
         max_row_length = max(*[ len(row) for row in rows ])
 
@@ -328,7 +328,7 @@ class SimpleList(gtk.VBox):
             )
         return new_rows
 
-    def __convert_rows_to_types(self, rows):
+    def _convert_rows_to_types(self, rows):
         cell_types = []
         render_types = []
         for cell in rows[0]:
@@ -353,7 +353,7 @@ class SimpleList(gtk.VBox):
         return cell_types, render_types
 
 
-    def __on_button_press(self, widget, event):
+    def _on_button_press(self, widget, event):
         if event.type not in (
             gtk.gdk.BUTTON_PRESS,
             gtk.gdk._2BUTTON_PRESS
@@ -399,18 +399,18 @@ class SimpleList(gtk.VBox):
             return True
         return False
 
-    def __on_button_release(self, widget, event):
+    def _on_button_release(self, widget, event):
         # DND Handling
         if event.button == 1:
             widget._drag_start_position = None
         return False
 
-    def __on_motion(self, widget, event):
+    def _on_motion(self, widget, event):
         # DND Handling
         if (
             widget._drag_start_position is not None
-            and self.__drag_test_start_function is not None
-            and self.__drag_creation_function is not None
+            and self._drag_test_start_function is not None
+            and self._drag_creation_function is not None
         ):
             startx, starty = widget._drag_start_position
             if widget.drag_check_threshold(startx, starty, int(event.x), int(event.y)):
@@ -426,36 +426,36 @@ class SimpleList(gtk.VBox):
                         else:
                             clicked_text = row[self.text_column]
 
-                        data = self.__drag_test_start_function(clicked_nr, clicked_text)
+                        data = self._drag_test_start_function(clicked_nr, clicked_text)
 
                         if data:
                             if type(data) in (list, tuple):
-                                self.__drag_data = (data[0], clicked_nr, clicked_text)
+                                self._drag_data = (data[0], clicked_nr, clicked_text)
                             else:
-                                self.__drag_data = (clicked_nr, clicked_text)
+                                self._drag_data = (clicked_nr, clicked_text)
                             widget.drag_begin(*list(
-                                list(self.__drag_type)+[1, event]
+                                list(self._drag_type)+[1, event]
                             ))
         return True
 
-    def __on_drag_begin(self, widget, context):
+    def _on_drag_begin(self, widget, context):
         if (
-            type(self.__drag_data) in (list, tuple) and
-            type(self.__drag_data[0]) is not int
+            type(self._drag_data) in (list, tuple) and
+            type(self._drag_data[0]) is not int
         ):
-            context.set_icon_pixbuf(self.__drag_data[0], 0, 0)
+            context.set_icon_pixbuf(self._drag_data[0], 0, 0)
         return False
 
-    def __on_drag_data_get(self, widget, context, selection, targetType, eventTime):
+    def _on_drag_data_get(self, widget, context, selection, targetType, eventTime):
         if targetType == 1:
-            data = self.__drag_creation_function(*self.__drag_data[-2:])
+            data = self._drag_creation_function(*self._drag_data[-2:])
             if data:
                 selection.set(selection.target, 8, data)
 
     def set_drag_test_start_function(self, function):
-        self.__drag_test_start_function = function
+        self._drag_test_start_function = function
     def set_drag_creation_function(self, function):
-        self.__drag_creation_function = function
+        self._drag_creation_function = function
 
     def set_drag_type(self, drag_type):
-        self.__drag_type = drag_type
+        self._drag_type = drag_type

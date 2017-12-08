@@ -40,8 +40,8 @@ class VineyardWidget(gtk.VBox):
                 gobject.TYPE_NONE,
                 (str, gobject.TYPE_PYOBJECT))
         self.gobject.loading = True
-        self.gobject.__loaded = False
-        self.__gui_initialized = False
+        self.gobject._loaded = False
+        self._gui_initialized = False
         self.gobject.number_of_settings = number_of_settings
         if 'hidden_on_load' not in dir(self):
             self.hidden_on_load = hidden_on_load
@@ -50,18 +50,18 @@ class VineyardWidget(gtk.VBox):
         gtk.VBox.__init__(self)
         self.set_spacing(0)
         if '_build_interface' in dir(self):
-            self.__build_interface_real = self._build_interface
-            self._build_interface = self.__build_interface_wrapper
+            self._build_interface_real = self._build_interface
+            self._build_interface = self._build_interface_wrapper
         else:
-            self.__gui_initialized = True
+            self._gui_initialized = True
 
-    def __build_interface_wrapper(self):
-        self.__build_interface_real()
-        self.__gui_initialized = True
+    def _build_interface_wrapper(self):
+        self._build_interface_real()
+        self._gui_initialized = True
 
     def __configure__(self, *args):
-        if not self.gobject.__loaded:
-            self.gobject.__loaded = True
+        if not self.gobject._loaded:
+            self.gobject._loaded = True
             if 'configure' in dir(self):
                 self.configure()
         return False
@@ -72,7 +72,7 @@ class VineyardWidget(gtk.VBox):
 
     def reset(self):
         self.gobject.loading = True
-        self.gobject.__loaded = False
+        self.gobject._loaded = False
         if getattr(self, 'on_reset', False) is not False:
             self.on_reset()
 
@@ -98,7 +98,7 @@ class VineyardWidget(gtk.VBox):
         If the widget has not been realised/initialised yet, continue trying
         every 250 milliseconds."""
         if getattr(self, 'fill_widgets', False) is not False:
-            if self.__gui_initialized:
+            if self._gui_initialized:
                 self.fill_widgets()
             else:
                 gobject.timeout_add(250, self._fill_widgets)

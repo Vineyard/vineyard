@@ -110,8 +110,8 @@ class Widget(widget.VineyardWidget):
             gtk.gdk.KEY_PRESS_MASK
         )
         self.list.connect('changed', self.list_changed)
-        self.list.treeview.connect('button-press-event', self.__list_button_pressed)
-        self.list.treeview.connect('key-press-event', self.__list_key_pressed)
+        self.list.treeview.connect('button-press-event', self._list_button_pressed)
+        self.list.treeview.connect('key-press-event', self._list_key_pressed)
         self.comboboxentry.connect('changed', self.entry_changed)
         self.button_remove.connect('clicked', self.button_remove_clicked)
         self.button_add.connect('clicked', self.button_add_clicked)
@@ -121,7 +121,7 @@ class Widget(widget.VineyardWidget):
     def list_changed(self, listwidget, treeview, active_nr, active_text):
         self.button_remove.set_sensitive(active_nr != None)
 
-    def __list_button_pressed(self, widget, event):
+    def _list_button_pressed(self, widget, event):
         event_dict = {
             'type': event.type,
             'button': event.button,
@@ -152,7 +152,7 @@ class Widget(widget.VineyardWidget):
                 self.list_rotate_order(row, back=(event['button'] == 3))
         return False
 
-    def __list_key_pressed(self,  widget, event):
+    def _list_key_pressed(self,  widget, event):
         event_dict = {
             'time': event.time,
             'keyval': event.keyval,

@@ -32,7 +32,8 @@ from Queue import Queue
 #from multiprocessing import Process
 from vineyard import crashhandler
 import gobject
-import sys,traceback
+import sys
+import traceback
 
 def _print_exception_details():
     et, ev, tb = sys.exc_info()

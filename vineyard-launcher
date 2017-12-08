@@ -223,7 +223,7 @@ class Dialog(gtk.Dialog):
                 select_prefix = index
 
 
-        self.bottlewidget.set_row_separator_func(self.__row_separator_func)
+        self.bottlewidget.set_row_separator_func(self._row_separator_func)
 
         #vineyard.combobox_set_active_by_string(self.bottlewidget, self.prefixes[0][1])
         if select_prefix is None:
@@ -231,7 +231,7 @@ class Dialog(gtk.Dialog):
         else:
             self.bottlewidget.set_active(select_prefix)
 
-        self.bottlewidget.connect("changed", self.__bottle_selection_changed)
+        self.bottlewidget.connect("changed", self._bottle_selection_changed)
 
         self.innervbox.pack_start(self.bottlewidget, False, False)
 
@@ -253,8 +253,8 @@ class Dialog(gtk.Dialog):
         self.entrycompletion.set_model(self.liststore_completion)
         self.entrycompletion.set_text_column(0)
 
-        self.entry.connect("changed", self.__entry_changed)
-        self.entry.connect('key-press-event', self.__key_pressed)
+        self.entry.connect("changed", self._entry_changed)
+        self.entry.connect('key-press-event', self._key_pressed)
 
         self.entryhbox.pack_start(self.entry)
         self.newvbox.pack_start(self.entryhbox, False, False)
@@ -344,7 +344,7 @@ class Dialog(gtk.Dialog):
                 ( i[0], i[1], '{0}\n<small>{1}</small>'.format(i[2], i[3]), False )
                 for i in vineyard.widgets.installers.INSTALLERS_EXTRAS
             ])
-            self.alsorun_list.connect('toggled', self.__on_list_toggled)
+            self.alsorun_list.connect('toggled', self._on_list_toggled)
             self.alsorun_list.set_size_request(-1, vineyard.widget_get_char_height(self)*6)
             self.vbox_alsorun.pack_start(self.alsorun_list, expand=False, fill=True)
 
@@ -356,7 +356,7 @@ class Dialog(gtk.Dialog):
             self.alsorun_hbox.pack_start(self.alsorun_label, expand=False, fill=False)
             self.alsorun_entry = gtk.Entry()
             self.alsorun_hbox.pack_start(self.alsorun_entry, expand=True, fill=True)
-            self.alsorun_entry.connect('changed', self.__on_install_entry_changed)
+            self.alsorun_entry.connect('changed', self._on_install_entry_changed)
 
             self.innervbox.pack_start(self.expander_alsorun, expand=True, fill=True)
 
@@ -421,14 +421,14 @@ class Dialog(gtk.Dialog):
 
             self.innervbox.pack_start(self.placeinbox, expand=True, fill=False)
 
-            self.placeinentry.connect('key-press-event', self.__key_pressed_placein)
+            self.placeinentry.connect('key-press-event', self._key_pressed_placein)
 
-            self.placeinbutton.connect('clicked', self.__placein_button_clicked)
+            self.placeinbutton.connect('clicked', self._placein_button_clicked)
             self.filechooserdialog_placein = vineyard.filechooserdialog_new_with_filters(
                 title = _('Select the root of where the folder should be placed'),
                 parent = self,
                 action = gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                on_response_func = self.__placein_dialog_response)
+                on_response_func = self._placein_dialog_response)
 
 
         self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
@@ -444,20 +444,20 @@ class Dialog(gtk.Dialog):
         self.newvbox.hide()
 
         self.is_dir = is_dir
-        self.__run_main()
+        self._run_main()
 
-    def __run_main(self):
+    def _run_main(self):
         result = self.run()
 
         if result == gtk.RESPONSE_YES:
-            self.__ok()
+            self._ok()
         else:
             self.destroy()
 
-    def __row_separator_func(self, model, iter):
+    def _row_separator_func(self, model, iter):
         return model.get_value(iter,1) == '-'
 
-    def __bottle_selection_changed(self, combobox):
+    def _bottle_selection_changed(self, combobox):
         if combobox.get_active() == 1:
             self.newvbox.set_sensitive(True)
             self.newvbox.show()
@@ -469,7 +469,7 @@ class Dialog(gtk.Dialog):
             if self.is_dir:
                 self.placeinbutton.set_sensitive(True)
 
-    def __entry_changed(self, entry):
+    def _entry_changed(self, entry):
         value = entry.get_text()
 
         if not len(value.strip()):
@@ -494,7 +494,7 @@ class Dialog(gtk.Dialog):
         style.font_desc.set_style(pango.STYLE_NORMAL)
         self.entry.set_style(style)
 
-    def __placein_button_clicked(self, button):
+    def _placein_button_clicked(self, button):
         selectedbottle = self.liststore[self.bottlewidget.get_active()][0]
 
         wine.prefixes.use(selectedbottle)
@@ -510,7 +510,7 @@ class Dialog(gtk.Dialog):
         self.filechooserdialog_placein.set_current_folder(current_target)
         self.filechooserdialog_placein.run()
 
-    def __placein_dialog_response(self, dialog, response):
+    def _placein_dialog_response(self, dialog, response):
         if response == gtk.RESPONSE_OK:
             folder = dialog.get_current_folder()
             folder_win = wine.util.unixtowin(folder)
@@ -531,7 +531,7 @@ class Dialog(gtk.Dialog):
             self.placeinentry.set_text(target)
         dialog.hide()
 
-    def __on_list_toggled(self, simplelist, row_nr, column_nr, state):
+    def _on_list_toggled(self, simplelist, row_nr, column_nr, state):
         package_toggled = simplelist.model[row_nr][0]
         ## A package was deselected, remove it from the argument entry as well
         if not state:
@@ -548,7 +548,7 @@ class Dialog(gtk.Dialog):
                 ).strip()
             )
 
-    def __on_install_entry_changed(self, entry):
+    def _on_install_entry_changed(self, entry):
         typed_packages = entry.get_text().split(' ')
         for row_nr, row in enumerate(self.alsorun_list.model):
             if row[0] in typed_packages:
@@ -556,7 +556,7 @@ class Dialog(gtk.Dialog):
             else:
                 self.alsorun_list.model[row_nr][3] = False
 
-    def __ok(self):
+    def _ok(self):
         self.hide()
         selectedbottle = self.liststore[self.bottlewidget.get_active()][0]
 
@@ -564,7 +564,7 @@ class Dialog(gtk.Dialog):
         if selectedbottle == self.liststore[1][0]:
             bottlename = self.entry.get_text().strip()
             selectedbottle = bottlename
-            self.__create_bottle(bottlename)
+            self._create_bottle(bottlename)
         elif selectedbottle == self.liststore[0][0]:
             selectedbottle = None
         wine.prefixes.use(selectedbottle)
@@ -602,7 +602,7 @@ class Dialog(gtk.Dialog):
                     )
                     self.show_error_dialog(error_text)
                     self.show()
-                    return self.__run_main()
+                    return self._run_main()
 
             #if operation == 0:
             # link
@@ -612,7 +612,7 @@ class Dialog(gtk.Dialog):
                 self.show_error_dialog(
                     _("Couldn't create symlink. Do you have write permissions for the target directory?")
                 )
-                return self.__run_main()
+                return self._run_main()
             """elif operation in (1, 2):
                 # copy or move
                 # copy
@@ -648,28 +648,28 @@ class Dialog(gtk.Dialog):
             # If we should install some "stuff" first
             if len(also_run):
                 #vineyard.widgets.installers.run_winetricks(also_run)
-                dialog = installer.Winetricks(also_run, callback = self.__ok_run)
+                dialog = installer.Winetricks(also_run, callback = self._ok_run)
                 gtk.main()
             else:
-                self.__ok_run()
+                self._ok_run()
 
-    def __ok_run(self, return_code=None):
+    def _ok_run(self, return_code=None):
         # Quit the main loop that may have been started for Winetricks
         if gtk.main_level() > 0:
             gtk.main_quit()
         # Finally, run the file
         if return_code is False:
             # FIXME: Shouldn't we show some info here?
-            self.__run_main()
+            self._run_main()
         else:
-            self.__run_file(self.filename)
+            self._run_file(self.filename)
 
-    def __key_pressed(self, widget, event):
+    def _key_pressed(self, widget, event):
         # If Enter was pressed
         if event.keyval == 65293:
             self.response(gtk.RESPONSE_YES)
 
-    def __key_pressed_placein(self, widget, event):
+    def _key_pressed_placein(self, widget, event):
         # This is where we do the drive magic for the "Create symlink at"-entry
 
         # If Enter was pressed
@@ -742,7 +742,7 @@ class Dialog(gtk.Dialog):
             else:
                 return True
 
-    def __create_bottle(self, bottlename):
+    def _create_bottle(self, bottlename):
         self.creatingbottledialog = gtk.Dialog('',
                                                None,
                                                gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -757,20 +757,20 @@ class Dialog(gtk.Dialog):
         self.creatingbottleprogress = gtk.ProgressBar()
         self.creatingbottleprogress.set_pulse_step(0.1)
         vbox.add(self.creatingbottleprogress)
-        #self.creatingbottledialog.action_area.get_children()[0].connect("activate", self.__create_bottle_cancel)
+        #self.creatingbottledialog.action_area.get_children()[0].connect("activate", self._create_bottle_cancel)
         self.creatingbottledialog.show_all()
         self.bottlename = bottlename
         self.creatingbottledone = False
-        gobject.timeout_add(60, self.__create_bottle_interface)
-        start_thread(self.__create_bottle_backend)
+        gobject.timeout_add(60, self._create_bottle_interface)
+        start_thread(self._create_bottle_backend)
 
-    def __create_bottle_backend(self):
+    def _create_bottle_backend(self):
         wine.prefixes.add(self.bottlename)
-        self.__create_bottle_backend_version()
-        self.__create_bottle_backend_desktop()
+        self._create_bottle_backend_version()
+        self._create_bottle_backend_desktop()
         self.creatingbottledone = True
 
-    def __get_version_from_combobox(self):
+    def _get_version_from_combobox(self):
         version = "winxp"
         selected = self.version_value.get_model()[self.version_value.get_active()][0]
         # Fix the special case of Windows 7 being called Windows 2008 in Wine
@@ -784,11 +784,11 @@ class Dialog(gtk.Dialog):
                 version = i[0]
         return version
 
-    def __create_bottle_backend_version(self):
-        version = self.__get_version_from_combobox()
+    def _create_bottle_backend_version(self):
+        version = self._get_version_from_combobox()
         wine.version.set(version)
 
-    def __create_bottle_backend_desktop(self):
+    def _create_bottle_backend_desktop(self):
         if self.widget_virtual_desktop.settings['desktop'] is None:
             wine.desktop.set(False)
         else:
@@ -797,7 +797,7 @@ class Dialog(gtk.Dialog):
                 size = self.widget_virtual_desktop.settings['desktop']
             )
 
-    def __create_bottle_interface(self):
+    def _create_bottle_interface(self):
         if self.creatingbottledone == True:
             self.creatingbottledialog.destroy()
             return False
@@ -805,12 +805,12 @@ class Dialog(gtk.Dialog):
             self.creatingbottleprogress.pulse()
             return True
 
-    def __run_file(self, filename):
+    def _run_file(self, filename):
         wine.run([filename])
         wine.run([filename], use_terminal=bool(self.checkbutton_run_in_terminal.get_active()))
 
     def open_appdb(self, *args):
-        def __key_pressed(widget, event, dialog):
+        def _key_pressed(widget, event, dialog):
             # If Enter was pressed
             if event.keyval == 65293:
                 dialog.response(gtk.RESPONSE_ACCEPT)
@@ -841,7 +841,7 @@ class Dialog(gtk.Dialog):
         entry.select_region(0, len(self.program_name))
         entry.grab_focus()
 
-        entry.connect('key-press-event', __key_pressed, dialog)
+        entry.connect('key-press-event', _key_pressed, dialog)
 
         response = dialog.run()
 

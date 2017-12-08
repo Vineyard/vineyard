@@ -25,9 +25,9 @@ class VineyardPage(vineyard.async.ThreadedClass):
         """Actually build the widgets on the page."""
         self.widgets = []
         if self._widgets != None:
-            self.__auto_build_interface(self._widgets)
+            self._auto_build_interface(self._widgets)
         elif self._pages != None:
-            self.__auto_build_pages(self._pages)
+            self._auto_build_pages(self._pages)
 
     def _get_widgets(self, get_all=False):
         if get_all:
@@ -89,7 +89,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
 
     def _build_frames_with_vbox(self, sections):
 
-        def __create_child_and_add_to_container(child, container, parent, size_group=None):
+        def _create_child_and_add_to_container(child, container, parent, size_group=None):
             if size_group is not None:
                 child_widget = self._setup_widget(child, size_group)
             else:
@@ -129,7 +129,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
                             child_child_box.set_homogeneous(True)
                             child_box.pack_start(child_child_box, expand=False, fill=True)
                             for child_child in child:
-                                child_widget, size_group = __create_child_and_add_to_container(
+                                child_widget, size_group = _create_child_and_add_to_container(
                                     child_child,
                                     child_child_box,
                                     frame,
@@ -137,7 +137,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
                                 )
                             child_child_box.show()
                         else:
-                            child_widget, size_group = __create_child_and_add_to_container(
+                            child_widget, size_group = _create_child_and_add_to_container(
                                 child,
                                 child_box,
                                 frame,
@@ -147,7 +147,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
                 else:
                     parent_vbox.pack_start(frame, expand=False, fill=True)
                     for child in children:
-                        child_widget, size_group = __create_child_and_add_to_container(
+                        child_widget, size_group = _create_child_and_add_to_container(
                             child,
                             child_box,
                             frame,
@@ -157,7 +157,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
                 child_box.show()
                 self._evaluate_visibility_from_children(frame, frame.child_widgets)
             else:
-                child_widget, size_group = __create_child_and_add_to_container(
+                child_widget, size_group = _create_child_and_add_to_container(
                     section,
                     parent_vbox,
                     parent_vbox,
@@ -179,7 +179,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
         self.notebook.connect_after('switch-page', self._notebook_page_changed)
         return self.notebook
 
-    def __auto_build_interface(self, widgets):
+    def _auto_build_interface(self, widgets):
         self._widget = gtk.Alignment(0.5, 0.5, 1.0, 1.0)
         self._widget.set_padding(3, 0, 0, 0)
         self.vbox, self.widgets = self._build_frames_with_vbox(widgets)
@@ -187,7 +187,7 @@ class VineyardPage(vineyard.async.ThreadedClass):
         self._widget.show()
         self.widget.pack_start(self._widget)
 
-    def __auto_build_pages(self, pages):
+    def _auto_build_pages(self, pages):
         self._widget = self._build_notebook_pages(pages)
         self.widget.pack_start(self._widget)
 

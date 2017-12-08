@@ -29,9 +29,9 @@ class Widget(widget.VineyardWidgetComboBox):
             values = settings,
             match_values = match_values,
             settings_key = 'sound-directsound-acceleration',
-            get_function = self.__get_function,
+            get_function = self._get_function,
             set_function = wine.audio.set_acceleration)
     
-    def __get_function(self):
+    def _get_function(self):
         value = wine.audio.get_acceleration()
         return value.lower()

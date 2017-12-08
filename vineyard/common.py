@@ -280,7 +280,7 @@ class LoadWidgets:
         # GtkSpinner
         if not file_loaded:
             with open(xmlfile, 'r') as f:
-                guidata = self.__downgrade_xml(f.read())
+                guidata = self._downgrade_xml(f.read())
             self._builder.add_from_string(guidata)
 
         if connect_signals and handlerclass != None:
@@ -292,7 +292,7 @@ class LoadWidgets:
         if filename.split('.')[-2].endswith('vineyard-preferences') or MAIN_WINDOW is None:
             MAIN_WINDOW = self['window']
 
-    def __downgrade_xml(self, xml):
+    def _downgrade_xml(self, xml):
         xml = re.sub(
             r'(?ms)$\s+<child>\s+<object class="GtkSpinner".*?</child>',
             '', xml)
@@ -401,9 +401,9 @@ class list_view_new_text(gtk.ScrolledWindow):
                 )
             )
 
-        self.treeview.get_selection().connect_after('changed', self.__on_selection_changed)
+        self.treeview.get_selection().connect_after('changed', self._on_selection_changed)
 
-    def __on_selection_changed(self, selection):
+    def _on_selection_changed(self, selection):
         self.emit('changed', self.treeview, self.get_active(), self.get_active_text())
 
     def get_active(self):
@@ -529,9 +529,9 @@ The actual widget returned is a ScrolledWindow with custom functions resembling 
         column.set_resizable(False)
         #column.set_sort_column_id(1)
 
-        self.__drag_test_start_function = None
-        self.__drag_creation_function = None
-        self.__drag_type = ([("text/uri-list", 0, 1)], gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self._drag_test_start_function = None
+        self._drag_creation_function = None
+        self._drag_type = ([("text/uri-list", 0, 1)], gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.renderers = []
         self.cell_renderer_icon = gtk.CellRendererPixbuf()
@@ -626,15 +626,15 @@ The actual widget returned is a ScrolledWindow with custom functions resembling 
                                    gobject.TYPE_PYOBJECT,
                                    gtk.gdk.Event))
 
-        self.treeview.get_selection().connect_after('changed', self.__on_selection_changed)
+        self.treeview.get_selection().connect_after('changed', self._on_selection_changed)
         self.treeview._drag_start_position = None
-        self.treeview.connect('button-press-event', self.__on_button_press)
-        self.treeview.connect('button-release-event', self.__on_button_release)
-        self.treeview.connect('motion-notify-event', self.__on_motion)
-        self.treeview.connect('drag-begin', self.__on_drag_begin)
-        self.treeview.connect('drag-data-get', self.__on_drag_data_get)
+        self.treeview.connect('button-press-event', self._on_button_press)
+        self.treeview.connect('button-release-event', self._on_button_release)
+        self.treeview.connect('motion-notify-event', self._on_motion)
+        self.treeview.connect('drag-begin', self._on_drag_begin)
+        self.treeview.connect('drag-data-get', self._on_drag_data_get)
 
-    def __on_selection_changed(self, selection):
+    def _on_selection_changed(self, selection):
         if selection.get_mode() == gtk.SELECTION_MULTIPLE:
             path, column = self.treeview.get_cursor()
             selected_row = self.treeview.get_model()[path[0]]
@@ -662,7 +662,7 @@ The actual widget returned is a ScrolledWindow with custom functions resembling 
         else:
             self.emit('changed', self.treeview, self.get_active(), self.get_active_text())
 
-    def __on_button_press(self, widget, event):
+    def _on_button_press(self, widget, event):
         if event.type not in (
             gtk.gdk.BUTTON_PRESS,
             gtk.gdk._2BUTTON_PRESS
@@ -709,18 +709,18 @@ The actual widget returned is a ScrolledWindow with custom functions resembling 
             return True
         return False
 
-    def __on_button_release(self, widget, event):
+    def _on_button_release(self, widget, event):
         # DND Handling
         if event.button == 1:
             widget._drag_start_position = None
         return False
 
-    def __on_motion(self, widget, event):
+    def _on_motion(self, widget, event):
         # DND Handling
         if (
             widget._drag_start_position is not None
-            and self.__drag_test_start_function is not None
-            and self.__drag_creation_function is not None
+            and self._drag_test_start_function is not None
+            and self._drag_creation_function is not None
         ):
             startx, starty = widget._drag_start_position
             if widget.drag_check_threshold(startx, starty, int(event.x), int(event.y)):
@@ -736,39 +736,39 @@ The actual widget returned is a ScrolledWindow with custom functions resembling 
                         else:
                             clicked_text = row[self.text_column]
 
-                        data = self.__drag_test_start_function(clicked_nr, clicked_text)
+                        data = self._drag_test_start_function(clicked_nr, clicked_text)
 
                         if data:
                             if type(data) in (list, tuple):
-                                self.__drag_data = (data[0], clicked_nr, clicked_text)
+                                self._drag_data = (data[0], clicked_nr, clicked_text)
                             else:
-                                self.__drag_data = (clicked_nr, clicked_text)
+                                self._drag_data = (clicked_nr, clicked_text)
                             widget.drag_begin(*list(
-                                list(self.__drag_type)+[1, event]
+                                list(self._drag_type)+[1, event]
                             ))
         return True
 
-    def __on_drag_begin(self, widget, context):
+    def _on_drag_begin(self, widget, context):
         if (
-            type(self.__drag_data) in (list, tuple) and
-            type(self.__drag_data[0]) is not int
+            type(self._drag_data) in (list, tuple) and
+            type(self._drag_data[0]) is not int
         ):
-            context.set_icon_pixbuf(self.__drag_data[0], 0, 0)
+            context.set_icon_pixbuf(self._drag_data[0], 0, 0)
         return False
 
-    def __on_drag_data_get(self, widget, context, selection, targetType, eventTime):
+    def _on_drag_data_get(self, widget, context, selection, targetType, eventTime):
         if targetType == 1:
-            data = self.__drag_creation_function(*self.__drag_data[-2:])
+            data = self._drag_creation_function(*self._drag_data[-2:])
             if data:
                 selection.set(selection.target, 8, data)
 
     def set_drag_test_start_function(self, function):
-        self.__drag_test_start_function = function
+        self._drag_test_start_function = function
     def set_drag_creation_function(self, function):
-        self.__drag_creation_function = function
+        self._drag_creation_function = function
 
     def set_drag_type(self, drag_type):
-        self.__drag_type = drag_type
+        self._drag_type = drag_type
 
     def get_active(self):
         if self.select_multiple:

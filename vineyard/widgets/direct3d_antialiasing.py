@@ -10,8 +10,8 @@ class Widget(widget.VineyardWidgetCheckButton):
         widget.VineyardWidgetCheckButton.__init__(self,
             title = _('Allow font antialiasing'),
             settings_key = 'direct3d-antialiasing',
-            get_function = self.__get_function,
-            set_function = self.__set_function)
+            get_function = self._get_function,
+            set_function = self._set_function)
         self.set_tooltip_text(_(
             "Enable or disable smooth edges on fonts." +
             "\n\n" +
@@ -19,8 +19,8 @@ class Widget(widget.VineyardWidgetCheckButton):
             "even if they ask for it."
         ))
     
-    def __get_function(self):
+    def _get_function(self):
         return not wine.graphics.get_antialiasing_disabled()
     
-    def __set_function(self, value):
+    def _set_function(self, value):
         return wine.graphics.set_antialiasing_disabled(not value)

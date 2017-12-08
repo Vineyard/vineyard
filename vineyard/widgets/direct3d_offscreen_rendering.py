@@ -32,17 +32,17 @@ class Widget(widget.VineyardWidgetComboBox):
             values = names,
             match_values = match_values,
             settings_key = 'direct3d-offscreen-rendering',
-            get_function = self.__get_function,
-            set_function = self.__set_function)
+            get_function = self._get_function,
+            set_function = self._set_function)
         self.set_tooltip_text(_(
             "Some programs and games work better or faster with one setting, others with another." +
             "\n\n" +
             "If you are experiencing issues with the speed of 3D in a program or game, try changing this setting."
         ))
     
-    def __get_function(self):
+    def _get_function(self):
         value = wine.graphics.get_offscreen_rendering_mode()
         return value.lower()
     
-    def __set_function(self, value):
+    def _set_function(self, value):
         wine.graphics.set_offscreen_rendering_mode(value)

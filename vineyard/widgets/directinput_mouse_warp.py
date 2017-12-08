@@ -33,9 +33,3 @@ class Widget(widget.VineyardWidgetComboBox):
             "The default is Enabled"
         ))
 
-    def __get_function(self):
-        return wine.graphics.get_mouse_warp()
-
-    def __set_function(self, value):
-        wine.graphics.set_mouse_warp(value)
-

@@ -10,16 +10,16 @@ class Widget(widget.VineyardWidgetFileChooserButton):
         widget.VineyardWidgetFileChooserButton.__init__(self,
             title = '%s: ' % _('Desktop'),
             settings_key = 'shellfolder-desktop',
-            get_function = self.__get_function,
-            set_function = self.__set_function,
+            get_function = self._get_function,
+            set_function = self._set_function,
             mode=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
         self.foldername = 'Desktop'
     
-    def __get_function(self):
+    def _get_function(self):
         folder = wine.shellfolders.get(self.foldername)
         if folder == None:
             return wine.util.get_real_home()
         return folder
     
-    def __set_function(self, value):
+    def _set_function(self, value):
         return wine.shellfolders.set(self.foldername, value)
