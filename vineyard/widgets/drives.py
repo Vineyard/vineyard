@@ -366,8 +366,6 @@ class Widget(widget.VineyardWidget):
         self.gobject.emit('settings-loaded', self.settings_key, (self.settings[self.settings_key],))
 
     def emit_change(self):
-        #if self.settings[self.settings_key]['new_list'] != self.settings[self.settings_key]['original_list']:
-        #    self.gobject.emit('settings-changed', self.settings_key, self.set_function, (self.settings[self.settings_key],))
         self.gobject.emit('settings-changed', self.settings_key, self.set_function, (self.settings[self.settings_key],))
 
 def get_drive_icon(drive, widget=None):
