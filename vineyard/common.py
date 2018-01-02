@@ -149,7 +149,7 @@ import wine
 
 mimetypes = {
     'windows_executables': (
-        'application/x-ms-dos-executable',
+        'application/x-ms-dos-executable', 'application/x-dosexec'
         'application/x-msdos-program','application/x-msdownload','application/exe',
         'application/x-exe','application/dos-exe','vms/exe','application/x-winexe',
         'application/msdos-windows','application/x-zip-compressed',
@@ -169,7 +169,8 @@ mimetypes = {
     ),
     'msstyles': (
         'application/octet-stream',
-        'application/x-ms-dos-executable'
+        'application/x-ms-dos-executable',
+        'application/x-dosexec'
     ),
     'executable': (
         'application/x-executable',
