@@ -17,7 +17,7 @@ If you would like to install in Ubuntu/Debian, you can use [the PPA](https://cod
 ```bash
 sudo add-apt-repository ppa:cybolic/vineyard-testing
 sudo apt update
-sudo apt install vineyard```
+sudo apt install vineyard
 ```
 
 To install in Fedora, you can use the COPR [respository](https://copr.fedorainfracloud.org/coprs/cybolic/Vineyard/):

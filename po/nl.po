@@ -233,11 +233,11 @@ msgstr "Dit hoeft maar een keer te gebeuren"
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:136
 msgid "Installing {package} and others"
-msgstr "Bezig met het nstalleren van {package} en anderen"
+msgstr "Bezig met het installeren van {package} en anderen"
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:140
 msgid "Installing {package}"
-msgstr "Bezig met het nstalleren van {package}"
+msgstr "Bezig met het installeren van {package}"
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:147
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:203
@@ -254,7 +254,7 @@ msgstr "Pakket installeren"
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:196
 msgid "Installing..."
-msgstr "Installeren…"
+msgstr "Installeren..."
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/installer.py:205
 msgid "Downloading {file}"
@@ -333,7 +333,7 @@ msgstr "Installie voor {package}"
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:59
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:108
 msgid "The program exited with an error"
-msgstr "Het programma is gesloten door een fout."
+msgstr "Het programma is afgesloten door een fout."
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:96
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:134
@@ -353,7 +353,7 @@ msgstr "Het bibliotheek bestand (DLL) <b>%s</b> is niet gevonden."
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:148
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:167
 msgid "Based on this output it looks like "
-msgstr "Gebaseerd op ontwikkeling lijkt het op "
+msgstr "Gebaseerd op deze uitvoer lijkt het er op "
 
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.old.py:111
 #: /home/cybolic/Projects/vineyard/trunk/vineyard/program_handler.py:158
@@ -427,7 +427,7 @@ msgstr "Argumenten:"
 
 #: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:168
 msgid "Opens in a:"
-msgstr "Opend in:"
+msgstr "Opent in:"
 
 #: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:173
 msgid "Normal window"
@@ -459,7 +459,7 @@ msgstr "Open in:"
 
 #: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:213
 msgid "Open program windows in a virtual desktop"
-msgstr "Open het programma's venster in een virtuele omgeving"
+msgstr "Open het programma's venster in een virtueel bureaublad"
 
 #: /home/cybolic/Projects/vineyard/trunk/data/vineyard-nautilus-property-page.py:216
 msgid "Desktop width: "
@@ -510,7 +510,7 @@ msgstr "Toon geavanceerde opties"
 #: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:9
 msgid "The selected prefix (also known as \"configuration\" or \"bottle\")"
 msgstr ""
-"De geselecteerde prefix (ook bekend als \"configuratie\" of \"fles\")"
+"De geselecteerde prefix (ook bekend als \"configuratie\" of \"bottle\")"
 
 #: /home/cybolic/Projects/vineyard/trunk/data/vineyard-preferences.glade.h:10
 msgid "Vineyard Preferences is a part of the Vineyard Project"
