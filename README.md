@@ -1,7 +1,7 @@
 # Vineyard
 
 [![Build Status](https://travis-ci.org/Cybolic/vineyard.svg?branch=master)](https://travis-ci.org/Cybolic/vineyard)
-![rpmbuild](https://copr.fedorainfracloud.org/coprs/cybolic/Vineyard/package/Git/status_image/last_build.png)
+[![RPM Build Status](https://copr.fedorainfracloud.org/coprs/cybolic/Vineyard/package/vineyard/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/cybolic/Vineyard/package/vineyard/)
 
 ## Easy to use Wine configuration programs and libraries
 
